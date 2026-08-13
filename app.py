@@ -1,8 +1,20 @@
 import streamlit as st
 import pandas as pd
 import os
+import re
 
-st.set_page_config(page_title="ACT! Soluções - Gerenciador Web", layout="wide")
+st.set_page_config(page_title="ACT! Soluções", layout="wide")
+
+# Estilo CSS para enquadrar em tela única sem rolagem
+st.markdown("""
+<style>
+    .block-container { padding-top: 1rem; padding-bottom: 1rem; padding-left: 2rem; padding-right: 2rem; }
+    div[data-baseweb="input"] { min-height: 30px; font-size: 13px; }
+    label { font-size: 11px !important; font-weight: 600 !important; margin-bottom: 2px !important; }
+    .stButton>button { height: 30px; padding-left: 6px; padding-right: 6px; font-size: 12px; }
+    hr { margin: 6px 0px !important; }
+</style>
+""", unsafe_allow_html=True)
 
 CSV_FILE = "Base_Consolidada_COMPLETA_ACT.csv"
 
@@ -11,16 +23,7 @@ def load_data():
     if os.path.exists(CSV_FILE):
         df = pd.read_csv(CSV_FILE, dtype=str).fillna("")
     else:
-        df = pd.DataFrame(columns=[
-            'UNIQUE_ID', 'NOME', 'PRIMEIRO_NOME', 'GOSTA_SER_CHAMADO', 'REFERENCIA', 'COMO_NOS_ACHOU',
-            'INDICADO_POR', 'DATA_VISITA', 'LOJA', 'ATENDIDO_POR', 'DIGITADO_POR',
-            'ORGAO', 'NUM_BENEFICIO', 'ESPECIE', 'SENHA_MEU_INSS', 'SENHA_PARANA', 'SENHA_BV',
-            'DATA_NASCIMENTO', 'CPF_LIMPO', 'CPF_FORMATADO', 'IDENTIDADE',
-            'PARA_QUE_USARA_DINHEIRO', 'BANCOS_FINANCEIRAS', 'EMAIL_1', 'EMAIL_2',
-            'ENDERECO', 'BAIRRO', 'CIDADE', 'UF', 'CEP', 'EDIFICIO', 'RMC',
-            'DDD_TEL1', 'TEL1', 'REF_TEL1', 'DDD_TEL2', 'TEL2', 'REF_TEL2', 'TELEFONES_CONSOLIDADOS',
-            'COMENTARIOS_HISTORICO'
-        ])
+        df = pd.DataFrame()
     return df
 
 df = load_data()
@@ -43,11 +46,10 @@ def format_cpf_display(digits):
 if 'index' not in st.session_state:
     st.session_state.index = 0
 
-st.title("📇 ACT! Soluções - Sistema Web Unificado")
+# Cabeçalho compacto
+c_head1, c_head2, c_head3 = st.columns([4, 3, 2])
 
-top_col1, top_col2, top_col3 = st.columns([3, 2, 2])
-
-with top_col1:
+with c_head1:
     busca = st.text_input("🔍 Pesquisar por Nome, CPF ou Benefício:", key="search_query")
 
 if busca:
@@ -65,107 +67,104 @@ if total_registros > 0:
     if st.session_state.index >= total_registros:
         st.session_state.index = 0
     curr_idx = st.session_state.index
-    contato = filtered_df.iloc[curr_idx]
+    contato = filtered_df.iloc[curr_idx].to_dict()
 else:
     contato = {}
     curr_idx = 0
 
-with top_col2:
-    st.write("### ")
+with c_head2:
     c_prev, c_pos, c_next = st.columns([1, 2, 1])
     if c_prev.button("◀ Anterior") and curr_idx > 0:
         st.session_state.index -= 1
         st.rerun()
-    c_pos.markdown(f"<h4 style='text-align: center;'><b>{curr_idx + 1} de {total_registros}</b></h4>", unsafe_allow_html=True)
+    c_pos.markdown(f"<h5 style='text-align: center; margin-top: 5px;'><b>{curr_idx + 1} de {total_registros}</b></h5>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.rerun()
 
-with top_col3:
-    st.write("### ")
-    if st.button("➕ Cadastrar Novo Contato", type="primary"):
+with c_head3:
+    if st.button("➕ Novo Contato", type="primary"):
         st.session_state.novo_contato = True
 
-st.divider()
+st.markdown("<hr>", unsafe_allow_html=True)
 
 if total_registros == 0:
     st.warning("Nenhum contato encontrado.")
 else:
-    with st.container():
-        r1_1, r1_2, r1_3 = st.columns([4, 2, 2])
-        r1_1.text_input("Nome", value=str(contato.get('NOME', '')))
-        r1_2.text_input("1º Nome", value=str(contato.get('PRIMEIRO_NOME', '')))
-        r1_3.text_input("Gosta de ser chamado por", value=str(contato.get('GOSTA_SER_CHAMADO', '')))
+    # Ajuste para garantir preenchimento de Tel1 a partir dos consolidados caso vazio
+    tel1_val = str(contato.get('TEL1', '')).strip()
+    tel_cons = str(contato.get('TELEFONES_CONSOLIDADOS', '')).strip()
+    if not tel1_val and tel_cons:
+        primeiro_tel = re.split(r'[,;/\\|-]', tel_cons)[0].strip()
+        tel1_val = primeiro_tel
 
-        r2_1, r2_2, r2_3, r2_4 = st.columns([3, 2, 2, 2])
-        r2_1.text_input("Referência", value=str(contato.get('REFERENCIA', '')))
-        r2_2.text_input("Como nos achou?", value=str(contato.get('COMO_NOS_ACHOU', '')))
-        r2_3.text_input("Indicado por", value=str(contato.get('INDICADO_POR', '')))
-        r2_4.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')))
+    # LAYOUT COMPACTO - TELA ÚNICA
+    # Linha 1: Identificação
+    r1_1, r1_2, r1_3, r1_4, r1_5 = st.columns([4, 2, 2, 2, 2])
+    r1_1.text_input("Nome", value=str(contato.get('NOME', '')), key="f_nome")
+    r1_2.text_input("1º Nome", value=str(contato.get('PRIMEIRO_NOME', '')), key="f_pnome")
+    r1_3.text_input("Gosta de ser chamado", value=str(contato.get('GOSTA_SER_CHAMADO', '')), key="f_chama")
+    r1_4.text_input("Indicado por", value=str(contato.get('INDICADO_POR', '')), key="f_ind")
+    r1_5.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')), key="f_dvis")
 
-        r3_1, r3_2, r3_3 = st.columns([2, 3, 3])
-        r3_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')))
-        r3_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')))
-        r3_3.text_input("Digitado por", value=str(contato.get('DIGITADO_POR', '')))
+    # Linha 2: Loja, Atendido por, Órgão, Benefício, Espécie
+    r2_1, r2_2, r2_3, r2_4, r2_5 = st.columns([2, 3, 2, 3, 2])
+    r2_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')), key="f_loja")
+    r2_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')), key="f_atend")
+    r2_3.text_input("Órgão", value=str(contato.get('ORGAO', 'INSS')), key="f_orgao")
+    r2_4.text_input("Nº Benefício / Matrícula", value=str(contato.get('NUM_BENEFICIO', '')), key="f_ben")
+    r2_5.text_input("Espécie", value=str(contato.get('ESPECIE', '')), key="f_esp")
 
-        st.markdown("---")
-        b1, b2, b3 = st.columns([3, 3, 2])
-        b1.text_input("Órgão", value=str(contato.get('ORGAO', 'INSS')))
-        b2.text_input("Nº Benefício ou matrícula", value=str(contato.get('NUM_BENEFICIO', '')))
-        b3.text_input("Espécie", value=str(contato.get('ESPECIE', '')))
+    # Linha 3: Senhas, Data Nasc, Identidade
+    r3_1, r3_2, r3_3, r3_4 = st.columns([3, 3, 3, 3])
+    r3_1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')), key="f_s1")
+    r3_2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')), key="f_s2")
+    r3_3.text_input("Data Nascimento", value=str(contato.get('DATA_NASCIMENTO', '')), key="f_dnasc")
+    r3_4.text_input("Identidade", value=str(contato.get('IDENTIDADE', '')), key="f_rg")
 
-        s1, s2, s3 = st.columns([3, 3, 2])
-        s1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')))
-        s2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')))
-        s3.text_input("Senha BV", value=str(contato.get('SENHA_BV', '')))
+    # Linha 4: CPF Puro + CPF Formatado com Botões Copiar e Limpar
+    raw_cpf = clean_cpf_only_digits(contato.get('CPF_LIMPO', ''))
+    cpf_fmt = format_cpf_display(raw_cpf)
 
-        d1, d2, d3 = st.columns([3, 3, 2])
-        d1.text_input("Data Nascimento", value=str(contato.get('DATA_NASCIMENTO', '')))
-        
-        raw_cpf = clean_cpf_only_digits(contato.get('CPF_LIMPO', ''))
-        cpf_fmt = format_cpf_display(raw_cpf)
-        
-        cpf_col1, cpf_col2 = d2.columns([5, 1])
-        cpf_col1.text_input("CGC/CPF (Apenas Números)", value=raw_cpf)
-        cpf_col2.button("📋", key="cp_cpf_puro")
+    cpf_1, cpf_2 = st.columns(2)
+    with cpf_1:
+        c_i1, c_b1, c_b2 = st.columns([6, 1, 1])
+        c_i1.text_input("CPF (Apenas Números)", value=raw_cpf, key="f_cpfl")
+        c_b1.button("📋", key="cp_cpf_l")
+        c_b2.button("🧹", key="cl_cpf_l")
 
-        d3.text_input("CPF (Formatado)", value=cpf_fmt)
+    with cpf_2:
+        c_i2, c_b3, c_b4 = st.columns([6, 1, 1])
+        c_i2.text_input("CPF (Formatado)", value=cpf_fmt, key="f_cpff")
+        c_b3.button("📋", key="cp_cpf_f")
+        c_b4.button("🧹", key="cl_cpf_f")
 
-        st.markdown("---")
-        col_esq, col_dir = st.columns([1, 1])
+    st.markdown("<hr>", unsafe_allow_html=True)
 
-        with col_esq:
-            st.write("### 🏠 Endereço & Localização")
-            st.text_input("Endereço 1", value=str(contato.get('ENDERECO', '')))
-            bair, cid, uf = st.columns([2, 2, 1])
-            bair.text_input("Bairro 1", value=str(contato.get('BAIRRO', '')))
-            cid.text_input("Cidade 1", value=str(contato.get('CIDADE', '')))
-            uf.text_input("Estado 1", value=str(contato.get('UF', 'MG')))
-            cep, edif = st.columns([2, 2])
-            cep.text_input("Cep 1", value=str(contato.get('CEP', '')))
-            edif.text_input("Edifício", value=str(contato.get('EDIFICIO', '')))
+    # Linha 5: Endereço & Telefones
+    col_esq, col_dir = st.columns([1, 1])
 
-            st.write("### 📝 Para quê vai usar o dinheiro / Observações")
-            st.text_area("Finalidade / Observações Gerais", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=120)
+    with col_esq:
+        e1, e2, e3 = st.columns([3, 2, 1])
+        e1.text_input("Endereço", value=str(contato.get('ENDERECO', '')), key="f_end")
+        e2.text_input("Bairro", value=str(contato.get('BAIRRO', '')), key="f_bai")
+        e3.text_input("UF", value=str(contato.get('UF', 'MG')), key="f_uf")
 
-            st.write("### 🏦 Bancos ou financeiras")
-            st.text_area("Bancos / Financeiras", value=str(contato.get('BANCOS_FINANCEIRAS', '')), height=80)
+        c1, c2, c3 = st.columns([3, 2, 2])
+        c1.text_input("Cidade", value=str(contato.get('CIDADE', '')), key="f_cid")
+        c2.text_input("CEP", value=str(contato.get('CEP', '')), key="f_cep")
+        c3.text_input("Edifício", value=str(contato.get('EDIFICIO', '')), key="f_edif")
 
-        with col_dir:
-            st.write("### 📞 Telefones & Contatos Rápidos")
-            
-            t1_ddd, t1_num, t1_ref = st.columns([1, 3, 2])
-            t1_ddd.text_input("DDD", value=str(contato.get('DDD_TEL1', '31')))
-            t1_num.text_input("Tel_1 (WhatsApp / Principal)", value=str(contato.get('TEL1', '')))
-            t1_ref.text_input("Ref_1", value=str(contato.get('REF_TEL1', '')))
+    with col_dir:
+        t1_1, t1_2, t1_3 = st.columns([1, 3, 2])
+        t1_1.text_input("DDD", value=str(contato.get('DDD_TEL1', '31')), key="f_ddd1")
+        t1_2.text_input("Tel_1 (WhatsApp / Principal)", value=tel1_val, key="f_t1")
+        t1_3.text_input("Ref_1", value=str(contato.get('REF_TEL1', '')), key="f_ref1")
 
-            t2_ddd, t2_num, t2_ref = st.columns([1, 3, 2])
-            t2_ddd.text_input("DDD 2", value=str(contato.get('DDD_TEL2', '31')))
-            t2_num.text_input("Tel_2", value=str(contato.get('TEL2', '')))
-            t2_ref.text_input("Ref_2", value=str(contato.get('REF_TEL2', '')))
+        tc_1, tc_2, tc_3 = st.columns([6, 1, 1])
+        tc_1.text_input("Telefones Consolidados", value=tel_cons, key="f_tcons")
+        tc_2.button("📋", key="cp_tel")
+        tc_3.button("🧹", key="cl_tel")
 
-            st.text_input("Todos os Telefones Consolidados", value=str(contato.get('TELEFONES_CONSOLIDADOS', '')))
-
-            e1, e2 = st.columns(2)
-            e1.text_input("e-mail 1", value=str(contato.get('EMAIL_1', '')))
-            e2.text_input("e-mail 2", value=str(contato.get('EMAIL_2', '')))
+    # Linha 6: Observações
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=65, key="f_obs")

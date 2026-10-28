@@ -5,22 +5,26 @@ import re
 
 st.set_page_config(page_title="ACT! Soluções", layout="wide")
 
+# CSS para replicar EXATAMENTE a altura dos campos, cores, fontes e relevo do ACT!
 st.markdown("""
 <style>
+    /* Fundo geral cinza clássico do ACT! / Windows 95/98/2000 */
     .stApp {
         background-color: #D4D0C8 !important;
-        font-family: 'MS Sans Serif', 'Tahoma', 'Arial', sans-serif !important;
+        font-family: 'Tahoma', 'MS Sans Serif', 'Arial', sans-serif !important;
         color: #000000 !important;
     }
     
+    /* Container compacto sem rolagem */
     .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-top: 0.3rem !important;
+        padding-bottom: 0.3rem !important;
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
         background-color: #D4D0C8 !important;
     }
 
+    /* Rótulos dos campos no padrão ACT! */
     label {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 11px !important;
@@ -28,26 +32,29 @@ st.markdown("""
         color: #000000 !important;
         margin-bottom: 1px !important;
         padding-bottom: 0px !important;
+        line-height: 1.1 !important;
     }
 
+    /* Caixas de Texto com ALTURA EXATA DO ACT! (22px) e efeito 3D Inset */
     div[data-baseweb="input"] {
-        min-height: 24px !important;
-        height: 26px !important;
+        min-height: 22px !important;
+        height: 22px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
-        padding: 0px 4px !important;
+        padding: 0px 3px !important;
     }
 
     div[data-baseweb="input"] input {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 11px !important;
         color: #000000 !important;
-        height: 22px !important;
+        height: 18px !important;
         padding: 0px 2px !important;
     }
 
+    /* Área de Observações */
     div[data-baseweb="textarea"] textarea {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 11px !important;
@@ -56,8 +63,10 @@ st.markdown("""
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
         color: #000000 !important;
+        padding: 2px 4px !important;
     }
 
+    /* Botões 3D em Relevo Saliente */
     .stButton>button {
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -67,9 +76,9 @@ st.markdown("""
         border: 2px solid !important;
         border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
         border-radius: 0px !important;
-        height: 24px !important;
-        min-height: 24px !important;
-        padding: 0px 6px !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        padding: 0px 4px !important;
         margin: 0px !important;
         box-shadow: none !important;
     }
@@ -78,8 +87,9 @@ st.markdown("""
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
     }
 
+    /* Divisores finos clássicos */
     hr {
-        margin: 4px 0px !important;
+        margin: 3px 0px !important;
         border: none !important;
         border-top: 1px solid #808080 !important;
         border-bottom: 1px solid #FFFFFF !important;
@@ -138,6 +148,7 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
+# Barra Superior (Busca e Navegação)
 c_head1, c_head2, c_head3 = st.columns([4, 3, 2])
 
 with c_head1:
@@ -169,7 +180,7 @@ with c_head2:
         st.session_state.index -= 1
         st.session_state.cleared_fields.clear()
         st.rerun()
-    c_pos.markdown(f"<div style='text-align: center; font-size: 12px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
+    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; margin-top: 3px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.session_state.cleared_fields.clear()
@@ -207,6 +218,7 @@ else:
             st.session_state.cleared_fields.add(field_id)
             st.rerun()
 
+    # Linha 1: Nome, 1º Nome, Gosta de ser chamado, Data da visita
     r1_1, r1_2, r1_3, r1_4 = st.columns([5, 2, 2, 2])
     with r1_1:
         input_with_tools("Nome", nome_completo, "nome")
@@ -214,6 +226,7 @@ else:
     r1_3.text_input("Gosta de ser chamado por", value=str(contato.get('GOSTA_SER_CHAMADO', '')), key="f_chama")
     r1_4.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')), key="f_dvis")
 
+    # Linha 2: Loja, Atendido por, Órgão, Benefício, Espécie
     r2_1, r2_2, r2_3, r2_4, r2_5 = st.columns([2, 3, 2, 4, 2])
     r2_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')), key="f_loja")
     r2_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')), key="f_atend")
@@ -222,12 +235,14 @@ else:
         input_with_tools("Nº benefício ou matrícula", str(contato.get('NUM_BENEFICIO', '')), "ben")
     r2_5.text_input("Espécie", value=str(contato.get('ESPECIE', '')), key="f_esp")
 
+    # Linha 3: Senhas, Data Nascimento, Identidade
     r3_1, r3_2, r3_3, r3_4 = st.columns([3, 3, 3, 3])
     r3_1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')), key="f_s1")
     r3_2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')), key="f_s2")
     r3_3.text_input("Data Nascimento", value=str(contato.get('DATA_NASCIMENTO', '')), key="f_dnasc")
     r3_4.text_input("Identidade", value=str(contato.get('IDENTIDADE', '')), key="f_rg")
 
+    # Linha 4: CPF Apenas Números e CPF Formatado
     cpf_col1, cpf_col2 = st.columns(2)
     with cpf_col1:
         input_with_tools("CGC/CPF (Apenas Números)", raw_cpf, "cpfl")
@@ -236,6 +251,7 @@ else:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
+    # Linha 5: Endereço & Telefones
     col_esq, col_dir = st.columns([1, 1])
 
     with col_esq:
@@ -259,4 +275,5 @@ else:
 
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=55, key="f_obs")
+    # Linha 6: Observações
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=50, key="f_obs")

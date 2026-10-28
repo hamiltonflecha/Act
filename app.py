@@ -5,14 +5,87 @@ import re
 
 st.set_page_config(page_title="ACT! Soluções", layout="wide")
 
-# CSS para tornar a interface bem compacta e enquadrada em tela única
 st.markdown("""
 <style>
-    .block-container { padding-top: 1rem; padding-bottom: 1rem; padding-left: 2rem; padding-right: 2rem; }
-    div[data-baseweb="input"] { min-height: 30px; font-size: 13px; }
-    label { font-size: 11px !important; font-weight: 600 !important; margin-bottom: 2px !important; }
-    .stButton>button { height: 30px; padding-left: 4px; padding-right: 4px; font-size: 12px; min-width: 32px; }
-    hr { margin: 6px 0px !important; }
+    .stApp {
+        background-color: #D4D0C8 !important;
+        font-family: 'MS Sans Serif', 'Tahoma', 'Arial', sans-serif !important;
+        color: #000000 !important;
+    }
+    
+    .block-container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        background-color: #D4D0C8 !important;
+    }
+
+    label {
+        font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
+        font-size: 11px !important;
+        font-weight: normal !important;
+        color: #000000 !important;
+        margin-bottom: 1px !important;
+        padding-bottom: 0px !important;
+    }
+
+    div[data-baseweb="input"] {
+        min-height: 24px !important;
+        height: 26px !important;
+        background-color: #FFFFFF !important;
+        border: 2px solid !important;
+        border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
+        border-radius: 0px !important;
+        padding: 0px 4px !important;
+    }
+
+    div[data-baseweb="input"] input {
+        font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
+        font-size: 11px !important;
+        color: #000000 !important;
+        height: 22px !important;
+        padding: 0px 2px !important;
+    }
+
+    div[data-baseweb="textarea"] textarea {
+        font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
+        font-size: 11px !important;
+        background-color: #FFFFFF !important;
+        border: 2px solid !important;
+        border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
+        border-radius: 0px !important;
+        color: #000000 !important;
+    }
+
+    .stButton>button {
+        background-color: #D4D0C8 !important;
+        color: #000000 !important;
+        font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
+        font-size: 11px !important;
+        font-weight: bold !important;
+        border: 2px solid !important;
+        border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
+        border-radius: 0px !important;
+        height: 24px !important;
+        min-height: 24px !important;
+        padding: 0px 6px !important;
+        margin: 0px !important;
+        box-shadow: none !important;
+    }
+
+    .stButton>button:active {
+        border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
+    }
+
+    hr {
+        margin: 4px 0px !important;
+        border: none !important;
+        border-top: 1px solid #808080 !important;
+        border-bottom: 1px solid #FFFFFF !important;
+    }
+
+    #MainMenu, footer, header { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -65,11 +138,10 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Cabeçalho compacto
 c_head1, c_head2, c_head3 = st.columns([4, 3, 2])
 
 with c_head1:
-    busca = st.text_input("🔍 Pesquisar por Nome, CPF ou Benefício:", key="search_query")
+    busca = st.text_input("Localizar (Nome / CPF / Benefício):", key="search_query")
 
 if busca:
     filtered_df = df[
@@ -97,14 +169,14 @@ with c_head2:
         st.session_state.index -= 1
         st.session_state.cleared_fields.clear()
         st.rerun()
-    c_pos.markdown(f"<h5 style='text-align: center; margin-top: 5px;'><b>{curr_idx + 1} de {total_registros}</b></h5>", unsafe_allow_html=True)
+    c_pos.markdown(f"<div style='text-align: center; font-size: 12px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.session_state.cleared_fields.clear()
         st.rerun()
 
 with c_head3:
-    if st.button("➕ Novo Contato", type="primary"):
+    if st.button("➕ Novo Contato"):
         st.session_state.novo_contato = True
 
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -112,7 +184,6 @@ st.markdown("<hr>", unsafe_allow_html=True)
 if total_registros == 0:
     st.warning("Nenhum contato encontrado.")
 else:
-    # Tratamentos de dados automáticos
     nome_completo = str(contato.get('NOME', '')).strip()
     primeiro_nome = extract_first_name(nome_completo, contato.get('PRIMEIRO_NOME', ''))
     
@@ -126,7 +197,6 @@ else:
     cpf_fmt = format_cpf_display(raw_cpf)
     cep_fmt = format_cep_display(contato.get('CEP', ''))
 
-    # Função auxiliar para renderizar qualquer campo com botões 📋 e 🧹
     def input_with_tools(label, value, field_id, col_spec=[5, 1, 1]):
         val = "" if field_id in st.session_state.cleared_fields else value
         c1, c2, c3 = st.columns(col_spec)
@@ -137,69 +207,56 @@ else:
             st.session_state.cleared_fields.add(field_id)
             st.rerun()
 
-    # Linha 1: Identificação (com Nome equipado com 📋/🧹 e sem Indicado por)
     r1_1, r1_2, r1_3, r1_4 = st.columns([5, 2, 2, 2])
     with r1_1:
         input_with_tools("Nome", nome_completo, "nome")
-    
-    r1_2.text_input("1º Nome (Extraído)", value=primeiro_nome, key="f_pnome")
-    r1_3.text_input("Gosta de ser chamado", value=str(contato.get('GOSTA_SER_CHAMADO', '')), key="f_chama")
+    r1_2.text_input("1º Nome", value=primeiro_nome, key="f_pnome")
+    r1_3.text_input("Gosta de ser chamado por", value=str(contato.get('GOSTA_SER_CHAMADO', '')), key="f_chama")
     r1_4.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')), key="f_dvis")
 
-    # Linha 2: Loja, Atendido por, Órgão, Benefício (com 📋/🧹), Espécie
     r2_1, r2_2, r2_3, r2_4, r2_5 = st.columns([2, 3, 2, 4, 2])
     r2_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')), key="f_loja")
     r2_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')), key="f_atend")
     r2_3.text_input("Órgão", value=str(contato.get('ORGAO', 'INSS')), key="f_orgao")
-    
     with r2_4:
-        input_with_tools("Nº Benefício / Matrícula", str(contato.get('NUM_BENEFICIO', '')), "ben")
-    
+        input_with_tools("Nº benefício ou matrícula", str(contato.get('NUM_BENEFICIO', '')), "ben")
     r2_5.text_input("Espécie", value=str(contato.get('ESPECIE', '')), key="f_esp")
 
-    # Linha 3: Senhas, Data Nasc, Identidade
     r3_1, r3_2, r3_3, r3_4 = st.columns([3, 3, 3, 3])
     r3_1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')), key="f_s1")
     r3_2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')), key="f_s2")
     r3_3.text_input("Data Nascimento", value=str(contato.get('DATA_NASCIMENTO', '')), key="f_dnasc")
     r3_4.text_input("Identidade", value=str(contato.get('IDENTIDADE', '')), key="f_rg")
 
-    # Linha 4: CPF Apenas Números e CPF Formatado
     cpf_col1, cpf_col2 = st.columns(2)
     with cpf_col1:
-        input_with_tools("CPF (Apenas Números - Sem Ponto)", raw_cpf, "cpfl")
+        input_with_tools("CGC/CPF (Apenas Números)", raw_cpf, "cpfl")
     with cpf_col2:
-        input_with_tools("CPF (Formatado)", cpf_fmt, "cpff")
+        input_with_tools("CGC/CPF (Formatado)", cpf_fmt, "cpff")
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # Linha 5: Endereço & Telefones (com CEP equipado com 📋/🧹)
     col_esq, col_dir = st.columns([1, 1])
 
     with col_esq:
         e1, e2, e3 = st.columns([3, 2, 1])
-        e1.text_input("Endereço", value=str(contato.get('ENDERECO', '')), key="f_end")
-        e2.text_input("Bairro", value=str(contato.get('BAIRRO', '')), key="f_bai")
-        e3.text_input("UF", value=str(contato.get('UF', 'MG')), key="f_uf")
+        e1.text_input("Endereço 1", value=str(contato.get('ENDERECO', '')), key="f_end")
+        e2.text_input("Bairro 1", value=str(contato.get('BAIRRO', '')), key="f_bai")
+        e3.text_input("Estado 1", value=str(contato.get('UF', 'MG')), key="f_uf")
 
         c1, c2, c3 = st.columns([3, 3, 2])
-        c1.text_input("Cidade", value=str(contato.get('CIDADE', '')), key="f_cid")
-        
+        c1.text_input("Cidade 1", value=str(contato.get('CIDADE', '')), key="f_cid")
         with c2:
-            input_with_tools("CEP", cep_fmt, "cep")
-            
+            input_with_tools("Cep 1", cep_fmt, "cep")
         c3.text_input("Edifício", value=str(contato.get('EDIFICIO', '')), key="f_edif")
 
     with col_dir:
         t1_1, t1_2, t1_3 = st.columns([1, 3, 2])
         t1_1.text_input("DDD", value=str(contato.get('DDD_TEL1', '31')), key="f_ddd1")
-        
         with t1_2:
-            input_with_tools("Tel_1 (Principal)", tel1_val, "t1", col_spec=[4, 1, 1])
-            
+            input_with_tools("Tel_1", tel1_val, "t1", col_spec=[4, 1, 1])
         t1_3.text_input("Ref_1", value=str(contato.get('REF_TEL1', '')), key="f_ref1")
 
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
-    # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=65, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=55, key="f_obs")

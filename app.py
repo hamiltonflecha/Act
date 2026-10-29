@@ -89,4 +89,152 @@ st.markdown("""
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
     }
 
-    /* Divisores finos cláss
+    /* Divisores finos clássicos */
+    hr {
+        margin: 3px 0px !important;
+        border: none !important;
+        border-top: 1px solid #808080 !important;
+        border-bottom: 1px solid #FFFFFF !important;
+    }
+
+    #MainMenu, footer, header { visibility: hidden; }
+</style>
+""", unsafe_allow_html=True)
+
+CSV_FILE = "Base_Consolidada_COMPLETA_ACT.csv"
+
+@st.cache_data(ttl=1)
+def load_data():
+    if os.path.exists(CSV_FILE):
+        df = pd.read_csv(CSV_FILE, dtype=str).fillna("")
+    else:
+        df = pd.DataFrame()
+    return df
+
+df = load_data()
+
+def remove_accents(text):
+    if not text or pd.isna(text):
+        return ""
+    nfkd = unicodedata.normalize('NFKD', str(text))
+    return "".join([c for c in nfkd if not unicodedata.combining(c)])
+
+def clean_cpf_only_digits(val):
+    if not val or pd.isna(val):
+        return ""
+    digits = ''.join(filter(str.isdigit, str(val)))
+    if len(digits) >= 11:
+        return digits[-11:]
+    elif len(digits) > 0:
+        return digits.zfill(11)
+    return ""
+
+def format_cpf_display(digits):
+    if len(digits) == 11:
+        return f"{digits[:3]}.{digits[3:6]}.{digits[6:9]}-{digits[9:]}"
+    return digits
+
+def format_cep_display(val):
+    if not val or pd.isna(val):
+        return ""
+    digits = ''.join(filter(str.isdigit, str(val)))
+    if len(digits) == 8:
+        return f"{digits[:5]}-{digits[5:]}"
+    return digits if digits else str(val)
+
+def extract_first_name(full_name, current_pname):
+    if current_pname and str(current_pname).strip():
+        return str(current_pname).strip()
+    if full_name and str(full_name).strip():
+        parts = str(full_name).strip().split()
+        return parts[0] if parts else ""
+    return ""
+
+def calculate_age(birth_date_str):
+    if not birth_date_str or pd.isna(birth_date_str):
+        return ""
+    birth_date_str = str(birth_date_str).strip()
+    for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%d/%m/%y"):
+        try:
+            dt = datetime.strptime(birth_date_str, fmt)
+            today = datetime.today()
+            age = today.year - dt.year - ((today.month, today.day) < (dt.month, dt.day))
+            return str(age)
+        except ValueError:
+            pass
+    return ""
+
+if 'index' not in st.session_state:
+    st.session_state.index = 0
+
+if 'cleared_fields' not in st.session_state:
+    st.session_state.cleared_fields = set()
+
+# Barra Superior (Busca e Navegação)
+c_head1, c_head2, c_head3 = st.columns([4, 3, 2])
+
+with c_head1:
+    busca = st.text_input("Localizar (Nome / CPF / Benefício):", key="search_query")
+
+if busca:
+    filtered_df = df[
+        df['NOME'].astype(str).str.contains(busca, case=False, na=False) |
+        df['CPF_LIMPO'].astype(str).str.contains(busca, na=False) |
+        df.get('NUM_BENEFICIO', pd.Series()).astype(str).str.contains(busca, na=False)
+    ]
+else:
+    filtered_df = df
+
+total_registros = len(filtered_df)
+
+if total_registros > 0:
+    if st.session_state.index >= total_registros:
+        st.session_state.index = 0
+    curr_idx = st.session_state.index
+    contato = filtered_df.iloc[curr_idx].to_dict()
+else:
+    contato = {}
+    curr_idx = 0
+
+with c_head2:
+    c_prev, c_pos, c_next = st.columns([1, 2, 1])
+    if c_prev.button("◀ Anterior") and curr_idx > 0:
+        st.session_state.index -= 1
+        st.session_state.cleared_fields.clear()
+        st.rerun()
+    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; margin-top: 3px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
+    if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
+        st.session_state.index += 1
+        st.session_state.cleared_fields.clear()
+        st.rerun()
+
+with c_head3:
+    if st.button("➕ Novo Contato"):
+        st.session_state.novo_contato = True
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+if total_registros == 0:
+    st.warning("Nenhum contato encontrado.")
+else:
+    nome_completo = str(contato.get('NOME', '')).strip()
+    primeiro_nome = extract_first_name(nome_completo, contato.get('PRIMEIRO_NOME', ''))
+    nome_sem_acentos = remove_accents(nome_completo)
+    
+    tel1_val = str(contato.get('TEL1', '')).strip()
+    tel_cons = str(contato.get('TELEFONES_CONSOLIDADOS', '')).strip()
+    if not tel1_val and tel_cons:
+        primeiro_tel = re.split(r'[,;/\|-]', tel_cons)[0].strip()
+        tel1_val = primeiro_tel
+
+    raw_cpf = clean_cpf_only_digits(contato.get('CPF_LIMPO', ''))
+    cpf_fmt = format_cpf_display(raw_cpf)
+    cep_fmt = format_cep_display(contato.get('CEP', ''))
+    
+    data_nasc = str(contato.get('DATA_NASCIMENTO', '')).strip()
+    idade_calc = calculate_age(data_nasc)
+    
+    orgao_val = str(contato.get('ORGAO', 'INSS')).strip()
+    resumo_concatenado = f"{orgao_val} {nome_sem_acentos} {raw_cpf} {idade_calc}".strip()
+
+    def input_with_tools(label, value, field_id, col_spec

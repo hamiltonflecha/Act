@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS Limpo e Estável: Preserva a estrutura nativa dos campos sem sobreposições
+# CSS Limpo e Ultra Compacto com suporte a Placeholders estilo ACT!
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -17,26 +17,27 @@ st.markdown("""
         color: #000000 !important;
     }
     
-    /* Zera margens externas para aproveitamento de tela no tablet */
+    /* Zera margens gerais para máximo aproveitamento de tela */
     .block-container {
-        padding-top: 0.3rem !important;
-        padding-bottom: 0.3rem !important;
-        padding-left: 0.6rem !important;
-        padding-right: 0.6rem !important;
+        padding-top: 0.2rem !important;
+        padding-bottom: 0.2rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
     }
 
-    /* Distância vertical suave entre as linhas */
-    div[data-testid="stVerticalBlock"] > div {
-        gap: 0.3rem !important;
-    }
-
-    /* Rótulos dos campos no padrão ACT! */
+    /* Esconde rótulos superiores para economizar espaço vertical */
     label {
-        font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 11px !important;
-        font-weight: normal !important;
-        color: #000000 !important;
-        margin-bottom: 2px !important;
+        display: none !important;
+    }
+
+    /* Reduz ao mínimo a distância vertical entre as linhas */
+    div[data-testid="stVerticalBlock"] > div {
+        gap: 0.15rem !important;
+    }
+
+    /* Alinhamento perfeito dos botões com as caixas */
+    div[data-testid="stHorizontalBlock"] {
+        align-items: center !important;
     }
 
     /* Caixas de Texto com Borda 3D Rebaixada Clássica */
@@ -45,13 +46,24 @@ st.markdown("""
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
-        padding: 0px 4px !important;
+        padding: 0px 3px !important;
+        height: 26px !important;
+        min-height: 26px !important;
     }
 
     div[data-baseweb="input"] input {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 11px !important;
         color: #000000 !important;
+        height: 22px !important;
+        padding: 0px 2px !important;
+    }
+
+    /* Estilo do Placeholder (marca d'água dentro do campo) */
+    div[data-baseweb="input"] input::placeholder {
+        color: #707070 !important;
+        font-style: italic !important;
+        font-size: 10px !important;
     }
 
     div[data-baseweb="textarea"] textarea {
@@ -62,9 +74,20 @@ st.markdown("""
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
         color: #000000 !important;
+        padding: 2px 4px !important;
     }
 
-    /* Botões em Relevo 3D Saliente */
+    div[data-baseweb="textarea"] textarea::placeholder {
+        color: #707070 !important;
+        font-style: italic !important;
+        font-size: 10px !important;
+    }
+
+    /* Botões 3D em Relevo Saliente */
+    .stButton {
+        margin-bottom: 0px !important;
+    }
+
     .stButton>button {
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -74,7 +97,10 @@ st.markdown("""
         border: 2px solid !important;
         border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
         border-radius: 0px !important;
-        padding: 2px 6px !important;
+        height: 26px !important;
+        min-height: 26px !important;
+        padding: 0px 5px !important;
+        margin: 0px !important;
         box-shadow: none !important;
     }
 
@@ -83,7 +109,7 @@ st.markdown("""
     }
 
     hr {
-        margin: 4px 0px !important;
+        margin: 3px 0px !important;
         border: none !important;
         border-top: 1px solid #808080 !important;
         border-bottom: 1px solid #FFFFFF !important;
@@ -162,11 +188,11 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca, Navegação e Bloco de Versão Act V13)
+# Barra Superior (Busca, Navegação e Bloco de Versão Act V14)
 c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2.5])
 
 with c_head1:
-    busca = st.text_input("Localizar (Nome / CPF / Benefício):", key="search_query")
+    busca = st.text_input("Localizar", placeholder="Localizar (Nome / CPF / Benefício)", key="search_query")
 
 if busca:
     filtered_df = df[
@@ -193,7 +219,7 @@ with c_head2:
     if c_prev.button("◀ Anterior") and curr_idx > 0:
         st.session_state.index -= 1
         st.session_state.cleared_fields.clear()
-    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; margin-top: 6px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
+    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.session_state.cleared_fields.clear()
@@ -208,12 +234,12 @@ with c_head4:
         background-color: #FFFFFF;
         border: 2px solid;
         border-color: #808080 #FFFFFF #FFFFFF #808080;
-        padding: 3px 8px;
+        padding: 2px 6px;
         text-align: center;
         font-family: Tahoma, sans-serif;
         line-height: 1.2;
     '>
-        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V13</div>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V14</div>
         <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
         <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>
@@ -244,17 +270,15 @@ else:
     orgao_val = str(contato.get('ORGAO', 'INSS')).strip()
     resumo_concatenado = f"{orgao_val} {nome_sem_acentos} {raw_cpf} {idade_calc}".strip()
 
-    def input_with_tools(label, value, field_id, col_spec=[7, 1, 1]):
+    def input_with_tools(placeholder_name, value, field_id, col_spec=[7, 1, 1]):
         val = "" if field_id in st.session_state.cleared_fields else value
         c1, c2, c3 = st.columns(col_spec)
         with c1:
-            st.text_input(label, value=val, key=f"inp_{field_id}")
+            st.text_input(placeholder_name, value=val, placeholder=placeholder_name, key=f"inp_{field_id}")
         with c2:
-            st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
             if st.button("📋", key=f"cp_{field_id}", help="Copiar"):
                 st.toast(f"Copiado: {val}")
         with c3:
-            st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
             if st.button("🧹", key="cl_" + field_id, help="Limpar"):
                 st.session_state.cleared_fields.add(field_id)
 
@@ -262,9 +286,9 @@ else:
     r1_1, r1_2, r1_3, r1_4 = st.columns([5, 2, 2, 2])
     with r1_1:
         input_with_tools("Nome", nome_completo, "nome")
-    r1_2.text_input("1º Nome", value=primeiro_nome, key="f_pnome")
-    r1_3.text_input("Gosta de ser chamado por", value=str(contato.get('GOSTA_SER_CHAMADO', '')), key="f_chama")
-    r1_4.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')), key="f_dvis")
+    r1_2.text_input("1º Nome", value=primeiro_nome, placeholder="1º Nome", key="f_pnome")
+    r1_3.text_input("Gosta de ser chamado por", value=str(contato.get('GOSTA_SER_CHAMADO', '')), placeholder="Gosta de ser chamado por", key="f_chama")
+    r1_4.text_input("Data da visita", value=str(contato.get('DATA_VISITA', '')), placeholder="Data da visita", key="f_dvis")
 
     # Linha 1B: Nome sem Acentos
     r1b_1, r1b_2 = st.columns([5, 6])
@@ -278,20 +302,20 @@ else:
 
     # Linha 2: Loja, Atendido por, Órgão, Nº Benefício, Espécie
     r2_1, r2_2, r2_3, r2_4, r2_5 = st.columns([2, 3, 2, 4, 2])
-    r2_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')), key="f_loja")
-    r2_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')), key="f_atend")
-    r2_3.text_input("Órgão", value=orgao_val, key="f_orgao")
+    r2_1.text_input("Loja", value=str(contato.get('LOJA', 'Centro - OB')), placeholder="Loja", key="f_loja")
+    r2_2.text_input("Atendido por", value=str(contato.get('ATENDIDO_POR', '')), placeholder="Atendido por", key="f_atend")
+    r2_3.text_input("Órgão", value=orgao_val, placeholder="Órgão", key="f_orgao")
     with r2_4:
         input_with_tools("Nº benefício ou matrícula", str(contato.get('NUM_BENEFICIO', '')), "ben")
-    r2_5.text_input("Espécie", value=str(contato.get('ESPECIE', '')), key="f_esp")
+    r2_5.text_input("Espécie", value=str(contato.get('ESPECIE', '')), placeholder="Espécie", key="f_esp")
 
     # Linha 3: Senhas, Data Nascimento, Idade, Identidade
     r3_1, r3_2, r3_3, r3_4, r3_5 = st.columns([3, 3, 3, 2, 3])
-    r3_1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')), key="f_s1")
-    r3_2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')), key="f_s2")
-    r3_3.text_input("Data Nascimento", value=data_nasc, key="f_dnasc")
-    r3_4.text_input("Idade", value=idade_calc, key="f_idade")
-    r3_5.text_input("Identidade", value=str(contato.get('IDENTIDADE', '')), key="f_rg")
+    r3_1.text_input("Senha Meu INSS", value=str(contato.get('SENHA_MEU_INSS', '')), placeholder="Senha Meu INSS", key="f_s1")
+    r3_2.text_input("Senha Paraná", value=str(contato.get('SENHA_PARANA', '')), placeholder="Senha Paraná", key="f_s2")
+    r3_3.text_input("Data Nascimento", value=data_nasc, placeholder="Data Nascimento", key="f_dnasc")
+    r3_4.text_input("Idade", value=idade_calc, placeholder="Idade", key="f_idade")
+    r3_5.text_input("Identidade", value=str(contato.get('IDENTIDADE', '')), placeholder="Identidade", key="f_rg")
 
     # Linha 4: CPF Apenas Números e CPF Formatado
     cpf_col1, cpf_col2 = st.columns(2)
@@ -307,24 +331,24 @@ else:
 
     with col_esq:
         e1, e2, e3 = st.columns([3, 2, 1])
-        e1.text_input("Endereço 1", value=str(contato.get('ENDERECO', '')), key="f_end")
-        e2.text_input("Bairro 1", value=str(contato.get('BAIRRO', '')), key="f_bai")
-        e3.text_input("Estado 1", value=str(contato.get('UF', 'MG')), key="f_uf")
+        e1.text_input("Endereço 1", value=str(contato.get('ENDERECO', '')), placeholder="Endereço 1", key="f_end")
+        e2.text_input("Bairro 1", value=str(contato.get('BAIRRO', '')), placeholder="Bairro 1", key="f_bai")
+        e3.text_input("Estado 1", value=str(contato.get('UF', 'MG')), placeholder="Estado 1", key="f_uf")
 
         c1, c2, c3 = st.columns([3, 3, 2])
-        c1.text_input("Cidade 1", value=str(contato.get('CIDADE', '')), key="f_cid")
+        c1.text_input("Cidade 1", value=str(contato.get('CIDADE', '')), placeholder="Cidade 1", key="f_cid")
         with c2:
             input_with_tools("Cep 1", cep_fmt, "cep")
-        c3.text_input("Edifício", value=str(contato.get('EDIFICIO', '')), key="f_edif")
+        c3.text_input("Edifício", value=str(contato.get('EDIFICIO', '')), placeholder="Edifício", key="f_edif")
 
     with col_dir:
         t1_1, t1_2, t1_3 = st.columns([1, 3, 2])
-        t1_1.text_input("DDD", value=str(contato.get('DDD_TEL1', '31')), key="f_ddd1")
+        t1_1.text_input("DDD", value=str(contato.get('DDD_TEL1', '31')), placeholder="DDD", key="f_ddd1")
         with t1_2:
             input_with_tools("Tel_1", tel1_val, "t1", col_spec=[4, 1, 1])
-        t1_3.text_input("Ref_1", value=str(contato.get('REF_TEL1', '')), key="f_ref1")
+        t1_3.text_input("Ref_1", value=str(contato.get('REF_TEL1', '')), placeholder="Ref_1", key="f_ref1")
 
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
     # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=50, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), placeholder="Observações", height=45, key="f_obs")

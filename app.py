@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS para forçar alinhamento perfeito, eliminar bordas extras e manter estilo ACT! clássico
+# CSS para forçar altura de 19px e ALINHAMENTO PERFEITO DOS BOTÕES NA BASE
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -17,7 +17,7 @@ st.markdown("""
         color: #000000 !important;
     }
     
-    /* Container compacto sem rolagem */
+    /* Zera margens gerais para caber tudo sem rolagem */
     .block-container {
         padding-top: 0.1rem !important;
         padding-bottom: 0.1rem !important;
@@ -25,7 +25,7 @@ st.markdown("""
         padding-right: 0.4rem !important;
     }
 
-    /* Distância vertical mínima entre elementos */
+    /* Reduz a distância vertical entre as linhas */
     div[data-testid="stVerticalBlock"] > div {
         gap: 0.05rem !important;
     }
@@ -51,15 +51,17 @@ st.markdown("""
         line-height: 1.0 !important;
     }
 
-    /* REMOVE A CAIXA EXTERNA/SOMBRA DO STREAMLIT PARA ACABAR COM AS BORDAS DUPLICADAS */
+    /* FORÇA ALTURA DE 19PX EM TODOS OS SELETORES DO STREAMLIT */
     div[data-testid="stTextInput"] {
         background-color: transparent !important;
         border: none !important;
         padding: 0px !important;
         margin: 0px !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
     }
 
-    /* CAIXA DE TEXTO ÚNICA COM ALTURA DE 19PX E BORDA 3D REBAIXADA */
     div[data-baseweb="input"] {
         min-height: 19px !important;
         height: 19px !important;
@@ -78,6 +80,7 @@ st.markdown("""
         color: #000000 !important;
         height: 15px !important;
         min-height: 15px !important;
+        max-height: 15px !important;
         padding: 0px 2px !important;
         line-height: 15px !important;
     }
@@ -96,6 +99,9 @@ st.markdown("""
     /* BOTÕES COM ALTURA DE 19PX E ALINHAMENTO PELA BASE */
     .stButton {
         margin-bottom: 0px !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
     }
 
     .stButton>button {
@@ -200,7 +206,7 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca, Navegação e Bloco de Versão Act V11)
+# Barra Superior (Busca, Navegação e Bloco de Versão Act V12)
 c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2.5])
 
 with c_head1:
@@ -251,7 +257,7 @@ with c_head4:
         font-family: Tahoma, sans-serif;
         line-height: 1.2;
     '>
-        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V11</div>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V12</div>
         <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
         <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>

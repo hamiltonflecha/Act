@@ -5,9 +5,9 @@ import re
 import unicodedata
 from datetime import datetime
 
-st.set_page_config(page_title="ACT! Soluções", layout="wide")
+st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS para forçar alinhamento perfeito dos botões com a caixa de texto e estilização do ACT!
+# CSS para alinhamento, caixa de texto no bloco superior e estilo ACT!
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -186,8 +186,8 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca, Navegação e Identificação da Versão/Autores)
-c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2])
+# Barra Superior (Busca, Navegação e Bloco de Versão/Autores em Caixa de Texto)
+c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2.5])
 
 with c_head1:
     busca = st.text_input("Localizar (Nome / CPF / Benefício):", key="search_query")
@@ -228,10 +228,18 @@ with c_head3:
 
 with c_head4:
     st.markdown("""
-    <div style='text-align: right; font-family: Tahoma, sans-serif; line-height: 1.1;'>
-        <div style='font-weight: bold; font-size: 12px; color: #000000;'>ACT V8</div>
-        <div style='font-size: 10px; color: #333333; text-align: center;'>Hamilton e Jaedna</div>
-        <div style='font-size: 10px; color: #333333; text-align: center;'>Soluções</div>
+    <div style='
+        background-color: #FFFFFF;
+        border: 2px solid;
+        border-color: #808080 #FFFFFF #FFFFFF #808080;
+        padding: 2px 6px;
+        text-align: center;
+        font-family: Tahoma, sans-serif;
+        line-height: 1.2;
+    '>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V8</div>
+        <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
+        <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>
     """, unsafe_allow_html=True)
 

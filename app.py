@@ -7,15 +7,17 @@ from datetime import datetime
 
 st.set_page_config(page_title="ACT! Soluções", layout="wide")
 
-# CSS Ajustado: Alinhamento vertical perfeito pela linha de base e espaçamento compacto ACT!
+# CSS para forçar alinhamento perfeito dos botões com a caixa de texto e estilização do ACT!
 st.markdown("""
 <style>
+    /* Fundo cinza clássico do ACT! */
     .stApp {
         background-color: #D4D0C8 !important;
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         color: #000000 !important;
     }
     
+    /* Zera margens gerais para caber tudo sem rolagem */
     .block-container {
         padding-top: 0.1rem !important;
         padding-bottom: 0.1rem !important;
@@ -23,18 +25,23 @@ st.markdown("""
         padding-right: 0.4rem !important;
     }
 
-    /* Reduz o espaço vertical entre linhas no Streamlit */
+    /* Reduz a distância vertical entre as linhas */
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.15rem !important;
+        gap: 0.1rem !important;
     }
 
-    /* Alinha os elementos das colunas pela base (Bottom Baseline) */
+    /* FORÇA O ALINHAMENTO DOS BOTÕES E INPUTS PELA PARTE INFERIOR (BASE) */
+    div[data-testid="stHorizontalBlock"] {
+        align-items: flex-end !important;
+    }
+    
     div[data-testid="column"] {
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-end !important;
     }
 
+    /* Rótulos dos campos no padrão compacto do ACT! */
     label {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 10px !important;
@@ -44,7 +51,7 @@ st.markdown("""
         line-height: 1.0 !important;
     }
 
-    /* Caixas de Texto com Altura Fixo de 22px do ACT! */
+    /* Caixas de Texto com Altura Fixa de 22px do ACT! */
     div[data-baseweb="input"] {
         min-height: 22px !important;
         height: 22px !important;
@@ -74,7 +81,11 @@ st.markdown("""
         padding: 1px 3px !important;
     }
 
-    /* Botões 3D com a mesma altura dos inputs (22px) */
+    /* Botões com a exata altura e alinhamento dos inputs */
+    .stButton {
+        margin-bottom: 0px !important;
+    }
+
     .stButton>button {
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -86,7 +97,7 @@ st.markdown("""
         border-radius: 0px !important;
         height: 22px !important;
         min-height: 22px !important;
-        padding: 0px 3px !important;
+        padding: 0px 4px !important;
         margin: 0px !important;
         box-shadow: none !important;
     }
@@ -175,8 +186,8 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca e Navegação)
-c_head1, c_head2, c_head3 = st.columns([4, 3, 2])
+# Barra Superior (Busca, Navegação e Identificação da Versão/Autores)
+c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2])
 
 with c_head1:
     busca = st.text_input("Localizar (Nome / CPF / Benefício):", key="search_query")
@@ -215,6 +226,15 @@ with c_head3:
     if st.button("➕ Novo Contato"):
         st.session_state.novo_contato = True
 
+with c_head4:
+    st.markdown("""
+    <div style='text-align: right; font-family: Tahoma, sans-serif; line-height: 1.1;'>
+        <div style='font-weight: bold; font-size: 12px; color: #000000;'>ACT V8</div>
+        <div style='font-size: 10px; color: #333333; text-align: center;'>Hamilton e Jaedna</div>
+        <div style='font-size: 10px; color: #333333; text-align: center;'>Soluções</div>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.markdown("<hr>", unsafe_allow_html=True)
 
 if total_registros == 0:
@@ -240,14 +260,17 @@ else:
     orgao_val = str(contato.get('ORGAO', 'INSS')).strip()
     resumo_concatenado = f"{orgao_val} {nome_sem_acentos} {raw_cpf} {idade_calc}".strip()
 
-    def input_with_tools(label, value, field_id, col_spec=[5, 1, 1]):
+    def input_with_tools(label, value, field_id, col_spec=[7, 1, 1]):
         val = "" if field_id in st.session_state.cleared_fields else value
         c1, c2, c3 = st.columns(col_spec)
-        c1.text_input(label, value=val, key=f"inp_{field_id}")
-        if c2.button("📋", key=f"cp_{field_id}", help="Copiar"):
-            st.toast(f"Copiado: {val}")
-        if c3.button("🧹", key="cl_" + field_id, help="Limpar"):
-            st.session_state.cleared_fields.add(field_id)
+        with c1:
+            st.text_input(label, value=val, key=f"inp_{field_id}")
+        with c2:
+            if st.button("📋", key=f"cp_{field_id}", help="Copiar"):
+                st.toast(f"Copiado: {val}")
+        with c3:
+            if st.button("🧹", key="cl_" + field_id, help="Limpar"):
+                st.session_state.cleared_fields.add(field_id)
 
     # Linha 1: Nome, 1º Nome, Gosta de ser chamado por, Data da visita
     r1_1, r1_2, r1_3, r1_4 = st.columns([5, 2, 2, 2])
@@ -318,4 +341,4 @@ else:
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
     # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=40, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=35, key="f_obs")

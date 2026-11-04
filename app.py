@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS para alinhamento, caixa de texto no bloco superior e estilo ACT!
+# CSS para alinhamento, caixa de texto no bloco superior e estilo ACT! ultra compacto (19px)
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -27,7 +27,7 @@ st.markdown("""
 
     /* Reduz a distância vertical entre as linhas */
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.1rem !important;
+        gap: 0.05rem !important;
     }
 
     /* FORÇA O ALINHAMENTO DOS BOTÕES E INPUTS PELA PARTE INFERIOR (BASE) */
@@ -51,10 +51,10 @@ st.markdown("""
         line-height: 1.0 !important;
     }
 
-    /* Caixas de Texto com Altura Fixa de 22px do ACT! */
+    /* Caixas de Texto com Altura Ajustada para 19px */
     div[data-baseweb="input"] {
-        min-height: 22px !important;
-        height: 22px !important;
+        min-height: 19px !important;
+        height: 19px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
@@ -66,7 +66,7 @@ st.markdown("""
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 10px !important;
         color: #000000 !important;
-        height: 18px !important;
+        height: 15px !important;
         padding: 0px 2px !important;
     }
 
@@ -81,7 +81,7 @@ st.markdown("""
         padding: 1px 3px !important;
     }
 
-    /* Botões com a exata altura e alinhamento dos inputs */
+    /* Botões com a exata altura e alinhamento dos inputs (19px) */
     .stButton {
         margin-bottom: 0px !important;
     }
@@ -95,8 +95,8 @@ st.markdown("""
         border: 2px solid !important;
         border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
         border-radius: 0px !important;
-        height: 22px !important;
-        min-height: 22px !important;
+        height: 19px !important;
+        min-height: 19px !important;
         padding: 0px 4px !important;
         margin: 0px !important;
         box-shadow: none !important;
@@ -237,7 +237,7 @@ with c_head4:
         font-family: Tahoma, sans-serif;
         line-height: 1.2;
     '>
-        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V8</div>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V9</div>
         <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
         <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>
@@ -349,4 +349,4 @@ else:
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
     # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=35, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=30, key="f_obs")

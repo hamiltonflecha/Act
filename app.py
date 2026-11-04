@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS para forçar altura de 19px e ALINHAMENTO PERFEITO DOS BOTÕES NA BASE
+# CSS Limpo e Estabilizado para evitar sobreposição de texto e campos quebrados
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -27,10 +27,10 @@ st.markdown("""
 
     /* Reduz a distância vertical entre as linhas */
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.05rem !important;
+        gap: 0.2rem !important;
     }
 
-    /* FORÇA O ALINHAMENTO DOS BOTÕES E INPUTS PELA PARTE INFERIOR (BASE) */
+    /* Alinhamento dos botões com os campos pela base */
     div[data-testid="stHorizontalBlock"] {
         align-items: flex-end !important;
     }
@@ -41,52 +41,47 @@ st.markdown("""
         justify-content: flex-end !important;
     }
 
-    /* Rótulos dos campos */
+    /* Rótulos dos campos no padrão compacto do ACT! */
     label {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         font-weight: normal !important;
         color: #000000 !important;
-        margin-bottom: 1px !important;
-        line-height: 1.0 !important;
+        margin-bottom: 2px !important;
+        line-height: 1.1 !important;
     }
 
-    /* SOBRESCREVE TODAS AS ESTRUTURAS INTERNAS DO STREAMLIT PARA 19PX */
-    div[data-baseweb="input"], 
-    div[data-baseweb="input"] > div,
-    div[data-testid="stTextInput"] > div {
-        min-height: 19px !important;
-        max-height: 19px !important;
-        height: 19px !important;
+    /* Caixas de Texto com Efeito 3D Rebaixado e Altura Estável (24px) */
+    div[data-baseweb="input"] {
+        min-height: 24px !important;
+        height: 24px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
-        padding: 0px 2px !important;
+        padding: 0px 3px !important;
     }
 
     div[data-baseweb="input"] input {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         color: #000000 !important;
-        height: 15px !important;
-        min-height: 15px !important;
+        height: 20px !important;
         padding: 0px 2px !important;
-        line-height: 15px !important;
     }
 
     div[data-baseweb="textarea"] textarea {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
         color: #000000 !important;
-        padding: 1px 3px !important;
+        padding: 2px 4px !important;
     }
 
-    /* Botões com alinhamento e altura exata de 19px */
+    /* Botões com a exata altura e relevo dos campos (24px) */
     .stButton {
         margin-bottom: 0px !important;
     }
@@ -95,15 +90,13 @@ st.markdown("""
         background-color: #D4D0C8 !important;
         color: #000000 !important;
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         font-weight: bold !important;
         border: 2px solid !important;
         border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
         border-radius: 0px !important;
-        height: 19px !important;
-        min-height: 19px !important;
-        max-height: 19px !important;
-        line-height: 15px !important;
+        height: 24px !important;
+        min-height: 24px !important;
         padding: 0px 4px !important;
         margin: 0px !important;
         box-shadow: none !important;
@@ -114,7 +107,7 @@ st.markdown("""
     }
 
     hr {
-        margin: 2px 0px !important;
+        margin: 3px 0px !important;
         border: none !important;
         border-top: 1px solid #808080 !important;
         border-bottom: 1px solid #FFFFFF !important;
@@ -193,7 +186,7 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca, Navegação e Bloco de Versão/Autores em Caixa de Texto)
+# Barra Superior (Busca, Navegação e Bloco de Versão/Autores)
 c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2.5])
 
 with c_head1:
@@ -224,7 +217,7 @@ with c_head2:
     if c_prev.button("◀ Anterior") and curr_idx > 0:
         st.session_state.index -= 1
         st.session_state.cleared_fields.clear()
-    c_pos.markdown(f"<div style='text-align: center; font-size: 10px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
+    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.session_state.cleared_fields.clear()
@@ -356,4 +349,4 @@ else:
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
     # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=30, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=35, key="f_obs")

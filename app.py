@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS Limpo e Estabilizado para evitar sobreposição de texto e campos quebrados
+# CSS para forçar alinhamento perfeito, eliminar bordas extras e manter estilo ACT! clássico
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -17,7 +17,7 @@ st.markdown("""
         color: #000000 !important;
     }
     
-    /* Zera margens gerais para caber tudo sem rolagem */
+    /* Container compacto sem rolagem */
     .block-container {
         padding-top: 0.1rem !important;
         padding-bottom: 0.1rem !important;
@@ -25,12 +25,12 @@ st.markdown("""
         padding-right: 0.4rem !important;
     }
 
-    /* Reduz a distância vertical entre as linhas */
+    /* Distância vertical mínima entre elementos */
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.2rem !important;
+        gap: 0.05rem !important;
     }
 
-    /* Alinhamento dos botões com os campos pela base */
+    /* ALINHAMENTO PELA LINHA DE BASE DOS BOTÕES E INPUTS */
     div[data-testid="stHorizontalBlock"] {
         align-items: flex-end !important;
     }
@@ -44,44 +44,56 @@ st.markdown("""
     /* Rótulos dos campos no padrão compacto do ACT! */
     label {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         font-weight: normal !important;
         color: #000000 !important;
-        margin-bottom: 2px !important;
-        line-height: 1.1 !important;
+        margin-bottom: 1px !important;
+        line-height: 1.0 !important;
     }
 
-    /* Caixas de Texto com Efeito 3D Rebaixado e Altura Estável (24px) */
+    /* REMOVE A CAIXA EXTERNA/SOMBRA DO STREAMLIT PARA ACABAR COM AS BORDAS DUPLICADAS */
+    div[data-testid="stTextInput"] {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    /* CAIXA DE TEXTO ÚNICA COM ALTURA DE 19PX E BORDA 3D REBAIXADA */
     div[data-baseweb="input"] {
-        min-height: 24px !important;
-        height: 24px !important;
+        min-height: 19px !important;
+        height: 19px !important;
+        max-height: 19px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
-        padding: 0px 3px !important;
+        padding: 0px 2px !important;
+        box-shadow: none !important;
     }
 
     div[data-baseweb="input"] input {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         color: #000000 !important;
-        height: 20px !important;
+        height: 15px !important;
+        min-height: 15px !important;
         padding: 0px 2px !important;
+        line-height: 15px !important;
     }
 
     div[data-baseweb="textarea"] textarea {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
         border-color: #808080 #FFFFFF #FFFFFF #808080 !important;
         border-radius: 0px !important;
         color: #000000 !important;
-        padding: 2px 4px !important;
+        padding: 1px 3px !important;
     }
 
-    /* Botões com a exata altura e relevo dos campos (24px) */
+    /* BOTÕES COM ALTURA DE 19PX E ALINHAMENTO PELA BASE */
     .stButton {
         margin-bottom: 0px !important;
     }
@@ -90,14 +102,16 @@ st.markdown("""
         background-color: #D4D0C8 !important;
         color: #000000 !important;
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         font-weight: bold !important;
         border: 2px solid !important;
         border-color: #FFFFFF #808080 #808080 #FFFFFF !important;
         border-radius: 0px !important;
-        height: 24px !important;
-        min-height: 24px !important;
-        padding: 0px 4px !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
+        line-height: 15px !important;
+        padding: 0px 3px !important;
         margin: 0px !important;
         box-shadow: none !important;
     }
@@ -107,7 +121,7 @@ st.markdown("""
     }
 
     hr {
-        margin: 3px 0px !important;
+        margin: 2px 0px !important;
         border: none !important;
         border-top: 1px solid #808080 !important;
         border-bottom: 1px solid #FFFFFF !important;
@@ -186,7 +200,7 @@ if 'index' not in st.session_state:
 if 'cleared_fields' not in st.session_state:
     st.session_state.cleared_fields = set()
 
-# Barra Superior (Busca, Navegação e Bloco de Versão/Autores)
+# Barra Superior (Busca, Navegação e Bloco de Versão Act V11)
 c_head1, c_head2, c_head3, c_head4 = st.columns([4, 3, 2, 2.5])
 
 with c_head1:
@@ -217,7 +231,7 @@ with c_head2:
     if c_prev.button("◀ Anterior") and curr_idx > 0:
         st.session_state.index -= 1
         st.session_state.cleared_fields.clear()
-    c_pos.markdown(f"<div style='text-align: center; font-size: 11px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
+    c_pos.markdown(f"<div style='text-align: center; font-size: 10px; font-weight: bold; margin-top: 4px; font-family: Tahoma;'>{curr_idx + 1} de {total_registros}</div>", unsafe_allow_html=True)
     if c_next.button("Próximo ▶") and curr_idx < total_registros - 1:
         st.session_state.index += 1
         st.session_state.cleared_fields.clear()
@@ -237,7 +251,7 @@ with c_head4:
         font-family: Tahoma, sans-serif;
         line-height: 1.2;
     '>
-        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V10</div>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V11</div>
         <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
         <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>
@@ -349,4 +363,4 @@ else:
         input_with_tools("Telefones Consolidados", tel_cons, "tcons")
 
     # Linha 6: Observações
-    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=35, key="f_obs")
+    st.text_area("Observações", value=str(contato.get('COMENTARIOS_HISTORICO', '')), height=30, key="f_obs")

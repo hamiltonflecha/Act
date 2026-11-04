@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="Act! Soluções", layout="wide")
 
-# CSS para alinhamento, caixa de texto no bloco superior e estilo ACT! ultra compacto (19px)
+# CSS para forçar altura de 19px e ALINHAMENTO PERFEITO DOS BOTÕES NA BASE
 st.markdown("""
 <style>
     /* Fundo cinza clássico do ACT! */
@@ -41,7 +41,7 @@ st.markdown("""
         justify-content: flex-end !important;
     }
 
-    /* Rótulos dos campos no padrão compacto do ACT! */
+    /* Rótulos dos campos */
     label {
         font-family: 'Tahoma', 'MS Sans Serif', sans-serif !important;
         font-size: 10px !important;
@@ -51,9 +51,12 @@ st.markdown("""
         line-height: 1.0 !important;
     }
 
-    /* Caixas de Texto com Altura Ajustada para 19px */
-    div[data-baseweb="input"] {
+    /* SOBRESCREVE TODAS AS ESTRUTURAS INTERNAS DO STREAMLIT PARA 19PX */
+    div[data-baseweb="input"], 
+    div[data-baseweb="input"] > div,
+    div[data-testid="stTextInput"] > div {
         min-height: 19px !important;
+        max-height: 19px !important;
         height: 19px !important;
         background-color: #FFFFFF !important;
         border: 2px solid !important;
@@ -67,7 +70,9 @@ st.markdown("""
         font-size: 10px !important;
         color: #000000 !important;
         height: 15px !important;
+        min-height: 15px !important;
         padding: 0px 2px !important;
+        line-height: 15px !important;
     }
 
     div[data-baseweb="textarea"] textarea {
@@ -81,7 +86,7 @@ st.markdown("""
         padding: 1px 3px !important;
     }
 
-    /* Botões com a exata altura e alinhamento dos inputs (19px) */
+    /* Botões com alinhamento e altura exata de 19px */
     .stButton {
         margin-bottom: 0px !important;
     }
@@ -97,6 +102,8 @@ st.markdown("""
         border-radius: 0px !important;
         height: 19px !important;
         min-height: 19px !important;
+        max-height: 19px !important;
+        line-height: 15px !important;
         padding: 0px 4px !important;
         margin: 0px !important;
         box-shadow: none !important;
@@ -237,7 +244,7 @@ with c_head4:
         font-family: Tahoma, sans-serif;
         line-height: 1.2;
     '>
-        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V9</div>
+        <div style='font-weight: bold; font-size: 11px; color: #000000;'>Act V10</div>
         <div style='font-size: 10px; color: #333333;'>Hamilton e Jaedna</div>
         <div style='font-size: 10px; color: #333333;'>Soluções</div>
     </div>

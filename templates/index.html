@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Act! Soluções</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #D4D0C8;
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            font-size: 10px;
+            color: #000000;
+            padding: 4px;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            flex: 2;
+        }
+
+        .nav-box {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .version-card {
+            background: #FFFFFF;
+            border: 2px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            padding: 2px 8px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .version-title { font-weight: bold; font-size: 11px; }
+        .version-sub { font-size: 9px; color: #333333; }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .row {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        label {
+            font-size: 9px;
+            color: #000000;
+            margin-bottom: 1px;
+            white-space: nowrap;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            height: 19px;
+        }
+
+        input[type="text"], textarea {
+            height: 19px;
+            background-color: #FFFFFF;
+            border: 2px solid;
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            font-size: 10px;
+            color: #000000;
+            padding: 0 3px;
+            width: 100%;
+            outline: none;
+        }
+
+        textarea {
+            height: 38px;
+            resize: none;
+            padding: 2px 3px;
+        }
+
+        button, .btn-act {
+            background-color: #D4D0C8;
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            font-size: 10px;
+            font-weight: bold;
+            height: 19px;
+            padding: 0 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+        }
+
+        button:active, .btn-act:active {
+            border-color: #808080 #FFFFFF #FFFFFF #808080;
+        }
+
+        .btn-tool {
+            width: 20px;
+            height: 19px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #808080;
+            border-bottom: 1px solid #FFFFFF;
+            margin: 2px 0;
+        }
+
+        .two-col {
+            display: flex;
+            gap: 8px;
+        }
+
+        .col-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="search-box">
+            <label>Localizar (Nome / CPF / Benefício):</label>
+            <input type="text" id="search" oninput="onSearch()">
+        </div>
+
+        <div class="nav-box">
+            <button onclick="prevRecord()">◀ Anterior</button>
+            <span id="nav-pos" style="font-weight:bold; width: 80px; text-align: center;">0 de 0</span>
+            <button onclick="nextRecord()">Próximo ▶</button>
+        </div>
+
+        <button style="height: 24px;">➕ Novo Contato</button>
+
+        <div class="version-card">
+            <div class="version-title">Act V17</div>
+            <div class="version-sub">Hamilton e Jaedna</div>
+            <div class="version-sub">Soluções</div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="form-grid">
+        
+        <div class="row">
+            <div class="field-group" style="flex: 5;">
+                <label>Nome</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_nome">
+                    <button class="btn-tool" onclick="copyField('f_nome')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_nome')">🧹</button>
+                </div>
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>1º Nome</label>
+                <input type="text" id="f_pnome">
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>Gosta de ser chamado por</label>
+                <input type="text" id="f_chama">
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>Data da visita</label>
+                <input type="text" id="f_dvis">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field-group" style="flex: 5;">
+                <label>Nome (Sem Acentos)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_nome_sa">
+                    <button class="btn-tool" onclick="copyField('f_nome_sa')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_nome_sa')">🧹</button>
+                </div>
+            </div>
+            <div style="flex: 6;"></div>
+        </div>
+
+        <div class="row">
+            <div class="field-group" style="flex: 8;">
+                <label>Resumo (Órgão Nome CPF Idade)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_res_conc">
+                    <button class="btn-tool" onclick="copyField('f_res_conc')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_res_conc')">🧹</button>
+                </div>
+            </div>
+            <div style="flex: 3;"></div>
+        </div>
+
+        <div class="row">
+            <div class="field-group" style="flex: 2;">
+                <label>Loja</label>
+                <input type="text" id="f_loja">
+            </div>
+            <div class="field-group" style="flex: 3;">
+                <label>Atendido por</label>
+                <input type="text" id="f_atend">
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>Órgão</label>
+                <input type="text" id="f_orgao">
+            </div>
+            <div class="field-group" style="flex: 4;">
+                <label>Nº benefício ou matrícula</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_ben">
+                    <button class="btn-tool" onclick="copyField('f_ben')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_ben')">🧹</button>
+                </div>
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>Espécie</label>
+                <input type="text" id="f_esp">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field-group" style="flex: 3;">
+                <label>Senha Meu INSS</label>
+                <input type="text" id="f_s1">
+            </div>
+            <div class="field-group" style="flex: 3;">
+                <label>Senha Paraná</label>
+                <input type="text" id="f_s2">
+            </div>
+            <div class="field-group" style="flex: 3;">
+                <label>Data Nascimento</label>
+                <input type="text" id="f_dnasc">
+            </div>
+            <div class="field-group" style="flex: 2;">
+                <label>Idade</label>
+                <input type="text" id="f_idade">
+            </div>
+            <div class="field-group" style="flex: 3;">
+                <label>Identidade</label>
+                <input type="text" id="f_rg">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field-group" style="flex: 1;">
+                <label>CGC/CPF (Apenas Números)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_cpfl">
+                    <button class="btn-tool" onclick="copyField('f_cpfl')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_cpfl')">🧹</button>
+                </div>
+            </div>
+            <div class="field-group" style="flex: 1;">
+                <label>CGC/CPF (Formatado)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="f_cpff">
+                    <button class="btn-tool" onclick="copyField('f_cpff')">📋</button>
+                    <button class="btn-tool" onclick="clearField('f_cpff')">🧹</button>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="two-col">
+            <div class="col-half">
+                <div class="row">
+                    <div class="field-group" style="flex: 3;"><label>Endereço 1</label><input type="text" id="f_end"></div>
+                    <div class="field-group" style="flex: 2;"><label>Bairro 1</label><input type="text" id="f_bai"></div>
+                    <div class="field-group" style="flex: 1;"><label>Estado 1</label><input type="text" id="f_uf"></div>
+                </div>
+                <div class="row">
+                    <div class="field-group" style="flex: 3;"><label>Cidade 1</label><input type="text" id="f_cid"></div>
+                    <div class="field-group" style="flex: 3;">
+                        <label>Cep 1</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="f_cep">
+                            <button class="btn-tool" onclick="copyField('f_cep')">📋</button>
+                            <button class="btn-tool" onclick="clearField('f_cep')">🧹</button>
+                        </div>
+                    </div>
+                    <div class="field-group" style="flex: 2;"><label>Edifício</label><input type="text" id="f_edif"></div>
+                </div>
+            </div>
+
+            <div class="col-half">
+                <div class="row">
+                    <div class="field-group" style="flex: 1;"><label>DDD</label><input type="text" id="f_ddd"></div>
+                    <div class="field-group" style="flex: 3;">
+                        <label>Tel_1</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="f_t1">
+                            <button class="btn-tool" onclick="copyField('f_t1')">📋</button>
+                            <button class="btn-tool" onclick="clearField('f_t1')">🧹</button>
+                        </div>
+                    </div>
+                    <div class="field-group" style="flex: 2;"><label>Ref_1</label><input type="text" id="f_ref1"></div>
+                </div>
+                <div class="row">
+                    <div class="field-group" style="flex: 1;">
+                        <label>Telefones Consolidados</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="f_tcons">
+                            <button class="btn-tool" onclick="copyField('f_tcons')">📋</button>
+                            <button class="btn-tool" onclick="clearField('f_tcons')">🧹</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 2px;">
+            <div class="field-group">
+                <label>Observações</label>
+                <textarea id="f_obs"></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let records = [];
+        let currentIndex = 0;
+
+        async function loadData(query = "") {
+            const res = await fetch(`/api/data?query=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            records = data.records;
+            currentIndex = 0;
+            renderRecord();
+        }
+
+        function renderRecord() {
+            const total = records.length;
+            document.getElementById("nav-pos").innerText = total > 0 ? `${currentIndex + 1} de ${total}` : "0 de 0";
+            
+            if (total === 0) return;
+
+            const r = records[currentIndex];
+            document.getElementById("f_nome").value = r.nome;
+            document.getElementById("f_pnome").value = r.primeiro_nome;
+            document.getElementById("f_chama").value = r.gosta_ser_chamado;
+            document.getElementById("f_dvis").value = r.data_visita;
+            document.getElementById("f_nome_sa").value = r.nome_sa;
+            document.getElementById("f_res_conc").value = r.resumo;
+            document.getElementById("f_loja").value = r.loja;
+            document.getElementById("f_atend").value = r.atendido_por;
+            document.getElementById("f_orgao").value = r.orgao;
+            document.getElementById("f_ben").value = r.num_beneficio;
+            document.getElementById("f_esp").value = r.especie;
+            document.getElementById("f_s1").value = r.senha_inss;
+            document.getElementById("f_s2").value = r.senha_parana;
+            document.getElementById("f_dnasc").value = r.data_nascimento;
+            document.getElementById("f_idade").value = r.idade;
+            document.getElementById("f_rg").value = r.identidade;
+            document.getElementById("f_cpfl").value = r.cpf_limpo;
+            document.getElementById("f_cpff").value = r.cpf_formatado;
+            document.getElementById("f_end").value = r.endereco;
+            document.getElementById("f_bai").value = r.bairro;
+            document.getElementById("f_uf").value = r.uf;
+            document.getElementById("f_cid").value = r.cidade;
+            document.getElementById("f_cep").value = r.cep;
+            document.getElementById("f_edif").value = r.edificio;
+            document.getElementById("f_ddd").value = r.ddd;
+            document.getElementById("f_t1").value = r.tel1;
+            document.getElementById("f_ref1").value = r.ref1;
+            document.getElementById("f_tcons").value = r.telefones_consolidados;
+            document.getElementById("f_obs").value = r.observacoes;
+        }
+
+        function prevRecord() {
+            if (currentIndex > 0) { currentIndex--; renderRecord(); }
+        }
+
+        function nextRecord() {
+            if (currentIndex < records.length - 1) { currentIndex++; renderRecord(); }
+        }
+
+        function onSearch() {
+            const q = document.getElementById("search").value;
+            loadData(q);
+        }
+
+        function copyField(id) {
+            const el = document.getElementById(id);
+            navigator.clipboard.writeText(el.value);
+        }
+
+        function clearField(id) {
+            document.getElementById(id).value = "";
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

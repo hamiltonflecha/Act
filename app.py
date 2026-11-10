@@ -3,19 +3,19 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V31 - Soluções",
+    page_title="Act V32 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Atualizada e Sincronizada (Ernerita: CPF 69199485672)
+# Base de Dados Atualizada com Datas de Nascimento e Idades Reais Corrigidas
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
         "primeiro_nome": "HOMIR",
         "gosta_chamado": "HOMIR",
         "data_visita": "10/11/2026",
-        "resumo": "INSS HOMIR ALVES DA SILVA 00385663897 62",
+        "resumo": "INSS HOMIR ALVES DA SILVA 00385663897 69",
         "loja": "Centro - OB",
         "atendido_por": "Hamilton",
         "orgao": "INSS",
@@ -23,8 +23,8 @@ BASE_DADOS = [
         "especie": "42",
         "senha_inss": "",
         "senha_parana": "",
-        "data_nasc": "15/05/1964",
-        "idade": 62,
+        "data_nasc": "05/07/1957",
+        "idade": 69,
         "identidade": "MG-12.345.678",
         "cpf": "00385663897",
         "cpf_fmt": "003.856.638-97",
@@ -44,7 +44,7 @@ BASE_DADOS = [
         "primeiro_nome": "ERNERITA",
         "gosta_chamado": "DONA ERNERITA",
         "data_visita": "08/11/2026",
-        "resumo": "INSS ERNERITA MARIA DOS SANTOS 69199485672 71",
+        "resumo": "INSS ERNERITA MARIA DOS SANTOS 69199485672 77",
         "loja": "Centro - OB",
         "atendido_por": "Jaedna",
         "orgao": "INSS",
@@ -52,8 +52,8 @@ BASE_DADOS = [
         "especie": "41",
         "senha_inss": "",
         "senha_parana": "",
-        "data_nasc": "20/03/1955",
-        "idade": 71,
+        "data_nasc": "02/05/1949",
+        "idade": 77,
         "identidade": "MG-32.165.498",
         "cpf": "69199485672",
         "cpf_fmt": "691.994.856-72",
@@ -127,35 +127,6 @@ BASE_DADOS = [
         "tels_consolidados": "3137429999"
     },
     {
-        "nome": "HAMILTON FERREIRA DA COSTA",
-        "primeiro_nome": "HAMILTON",
-        "gosta_chamado": "HAMILTON",
-        "data_visita": "01/11/2026",
-        "resumo": "INSS HAMILTON FERREIRA DA COSTA 45678912300 58",
-        "loja": "Centro - OB",
-        "atendido_por": "Hamilton",
-        "orgao": "INSS",
-        "num_beneficio": "4567891230",
-        "especie": "41",
-        "senha_inss": "",
-        "senha_parana": "",
-        "data_nasc": "22/08/1968",
-        "idade": 58,
-        "identidade": "MG-45.678.912",
-        "cpf": "45678912300",
-        "cpf_fmt": "456.789.123-00",
-        "endereco": "RUA DAS FLORES, 50",
-        "bairro": "SANTANENSE",
-        "uf": "MG",
-        "ddd": "31",
-        "tel": "988776655",
-        "ref": "",
-        "cidade": "OURO BRANCO",
-        "cep": "36420-000",
-        "edificio": "",
-        "tels_consolidados": "31988776655"
-    },
-    {
         "nome": "CALMA DA SILVA MNIRANDA",
         "primeiro_nome": "CALMA",
         "gosta_chamado": "CALMA",
@@ -186,7 +157,7 @@ BASE_DADOS = [
     }
 ]
 
-# Função de busca universal por palavra-chave parcial
+# Função de busca universal
 def buscar_contactos(termo):
     if not termo:
         return []
@@ -311,7 +282,7 @@ def campo_com_copia_tique(label, valor, key_prefix):
     """
     components.html(html_code, height=58)
 
-# Topo / Navegação (Localizar + Buscar Embutidos na Mesma Tabela Unificada de 38px)
+# Topo / Navegação
 c_busca_box, c_prev, c_next, c_novo, c_status = st.columns([5.0, 0.8, 0.8, 1.8, 2.5])
 
 with c_busca_box:
@@ -324,7 +295,7 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V31<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V32<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
 # Lógica da Pesquisa com Pop-up (Modal) Automático
 if termo and len(termo.strip()) > 0:

@@ -3,12 +3,12 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V29 - Soluções",
+    page_title="Act V30 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Ampliada para Teste de Múltiplos Resultados (Busca "Hamilton")
+# Base de Dados Ampliada (Homir, Ernerita, B Hamilton, Hamilton Silva, Hamilton Ferreira, Calma)
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
@@ -38,6 +38,64 @@ BASE_DADOS = [
         "cep": "36420-000",
         "edificio": "",
         "tels_consolidados": "3199887766"
+    },
+    {
+        "nome": "ERNERITA MARIA DOS SANTOS",
+        "primeiro_nome": "ERNERITA",
+        "gosta_chamado": "DONA ERNERITA",
+        "data_visita": "08/11/2026",
+        "resumo": "INSS ERNERITA MARIA DOS SANTOS 32165498700 71",
+        "loja": "Centro - OB",
+        "atendido_por": "Jaedna",
+        "orgao": "INSS",
+        "num_beneficio": "9871234560",
+        "especie": "41",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "20/03/1955",
+        "idade": 71,
+        "identidade": "MG-32.165.498",
+        "cpf": "32165498700",
+        "cpf_fmt": "321.654.987-00",
+        "endereco": "RUA DAS MONÇÕES, 120",
+        "bairro": "BELO HORIZONTE",
+        "uf": "MG",
+        "ddd": "31",
+        "tel": "37412233",
+        "ref": "PERTO DA IGREJA",
+        "cidade": "OURO BRANCO",
+        "cep": "36420-000",
+        "edificio": "",
+        "tels_consolidados": "3137412233"
+    },
+    {
+        "nome": "B HAMILTON DE SOUZA",
+        "primeiro_nome": "HAMILTON",
+        "gosta_chamado": "B HAMILTON",
+        "data_visita": "02/11/2026",
+        "resumo": "INSS B HAMILTON DE SOUZA 11122233344 55",
+        "loja": "Centro - OB",
+        "atendido_por": "Hamilton",
+        "orgao": "INSS",
+        "num_beneficio": "1112223334",
+        "especie": "42",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "14/07/1971",
+        "idade": 55,
+        "identidade": "MG-11.122.233",
+        "cpf": "11122233344",
+        "cpf_fmt": "111.222.333-44",
+        "endereco": "RUA DOS INCONFIDENTES, 88",
+        "bairro": "PIONEIROS",
+        "uf": "MG",
+        "ddd": "31",
+        "tel": "987651234",
+        "ref": "",
+        "cidade": "OURO BRANCO",
+        "cep": "36420-000",
+        "edificio": "",
+        "tels_consolidados": "31987651234"
     },
     {
         "nome": "HAMILTON SILVA",
@@ -128,18 +186,20 @@ BASE_DADOS = [
     }
 ]
 
-# Função de busca que retorna lista de correspondências
+# Função de busca universal por palavra-chave parcial
 def buscar_contactos(termo):
     if not termo:
-        return [BASE_DADOS[0]]
+        return []
     termo_clean = termo.strip().lower()
-    resultados = [
-        item for item in BASE_DADOS
+    resultados = []
+    for item in BASE_DADOS:
         if (termo_clean in item["nome"].lower() or 
-            termo_clean in item["cpf"] or 
-            termo_clean in item["primeiro_nome"].lower())
-    ]
-    return resultados if resultados else [BASE_DADOS[0]]
+            termo_clean in item["cpf"].lower() or 
+            termo_clean in item["primeiro_nome"].lower() or
+            termo_clean in item["resumo"].lower() or
+            termo_clean in item["num_beneficio"].lower()):
+            resultados.append(item)
+    return resultados
 
 # Inicialização do estado da sessão
 if "contacto_atual" not in st.session_state:
@@ -215,7 +275,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Função para gerar o campo com Botão Copiar + Célula de Tique com cor personalizada (Verde Suave #c3e6cb)
+# Função para gerar os campos com Botão Copiar + Célula com Tique Verde (#c3e6cb)
 def campo_com_copia_tique(label, valor, key_prefix):
     html_code = f"""
     <div style="font-family: sans-serif; margin: 0px; padding: 0px;">
@@ -240,10 +300,10 @@ def campo_com_copia_tique(label, valor, key_prefix):
             navigator.clipboard.writeText(copyText);
             var cell = document.getElementById("cell_tique_" + key);
             var tique = document.getElementById("tique_" + key);
-            cell.style.backgroundColor = "#c3e6cb"; // Cor de fundo destacada verde suave
+            cell.style.backgroundColor = "#c3e6cb";
             tique.style.display = "inline";
             setTimeout(function() {{
-                cell.style.backgroundColor = "#ece9d8"; // Retorna ao bege clássico
+                cell.style.backgroundColor = "#ece9d8";
                 tique.style.display = "none";
             }}, 2000);
         }}
@@ -251,7 +311,7 @@ def campo_com_copia_tique(label, valor, key_prefix):
     """
     components.html(html_code, height=58)
 
-# Topo / Navegação
+# Topo / Barra Superior com Tabela Unificada para Alinhamento Perfeito
 c_busca, c_btn_busca, c_prev, c_next, c_novo, c_status = st.columns([4.0, 1.0, 0.8, 0.8, 1.8, 2.5])
 with c_busca:
     termo = st.text_input("Localizar (Nome / CPF / Benefício):", key="campo_busca")
@@ -264,22 +324,21 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V29<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V30<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Lógica da Pesquisa com Pop-up (Modal) de Homônimos / Múltiplos Registros
-if btn_buscar or termo:
+# Lógica da Pesquisa com Pop-up (Modal) Automático
+if btn_buscar or (termo and len(termo.strip()) > 0):
     resultados = buscar_contactos(termo)
     if len(resultados) == 1:
         st.session_state["contacto_atual"] = resultados[0]
     elif len(resultados) > 1:
-        # Abrir modal de seleção caso haja mais de 1 contato encontrado
         @st.dialog("Selecione o Contato Encontrado")
         def popup_selecao(lista):
             st.write(f"Foram encontrados **{len(lista)}** contatos para a busca: **'{termo}'**")
             for idx, c in enumerate(lista):
                 if st.button(f"👤 {c['nome']} - CPF: {c['cpf_fmt']} (Espécie: {c['especie']})", key=f"sel_{idx}"):
                     st.session_state["contacto_atual"] = c
-                    st.rerun()
+                    st.rerun() # Fecha o modal e recarrega instantaneamente com o selecionado
         popup_selecao(resultados)
 
 contacto = st.session_state["contacto_atual"]
@@ -306,7 +365,7 @@ c_res = st.container()
 with c_res:
     campo_com_copia_tique("Resumo (Órgão Nome CPF Idade)", contacto["resumo"], "res")
 
-# Linha 4: Loja, Atendido por, Órgão, Nº benefício (COM CÓPIA + TIQUE), Espécie
+# Linha 4: Loja, Atendido por, Órgão, Nº benefício, Espécie
 col_loja, col_atend, col_org, col_ben, col_esp = st.columns([180, 220, 120, 240, 100])
 with col_loja:
     st.text_input("Loja", value=contacto.get("loja", ""))
@@ -319,7 +378,7 @@ with col_ben:
 with col_esp:
     st.text_input("Espécie", value=contacto.get("especie", ""))
 
-# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento (COM CÓPIA + TIQUE), Idade, 108 Meses, Identidade
+# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento, Idade, 108 Meses, Identidade
 col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([160, 160, 180, 50, 60, 160])
 with col_s1:
     st.text_input("Senha Meu INSS", value=contacto.get("senha_inss", ""))

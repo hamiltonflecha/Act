@@ -3,12 +3,12 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V26 - Soluções",
+    page_title="Act V27 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Atualizada (Com CPF correto do Homir e cadastro do Hamilton)
+# Base de Dados Atualizada
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
@@ -57,7 +57,7 @@ BASE_DADOS = [
     }
 ]
 
-# Função para pesquisar na base (Nome, CPF, 1º Nome, etc.)
+# Função para pesquisar na base
 def pesquisar_contacto(termo):
     if not termo:
         return BASE_DADOS[0]
@@ -78,51 +78,38 @@ st.markdown("""
     <style>
         html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #ece9d8 !important;
-            overflow: hidden !important;
         }
 
         .main .block-container {
-            padding: 0.2rem 0.4rem !important;
+            padding: 0.3rem 0.5rem !important;
             max-width: 100% !important;
         }
 
-        div[data-baseweb="input"], div[data-baseweb="base-input"] {
-            background-color: transparent !important;
-            border: none !important;
-            padding: 0px !important;
-            margin: 0px !important;
-            box-shadow: none !important;
-        }
-
         .stTextInput label {
-            font-size: 10.5px !important;
+            font-size: 11px !important;
             font-weight: bold !important;
             color: #000000 !important;
-            margin-bottom: 0px !important;
-            height: 13px !important;
-            line-height: 13px !important;
+            margin-bottom: 2px !important;
             white-space: nowrap !important;
         }
 
+        /* Padronizar a altura exata dos campos normais para 38px */
         input[data-testid="stTextInputInput"] {
-            height: 19px !important;
-            min-height: 19px !important;
-            max-height: 19px !important;
-            font-size: 11px !important;
-            padding: 0px 3px !important;
-            line-height: 19px !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            max-height: 38px !important;
+            font-size: 12px !important;
+            padding: 0px 8px !important;
             background-color: #ffffff !important;
             border: 1px solid #7f9db9 !important;
-            border-radius: 0px !important;
             color: #000000 !important;
-            box-shadow: none !important;
         }
 
         [data-testid="column"] {
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-end !important;
-            padding: 0px 1px !important;
+            padding: 0px 2px !important;
             min-width: 0px !important;
         }
 
@@ -133,23 +120,22 @@ st.markdown("""
         }
 
         .stButton > button {
-            height: 19px !important;
-            min-height: 19px !important;
-            line-height: 17px !important;
-            font-size: 10px !important;
-            padding: 0px 2px !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            line-height: 36px !important;
+            font-size: 11px !important;
+            padding: 0px 4px !important;
             margin: 0px !important;
             background-color: #d4d0c8 !important;
             border: 1px solid #404040 !important;
             color: #000000 !important;
-            border-radius: 0px !important;
             font-weight: bold !important;
             width: 100% !important;
         }
 
         div[data-testid="stVerticalBlock"] > div {
-            gap: 0px !important;
-            margin-bottom: 0px !important;
+            gap: 2px !important;
+            margin-bottom: 2px !important;
         }
         
         header[data-testid="stHeader"], footer {
@@ -158,21 +144,21 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Função para gerar a tabela de 1 linha e 3 células (Campo + Botão Copiar + Tique de Confirmação)
+# Função para gerar o campo customizado com ALTURA IGUALADA DE 38PX + Botão Copiar + Tique
 def campo_com_copia_tique(label, valor, key_prefix):
     html_code = f"""
     <div style="font-family: sans-serif; margin: 0px; padding: 0px;">
-        <label style="font-size: 10.5px; font-weight: bold; color: #000; display: block; height: 13px; line-height: 13px; white-space: nowrap; margin-bottom: 0px;">{label}</label>
+        <label style="font-size: 11px; font-weight: bold; color: #000; display: block; height: 15px; line-height: 15px; white-space: nowrap; margin-bottom: 2px;">{label}</label>
         <table style="border-collapse: collapse; width: 100%; table-layout: fixed; margin: 0px; padding: 0px;">
-            <tr style="height: 19px;">
+            <tr style="height: 38px;">
                 <td style="padding: 0px; margin: 0px;">
-                    <input type="text" id="input_{key_prefix}" value="{valor}" style="width: 100%; height: 19px; font-size: 11px; padding: 0 3px; border: 1px solid #7f9db9; border-right: none; box-sizing: border-box; background: #fff; color: #000; outline: none;">
+                    <input type="text" id="input_{key_prefix}" value="{valor}" style="width: 100%; height: 38px; font-size: 12px; padding: 0 8px; border: 1px solid #7f9db9; border-right: none; border-top-left-radius: 4px; border-bottom-left-radius: 4px; box-sizing: border-box; background: #fff; color: #000; outline: none;">
                 </td>
-                <td style="width: 22px; padding: 0px; margin: 0px;">
-                    <button onclick="copiarComTique('{key_prefix}')" style="width: 22px; height: 19px; font-size: 10px; background: #d4d0c8; border: 1px solid #404040; border-right: none; cursor: pointer; font-weight: bold; padding: 0px; box-sizing: border-box;">📋</button>
+                <td style="width: 32px; padding: 0px; margin: 0px;">
+                    <button onclick="copiarComTique('{key_prefix}')" style="width: 32px; height: 38px; font-size: 12px; background: #d4d0c8; border: 1px solid #7f9db9; border-left: 1px solid #ccc; cursor: pointer; font-weight: bold; padding: 0px; box-sizing: border-box;">📋</button>
                 </td>
-                <td style="width: 20px; padding: 0px; margin: 0px; text-align: center; background: #ece9d8; border: 1px solid #7f9db9; border-left: none;">
-                    <span id="tique_{key_prefix}" style="font-size: 11px; font-weight: bold; color: #008000; display: none;">✔</span>
+                <td style="width: 25px; padding: 0px; margin: 0px; text-align: center; background: #ece9d8; border: 1px solid #7f9db9; border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">
+                    <span id="tique_{key_prefix}" style="font-size: 13px; font-weight: bold; color: #008000; display: none;">✔</span>
                 </td>
             </tr>
         </table>
@@ -189,7 +175,7 @@ def campo_com_copia_tique(label, valor, key_prefix):
         }}
     </script>
     """
-    components.html(html_code, height=34)
+    components.html(html_code, height=58)
 
 # Topo / Navegação
 c_busca, c_btn_busca, c_prev, c_next, c_novo, c_status = st.columns([4.0, 1.0, 0.8, 0.8, 1.8, 2.5])
@@ -204,16 +190,16 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V26<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V27<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Executar Busca ao clicar ou dar Enter
+# Executar Busca
 if btn_buscar or termo:
     st.session_state["contacto_atual"] = pesquisar_contacto(termo)
 
 contacto = st.session_state["contacto_atual"]
 idade_108_meses = contacto["idade"] + 9 if contacto["idade"] else ""
 
-# Linha 1: Nome (Com Cópia e Tique), 1º Nome, Gosta de ser chamado por, Data da visita
+# Linha 1: Nome, 1º Nome, Gosta de ser chamado por, Data da visita
 c1, c2, c3, c4 = st.columns([580, 200, 160, 100])
 with c1:
     campo_com_copia_tique("Nome", contacto["nome"], "nome")
@@ -224,12 +210,12 @@ with c3:
 with c4:
     st.text_input("Data da visita", value="")
 
-# Linha 2: Nome sem acentos (Com Cópia e Tique)
+# Linha 2: Nome sem acentos
 c_sa, c_empty = st.columns([580, 460])
 with c_sa:
     campo_com_copia_tique("Nome (Sem Acentos)", contacto["nome"], "sa")
 
-# Linha 3: Resumo (Com Cópia e Tique)
+# Linha 3: Resumo
 c_res = st.container()
 with c_res:
     campo_com_copia_tique("Resumo (Órgão Nome CPF Idade)", contacto["resumo"], "res")
@@ -262,14 +248,14 @@ with col_id108:
 with col_rg:
     st.text_input("Identidade", value="")
 
-# Linha 6: CPF Números (Com Cópia e Tique), CPF Formatado (Com Cópia e Tique)
+# Linha 6: CPF Números, CPF Formatado
 col_cpf, col_cpff, col_empty2 = st.columns([220, 240, 430])
 with col_cpf:
     campo_com_copia_tique("CGC/CPF (Números)", contacto["cpf"], "cpf")
 with col_cpff:
     campo_com_copia_tique("CGC/CPF (Formatado)", contacto["cpf_fmt"], "cpff")
 
-# Linha 7: Endereço 1, Bairro 1, UF, DDD, Tel_1 (Com Cópia e Tique), Ref_1
+# Linha 7: Endereço 1, Bairro 1, UF, DDD, Tel_1, Ref_1
 c_end, c_bai, c_uf, c_ddd, c_tel, c_ref = st.columns([350, 200, 40, 40, 190, 180])
 with c_end:
     st.text_input("Endereço 1", value=contacto["endereco"])
@@ -284,7 +270,7 @@ with c_tel:
 with c_ref:
     st.text_input("Ref_1", value="")
 
-# Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados (Com Cópia e Tique)
+# Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados
 c_cid, c_cep, c_edi, c_tels = st.columns([220, 100, 200, 320])
 with c_cid:
     st.text_input("Cidade 1", value=contacto["cidade"])

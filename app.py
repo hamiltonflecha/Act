@@ -3,12 +3,12 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V28 - Soluções",
+    page_title="Act V29 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Atualizada com Sincronia Correta dos Campos (Homir: Espécie 42)
+# Base de Dados Ampliada para Teste de Múltiplos Resultados (Busca "Hamilton")
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
@@ -69,6 +69,35 @@ BASE_DADOS = [
         "tels_consolidados": "3137429999"
     },
     {
+        "nome": "HAMILTON FERREIRA DA COSTA",
+        "primeiro_nome": "HAMILTON",
+        "gosta_chamado": "HAMILTON",
+        "data_visita": "01/11/2026",
+        "resumo": "INSS HAMILTON FERREIRA DA COSTA 45678912300 58",
+        "loja": "Centro - OB",
+        "atendido_por": "Hamilton",
+        "orgao": "INSS",
+        "num_beneficio": "4567891230",
+        "especie": "41",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "22/08/1968",
+        "idade": 58,
+        "identidade": "MG-45.678.912",
+        "cpf": "45678912300",
+        "cpf_fmt": "456.789.123-00",
+        "endereco": "RUA DAS FLORES, 50",
+        "bairro": "SANTANENSE",
+        "uf": "MG",
+        "ddd": "31",
+        "tel": "988776655",
+        "ref": "",
+        "cidade": "OURO BRANCO",
+        "cep": "36420-000",
+        "edificio": "",
+        "tels_consolidados": "31988776655"
+    },
+    {
         "nome": "CALMA DA SILVA MNIRANDA",
         "primeiro_nome": "CALMA",
         "gosta_chamado": "CALMA",
@@ -99,17 +128,18 @@ BASE_DADOS = [
     }
 ]
 
-# Função para pesquisar na base
-def pesquisar_contacto(termo):
+# Função de busca que retorna lista de correspondências
+def buscar_contactos(termo):
     if not termo:
-        return BASE_DADOS[0]
+        return [BASE_DADOS[0]]
     termo_clean = termo.strip().lower()
-    for item in BASE_DADOS:
+    resultados = [
+        item for item in BASE_DADOS
         if (termo_clean in item["nome"].lower() or 
             termo_clean in item["cpf"] or 
-            termo_clean in item["primeiro_nome"].lower()):
-            return item
-    return BASE_DADOS[0]
+            termo_clean in item["primeiro_nome"].lower())
+    ]
+    return resultados if resultados else [BASE_DADOS[0]]
 
 # Inicialização do estado da sessão
 if "contacto_atual" not in st.session_state:
@@ -185,7 +215,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Função para gerar o campo customizado com ALTURA IGUALADA DE 38PX + Botão Copiar + Tique
+# Função para gerar o campo com Botão Copiar + Célula de Tique com cor personalizada (Verde Suave #c3e6cb)
 def campo_com_copia_tique(label, valor, key_prefix):
     html_code = f"""
     <div style="font-family: sans-serif; margin: 0px; padding: 0px;">
@@ -198,8 +228,8 @@ def campo_com_copia_tique(label, valor, key_prefix):
                 <td style="width: 32px; padding: 0px; margin: 0px;">
                     <button onclick="copiarComTique('{key_prefix}')" style="width: 32px; height: 38px; font-size: 12px; background: #d4d0c8; border: 1px solid #7f9db9; border-left: 1px solid #ccc; cursor: pointer; font-weight: bold; padding: 0px; box-sizing: border-box;">📋</button>
                 </td>
-                <td style="width: 25px; padding: 0px; margin: 0px; text-align: center; background: #ece9d8; border: 1px solid #7f9db9; border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">
-                    <span id="tique_{key_prefix}" style="font-size: 13px; font-weight: bold; color: #008000; display: none;">✔</span>
+                <td id="cell_tique_{key_prefix}" style="width: 25px; padding: 0px; margin: 0px; text-align: center; background: #ece9d8; border: 1px solid #7f9db9; border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">
+                    <span id="tique_{key_prefix}" style="font-size: 13px; font-weight: bold; color: #155724; display: none;">✔</span>
                 </td>
             </tr>
         </table>
@@ -208,9 +238,12 @@ def campo_com_copia_tique(label, valor, key_prefix):
         function copiarComTique(key) {{
             var copyText = document.getElementById("input_" + key).value;
             navigator.clipboard.writeText(copyText);
+            var cell = document.getElementById("cell_tique_" + key);
             var tique = document.getElementById("tique_" + key);
+            cell.style.backgroundColor = "#c3e6cb"; // Cor de fundo destacada verde suave
             tique.style.display = "inline";
             setTimeout(function() {{
+                cell.style.backgroundColor = "#ece9d8"; // Retorna ao bege clássico
                 tique.style.display = "none";
             }}, 2000);
         }}
@@ -231,11 +264,23 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V28<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V29<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Executar Busca
+# Lógica da Pesquisa com Pop-up (Modal) de Homônimos / Múltiplos Registros
 if btn_buscar or termo:
-    st.session_state["contacto_atual"] = pesquisar_contacto(termo)
+    resultados = buscar_contactos(termo)
+    if len(resultados) == 1:
+        st.session_state["contacto_atual"] = resultados[0]
+    elif len(resultados) > 1:
+        # Abrir modal de seleção caso haja mais de 1 contato encontrado
+        @st.dialog("Selecione o Contato Encontrado")
+        def popup_selecao(lista):
+            st.write(f"Foram encontrados **{len(lista)}** contatos para a busca: **'{termo}'**")
+            for idx, c in enumerate(lista):
+                if st.button(f"👤 {c['nome']} - CPF: {c['cpf_fmt']} (Espécie: {c['especie']})", key=f"sel_{idx}"):
+                    st.session_state["contacto_atual"] = c
+                    st.rerun()
+        popup_selecao(resultados)
 
 contacto = st.session_state["contacto_atual"]
 idade_108_meses = contacto["idade"] + 9 if contacto["idade"] else ""
@@ -261,8 +306,8 @@ c_res = st.container()
 with c_res:
     campo_com_copia_tique("Resumo (Órgão Nome CPF Idade)", contacto["resumo"], "res")
 
-# Linha 4: Loja, Atendido por, Órgão, Nº benefício, Espécie
-col_loja, col_atend, col_org, col_ben, col_esp = st.columns([180, 220, 120, 200, 100])
+# Linha 4: Loja, Atendido por, Órgão, Nº benefício (COM CÓPIA + TIQUE), Espécie
+col_loja, col_atend, col_org, col_ben, col_esp = st.columns([180, 220, 120, 240, 100])
 with col_loja:
     st.text_input("Loja", value=contacto.get("loja", ""))
 with col_atend:
@@ -270,18 +315,18 @@ with col_atend:
 with col_org:
     st.text_input("Órgão", value=contacto.get("orgao", ""))
 with col_ben:
-    st.text_input("Nº benefício ou matrícula", value=contacto.get("num_beneficio", ""))
+    campo_com_copia_tique("Nº benefício ou matrícula", contacto.get("num_beneficio", ""), "ben")
 with col_esp:
     st.text_input("Espécie", value=contacto.get("especie", ""))
 
-# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento, Idade, 108 Meses, Identidade
-col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([160, 160, 110, 50, 60, 160])
+# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento (COM CÓPIA + TIQUE), Idade, 108 Meses, Identidade
+col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([160, 160, 180, 50, 60, 160])
 with col_s1:
     st.text_input("Senha Meu INSS", value=contacto.get("senha_inss", ""))
 with col_s2:
     st.text_input("Senha Paraná", value=contacto.get("senha_parana", ""))
 with col_dn:
-    st.text_input("Data Nascimento", value=contacto.get("data_nasc", ""))
+    campo_com_copia_tique("Data Nascimento", contacto.get("data_nasc", ""), "dn")
 with col_id:
     st.text_input("Idade", value=str(contacto.get("idade", "")))
 with col_id108:

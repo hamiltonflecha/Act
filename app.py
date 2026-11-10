@@ -7,13 +7,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Estilização CSS customizada - Réplica das cores clássicas e layout compacto do ACT!
+# Estilização CSS customizada - Réplica exata das cores e caixas do ACT!
 st.markdown("""
     <style>
         /* 1. Zerar margens e remover barras de rolagem da página principal */
         html, body, [data-testid="stAppViewContainer"] {
-            background-color: #ece9d8 !important; /* Cor bege/cinza clássica do ACT!/Windows */
-            overflow: hidden !important; /* Elimina barra de rolagem */
+            background-color: #ece9d8 !important; /* Cor bege/cinza clássica do ACT! */
+            overflow: hidden !important; /* Elimina a rolagem vertical */
         }
 
         .main .block-container {
@@ -24,17 +24,26 @@ st.markdown("""
             max-width: 100% !important;
         }
 
-        /* 2. Compactar rótulos (labels) dos campos */
+        /* 2. Remover a caixa externa branca (BaseWeb Container) do Streamlit */
+        div[data-baseweb="input"] {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0px !important;
+            margin: 0px !important;
+            box-shadow: none !important;
+        }
+
+        /* 3. Compactar rótulos (labels) dos campos */
         .stTextInput label, .stSelectbox label, .stTextArea label {
             font-size: 11px !important;
             font-weight: bold !important;
             color: #000000 !important;
-            margin-bottom: 0px !important;
+            margin-bottom: 1px !important;
             height: 14px !important;
             line-height: 14px !important;
         }
 
-        /* 3. Definir altura exata de 19px para as caixas de entrada de texto com borda estilo Windows clássico */
+        /* 4. Definir altura exata de 19px para as caixas de texto com borda retangular limpa */
         .stTextInput input, .stSelectbox > div > div {
             height: 19px !important;
             min-height: 19px !important;
@@ -43,19 +52,24 @@ st.markdown("""
             padding: 0px 4px !important;
             line-height: 19px !important;
             background-color: #ffffff !important;
-            border: 1px solid #7f9db9 !important; /* Borda azul/cinza clássica do Windows */
+            border: 1px solid #7f9db9 !important; /* Borda fina estilo Windows clássico */
             border-radius: 0px !important;
             color: #000000 !important;
+            box-shadow: none !important;
         }
 
-        /* 4. Estilizar botões de ação e cópia inline */
+        /* 5. Estilizar e alinhar perfeitamente os botões de ação e cópia inline */
+        .stButton {
+            margin-top: 15px !important; /* Alinha o botão com a base da caixa de texto */
+        }
+
         .stButton > button {
             height: 19px !important;
             min-height: 19px !important;
             line-height: 17px !important;
             font-size: 10px !important;
             padding: 0px 4px !important;
-            margin-top: 0px !important;
+            margin: 0px !important;
             background-color: #d4d0c8 !important; /* Cinza metálico de botão clássico */
             border: 1px solid #404040 !important;
             color: #000000 !important;
@@ -68,7 +82,7 @@ st.markdown("""
             color: #ffffff !important;
         }
 
-        /* 5. Zerar espaçamentos entre linhas e colunas para eliminar a rolagem */
+        /* 6. Espaçamentos entre colunas */
         [data-testid="column"] {
             padding: 0px 1px !important;
         }
@@ -94,26 +108,21 @@ c_busca, c_prev, c_next, c_novo, c_status = st.columns([6, 1, 1, 2, 3])
 with c_busca:
     st.text_input("Localizar (Nome / CPF / Benefício):", key="busca")
 with c_prev:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("◄ Ant...", use_container_width=True)
 with c_next:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("Próx...", use_container_width=True)
 with c_novo:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
     st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V19<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Linha 1: Nome completo (78 char max+20%), 1º Nome (30 char), Gosta de ser chamado por (24 char), Data da visita (10 char)
+# Linha 1: Nome (78 char max+20%), 1º Nome (30 char), Gosta de ser chamado por (24 char), Data da visita (10 char)
 c1, c1_b1, c1_b2, c2, c3, c4 = st.columns([7.8, 0.4, 0.4, 3.0, 2.4, 1.2])
 with c1:
     st.text_input("Nome", value="CALMA DA SILVA MNIRANDA")
 with c1_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_nome")
 with c1_b2:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("✂️", key="cl_nome")
 with c2:
     st.text_input("1º Nome", value="CALMA")
@@ -127,10 +136,8 @@ c_sa, c_sa_b1, c_sa_b2, c_empty = st.columns([7.8, 0.4, 0.4, 6.6])
 with c_sa:
     st.text_input("Nome (Sem Acentos)", value="CALMA DA SILVA MNIRANDA")
 with c_sa_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_sa")
 with c_sa_b2:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("✂️", key="cl_sa")
 
 # Linha 3: Resumo (114 char max+20%)
@@ -138,10 +145,8 @@ c_res, c_res_b1, c_res_b2 = st.columns([11.4, 0.4, 0.4])
 with c_res:
     st.text_input("Resumo (Órgão Nome CPF Idade)", value="INSS CALMA DA SILVA MNIRANDA 67570437691")
 with c_res_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_res")
 with c_res_b2:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("✂️", key="cl_res")
 
 # Linha 4: Loja (24), Atendido por (36), Órgão (18), Nº benefício (24), Espécie (12)
@@ -177,15 +182,12 @@ col_cpf, col_cpf_b1, col_cpf_b2, col_cpff, col_cpff_b1 = st.columns([1.5, 0.4, 0
 with col_cpf:
     st.text_input("CGC/CPF (Apenas Números)", value="67570437691")
 with col_cpf_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_cpf")
 with col_cpf_b2:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("✂️", key="cl_cpf")
 with col_cpff:
     st.text_input("CGC/CPF (Formatado)", value="675.704.376-91")
 with col_cpff_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_cpff")
 
 # Linha 7: Endereço 1 (84), Bairro 1 (42), Estado 1 (3), DDD (3), Tel_1 (12), Ref_1 (36)
@@ -201,10 +203,8 @@ with c_ddd:
 with c_tel:
     st.text_input("Tel_1", value="37421019")
 with c_tel_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_tel")
 with c_tel_b2:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("✂️", key="cl_tel")
 with c_ref:
     st.text_input("Ref_1", value="")
@@ -220,5 +220,4 @@ with c_edi:
 with c_tels:
     st.text_input("Telefones Consolidados", value="37421019")
 with c_tels_b1:
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     st.button("📋", key="cp_tels")

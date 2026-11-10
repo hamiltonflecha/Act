@@ -1,13 +1,14 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V24 - Soluções",
+    page_title="Act V25 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados de Teste (Incluindo o contacto HOMIR)
+# Base de Dados de Teste
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
@@ -57,7 +58,7 @@ def pesquisar_contacto(termo):
 if "contacto_atual" not in st.session_state:
     st.session_state["contacto_atual"] = BASE_DADOS[0]
 
-# Estilização CSS - Forçar larguras exatas estilo FrontPage
+# Estilização CSS do Layout ACT!
 st.markdown("""
     <style>
         html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
@@ -142,6 +143,25 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Função para gerar o campo + botão de cópia na mesma estrutura tipo tabela de 1 linha
+def campo_com_copia(label, valor, key_prefix):
+    script_js = f"""
+    <div style="font-family: sans-serif; margin-bottom: 0px;">
+        <label style="font-size: 10.5px; font-weight: bold; color: #000; display: block; height: 13px; line-height: 13px; white-space: nowrap;">{label}</label>
+        <table style="border-collapse: collapse; width: 100%; table-layout: fixed;">
+            <tr>
+                <td style="padding: 0px;">
+                    <input type="text" id="input_{key_prefix}" value="{valor}" style="width: 100%; height: 19px; font-size: 11px; padding: 0 3px; border: 1px solid #7f9db9; border-right: none; box-sizing: border-box; background: #fff; color: #000;">
+                </td>
+                <td style="width: 22px; padding: 0px;">
+                    <button onclick="navigator.clipboard.writeText(document.getElementById('input_{key_prefix}').value); alert('Copiado: ' + document.getElementById('input_{key_prefix}').value);" style="width: 22px; height: 19px; font-size: 10px; background: #d4d0c8; border: 1px solid #404040; cursor: pointer; font-weight: bold; padding: 0px; box-sizing: border-box;">📋</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    """
+    components.html(script_js, height=36)
+
 # Barra Superior com Pesquisa Ativa
 c_busca, c_btn_busca, c_prev, c_next, c_novo, c_status = st.columns([4.0, 1.0, 0.8, 0.8, 1.8, 2.5])
 with c_busca:
@@ -155,25 +175,19 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V24<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V25<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Disparar busca ao clicar no botão ou ao dar Enter
+# Disparar busca
 if btn_buscar or termo:
     st.session_state["contacto_atual"] = pesquisar_contacto(termo)
 
 contacto = st.session_state["contacto_atual"]
 idade_108_meses = contacto["idade"] + 9 if contacto["idade"] else ""
 
-# LARGURAS FIXAS PROPORCIONAIS ESTILO FRONTPAGE
-
-# Linha 1: Nome, 1º Nome, Gosta de ser chamado por, Data da visita
-c1, c1_b1, c1_b2, c2, c3, c4 = st.columns([500, 30, 30, 200, 160, 100])
+# Linha 1: Nome (Com Cópia Embutida), 1º Nome, Gosta de ser chamado por, Data da visita
+c1, c2, c3, c4 = st.columns([560, 200, 160, 100])
 with c1:
-    st.text_input("Nome", value=contacto["nome"])
-with c1_b1:
-    st.button("📋", key="cp_nome")
-with c1_b2:
-    st.button("✂️", key="cl_nome")
+    campo_com_copia("Nome", contacto["nome"], "nome")
 with c2:
     st.text_input("1º Nome", value=contacto["primeiro_nome"])
 with c3:
@@ -181,23 +195,15 @@ with c3:
 with c4:
     st.text_input("Data da visita", value="")
 
-# Linha 2: Nome sem acentos
-c_sa, c_sa_b1, c_sa_b2, c_empty = st.columns([500, 30, 30, 460])
+# Linha 2: Nome sem acentos (Com Cópia Embutida)
+c_sa, c_empty = st.columns([560, 460])
 with c_sa:
-    st.text_input("Nome (Sem Acentos)", value=contacto["nome"])
-with c_sa_b1:
-    st.button("📋", key="cp_sa")
-with c_sa_b2:
-    st.button("✂️", key="cl_sa")
+    campo_com_copia("Nome (Sem Acentos)", contacto["nome"], "sa")
 
-# Linha 3: Resumo
-c_res, c_res_b1, c_res_b2 = st.columns([760, 30, 30])
+# Linha 3: Resumo (Com Cópia Embutida)
+c_res = st.container()
 with c_res:
-    st.text_input("Resumo (Órgão Nome CPF Idade)", value=contacto["resumo"])
-with c_res_b1:
-    st.button("📋", key="cp_res")
-with c_res_b2:
-    st.button("✂️", key="cl_res")
+    campo_com_copia("Resumo (Órgão Nome CPF Idade)", contacto["resumo"], "res")
 
 # Linha 4: Loja, Atendido por, Órgão, Nº benefício, Espécie
 col_loja, col_atend, col_org, col_ben, col_esp = st.columns([180, 220, 120, 200, 100])
@@ -212,7 +218,7 @@ with col_ben:
 with col_esp:
     st.text_input("Espécie", value="")
 
-# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento, Idade (curta: 50px), 108 Meses (50px), Identidade
+# Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento, Idade, 108 Meses, Identidade
 col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([160, 160, 110, 50, 60, 160])
 with col_s1:
     st.text_input("Senha Meu INSS", value="")
@@ -227,21 +233,15 @@ with col_id108:
 with col_rg:
     st.text_input("Identidade", value="")
 
-# Linha 6: CPF Números, CPF Formatado
-col_cpf, col_cpf_b1, col_cpf_b2, col_cpff, col_cpff_b1, col_empty2 = st.columns([140, 30, 30, 160, 30, 430])
+# Linha 6: CPF Números (Com Cópia Embutida), CPF Formatado (Com Cópia Embutida)
+col_cpf, col_cpff, col_empty2 = st.columns([200, 220, 430])
 with col_cpf:
-    st.text_input("CGC/CPF (Números)", value=contacto["cpf"])
-with col_cpf_b1:
-    st.button("📋", key="cp_cpf")
-with col_cpf_b2:
-    st.button("✂️", key="cl_cpf")
+    campo_com_copia("CGC/CPF (Números)", contacto["cpf"], "cpf")
 with col_cpff:
-    st.text_input("CGC/CPF (Formatado)", value=contacto["cpf_fmt"])
-with col_cpff_b1:
-    st.button("📋", key="cp_cpff")
+    campo_com_copia("CGC/CPF (Formatado)", contacto["cpf_fmt"], "cpff")
 
-# Linha 7: Endereço 1, Bairro 1, UF (40px), DDD (40px), Tel_1, Ref_1
-c_end, c_bai, c_uf, c_ddd, c_tel, c_tel_b1, c_tel_b2, c_ref = st.columns([350, 200, 40, 40, 110, 30, 30, 180])
+# Linha 7: Endereço 1, Bairro 1, UF, DDD, Tel_1 (Com Cópia Embutida), Ref_1
+c_end, c_bai, c_uf, c_ddd, c_tel, c_ref = st.columns([350, 200, 40, 40, 170, 180])
 with c_end:
     st.text_input("Endereço 1", value=contacto["endereco"])
 with c_bai:
@@ -251,16 +251,12 @@ with c_uf:
 with c_ddd:
     st.text_input("DDD", value=contacto["ddd"])
 with c_tel:
-    st.text_input("Tel_1", value=contacto["tel"])
-with c_tel_b1:
-    st.button("📋", key="cp_tel")
-with c_tel_b2:
-    st.button("✂️", key="cl_tel")
+    campo_com_copia("Tel_1", contacto["tel"], "tel")
 with c_ref:
     st.text_input("Ref_1", value="")
 
-# Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados
-c_cid, c_cep, c_edi, c_tels, c_tels_b1 = st.columns([220, 100, 200, 260, 30])
+# Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados (Com Cópia Embutida)
+c_cid, c_cep, c_edi, c_tels = st.columns([220, 100, 200, 300])
 with c_cid:
     st.text_input("Cidade 1", value=contacto["cidade"])
 with c_cep:
@@ -268,6 +264,4 @@ with c_cep:
 with c_edi:
     st.text_input("Edifício", value="")
 with c_tels:
-    st.text_input("Telefones Consolidados", value=contacto["tel"])
-with c_tels_b1:
-    st.button("📋", key="cp_tels")
+    campo_com_copia("Telefones Consolidados", contacto["tel"], "tels")

@@ -79,7 +79,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Exemplo de valores e cálculo da idade em +108 meses (+9 anos)
-idade_atual = 45  # Exemplo de valor de idade
+idade_atual = 45
 idade_108_meses = idade_atual + 9 if idade_atual is not None else ""
 
 # Cabeçalho / Navegação
@@ -163,4 +163,55 @@ with col_id:
 with col_id108:
     st.text_input("Idade daqui a 108 meses", value=str(idade_108_meses))
 with col_rg:
-    st.text_input("
+    st.text_input("Identidade", value="")
+
+# Linha 6: CPF
+col_cpf, col_cpf_b1, col_cpf_b2, col_cpff, col_cpff_b1 = st.columns([4, 0.4, 0.4, 4, 0.4])
+with col_cpf:
+    st.text_input("CGC/CPF (Apenas Números)", value="67570437691")
+with col_cpf_b1:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("📋", key="cp_cpf")
+with col_cpf_b2:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("✂️", key="cl_cpf")
+with col_cpff:
+    st.text_input("CGC/CPF (Formatado)", value="675.704.376-91")
+with col_cpff_b1:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("📋", key="cp_cpff")
+
+# Linha 7: Endereço 1, Bairro 1, Estado 1, DDD, Tel_1, Ref_1
+c_end, c_bai, c_uf, c_ddd, c_tel, c_tel_b1, c_tel_b2, c_ref = st.columns([4, 3, 1.5, 1, 2.5, 0.4, 0.4, 2])
+with c_end:
+    st.text_input("Endereço 1", value="RUA AÇONORTE, 314")
+with c_bai:
+    st.text_input("Bairro 1", value="")
+with c_uf:
+    st.text_input("Estado 1", value="MG")
+with c_ddd:
+    st.text_input("DDD", value="31")
+with c_tel:
+    st.text_input("Tel_1", value="37421019")
+with c_tel_b1:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("📋", key="cp_tel")
+with c_tel_b2:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("✂️", key="cl_tel")
+with c_ref:
+    st.text_input("Ref_1", value="")
+
+# Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados
+c_cid, c_cep, c_edi, c_tels, c_tels_b1 = st.columns([3, 2, 3, 5, 0.4])
+with c_cid:
+    st.text_input("Cidade 1", value="OURO BRANCO")
+with c_cep:
+    st.text_input("Cep 1", value="")
+with c_edi:
+    st.text_input("Edifício", value="")
+with c_tels:
+    st.text_input("Telefones Consolidados", value="37421019")
+with c_tels_b1:
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.button("📋", key="cp_tels")

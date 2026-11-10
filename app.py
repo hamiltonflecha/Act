@@ -2,7 +2,7 @@ import streamlit as st
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V19 - Soluções",
+    page_title="Act V20 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -24,7 +24,7 @@ st.markdown("""
             max-width: 100% !important;
         }
 
-        /* 2. Remover a caixa externa branca (BaseWeb Container) do Streamlit */
+        /* 2. ELIMINAR A MOLDURA BRANCA EXTERNA DO STREAMLIT */
         div[data-baseweb="input"] {
             background-color: transparent !important;
             border: none !important;
@@ -43,7 +43,7 @@ st.markdown("""
             line-height: 14px !important;
         }
 
-        /* 4. Definir altura exata de 19px para as caixas de texto com borda retangular limpa */
+        /* 4. Caixa de texto retangular de 19px estilo Windows clássico */
         .stTextInput input, .stSelectbox > div > div {
             height: 19px !important;
             min-height: 19px !important;
@@ -58,9 +58,9 @@ st.markdown("""
             box-shadow: none !important;
         }
 
-        /* 5. Estilizar e alinhar perfeitamente os botões de ação e cópia inline */
+        /* 5. Alinhamento perfeito dos botões inline com a base do campo */
         .stButton {
-            margin-top: 15px !important; /* Alinha o botão com a base da caixa de texto */
+            margin-top: 15px !important;
         }
 
         .stButton > button {
@@ -70,7 +70,7 @@ st.markdown("""
             font-size: 10px !important;
             padding: 0px 4px !important;
             margin: 0px !important;
-            background-color: #d4d0c8 !important; /* Cinza metálico de botão clássico */
+            background-color: #d4d0c8 !important; /* Cinza metálico clássico */
             border: 1px solid #404040 !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -103,7 +103,7 @@ st.markdown("""
 idade_atual = 45
 idade_108_meses = idade_atual + 9 if idade_atual is not None else ""
 
-# Topo / Navegação
+# Topo / Navegação (Marcado como ACT V20)
 c_busca, c_prev, c_next, c_novo, c_status = st.columns([6, 1, 1, 2, 3])
 with c_busca:
     st.text_input("Localizar (Nome / CPF / Benefício):", key="busca")
@@ -114,7 +114,7 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V19<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V20<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
 # Linha 1: Nome (78 char max+20%), 1º Nome (30 char), Gosta de ser chamado por (24 char), Data da visita (10 char)
 c1, c1_b1, c1_b2, c2, c3, c4 = st.columns([7.8, 0.4, 0.4, 3.0, 2.4, 1.2])

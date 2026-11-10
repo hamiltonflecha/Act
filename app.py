@@ -2,12 +2,12 @@ import streamlit as st
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V21 - Soluções",
+    page_title="Act V22 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Estilização CSS customizada - Réplica exata da interface ACT!
+# Estilização CSS customizada - Réplica exata das cores, bordas e larguras de coluna do ACT!
 st.markdown("""
     <style>
         /* 1. Zerar margens e remover barras de rolagem da página principal */
@@ -24,7 +24,7 @@ st.markdown("""
             max-width: 100% !important;
         }
 
-        /* 2. REMOÇÃO COMPLETA DA MOLDURA BRANCA EXTERNA DO STREAMLIT / BASEWEB */
+        /* 2. REMOVER MOLDURAS BRANCAS E DESATIVAR LARGURA MÍNIMA PADRÃO DAS COLUNAS */
         div[data-baseweb="input"], 
         div[data-baseweb="base-input"] {
             background-color: transparent !important;
@@ -32,6 +32,15 @@ st.markdown("""
             padding: 0px !important;
             margin: 0px !important;
             box-shadow: none !important;
+        }
+
+        /* Libera as colunas para assumirem as larguras exatas da tabela de caracteres */
+        [data-testid="column"] {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-end !important;
+            padding: 0px 1px !important;
+            min-width: 0px !important; /* Permite encolher campos pequenos */
         }
 
         /* 3. Compactar rótulos (labels) dos campos */
@@ -43,6 +52,8 @@ st.markdown("""
             height: 13px !important;
             line-height: 13px !important;
             white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
         }
 
         /* 4. Caixa de texto retangular de 19px estilo Windows clássico */
@@ -60,14 +71,7 @@ st.markdown("""
             box-shadow: none !important;
         }
 
-        /* 5. Alinhamento preciso dos botões inline pela base dos campos */
-        [data-testid="column"] {
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: flex-end !important;
-            padding: 0px 1px !important;
-        }
-
+        /* 5. Botões inline com 19px e alinhamento na base dos campos */
         .stButton {
             margin-top: 0px !important;
             margin-bottom: 0px !important;
@@ -94,13 +98,13 @@ st.markdown("""
             color: #ffffff !important;
         }
 
-        /* 6. Reduzir espaçamentos entre linhas verticais para evitar rolagem */
+        /* 6. Zerar espaçamentos entre linhas para garantir zero rolagem */
         div[data-testid="stVerticalBlock"] > div {
             gap: 0px !important;
             margin-bottom: 0px !important;
         }
         
-        /* Ocultar elementos desnecessários do Streamlit */
+        /* Ocultar barra superior padrão do Streamlit */
         header[data-testid="stHeader"], footer {
             display: none !important;
         }
@@ -111,7 +115,7 @@ st.markdown("""
 idade_atual = 45
 idade_108_meses = idade_atual + 9 if idade_atual is not None else ""
 
-# Topo / Navegação (Marcado como ACT V21)
+# Topo / Navegação (Marcado como ACT V22)
 c_busca, c_prev, c_next, c_novo, c_status = st.columns([5.4, 1.0, 1.0, 2.0, 3.0])
 with c_busca:
     st.text_input("Localizar (Nome / CPF / Benefício):", key="busca")
@@ -122,9 +126,9 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000; padding-bottom: 2px;'>Act V21<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000; padding-bottom: 2px;'>Act V22<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
-# Linha 1: Nome (78 char max+20%), 1º Nome (30 char), Gosta de ser chamado por (24 char), Data da visita (10 char)
+# Linha 1: Nome (78 char), 1º Nome (30 char), Gosta de ser chamado por (24 char), Data da visita (10 char)
 c1, c1_b1, c1_b2, c2, c3, c4 = st.columns([7.8, 0.4, 0.4, 3.0, 2.4, 1.0])
 with c1:
     st.text_input("Nome", value="CALMA DA SILVA MNIRANDA")
@@ -139,7 +143,7 @@ with c3:
 with c4:
     st.text_input("Data da visita", value="")
 
-# Linha 2: Nome sem acentos (78 char max+20%)
+# Linha 2: Nome sem acentos (78 char)
 c_sa, c_sa_b1, c_sa_b2, c_empty = st.columns([7.8, 0.4, 0.4, 6.4])
 with c_sa:
     st.text_input("Nome (Sem Acentos)", value="CALMA DA SILVA MNIRANDA")
@@ -148,7 +152,7 @@ with c_sa_b1:
 with c_sa_b2:
     st.button("✂️", key="cl_sa")
 
-# Linha 3: Resumo (114 char max+20%)
+# Linha 3: Resumo (114 char)
 c_res, c_res_b1, c_res_b2 = st.columns([11.4, 0.4, 0.4])
 with c_res:
     st.text_input("Resumo (Órgão Nome CPF Idade)", value="INSS CALMA DA SILVA MNIRANDA 67570437691")
@@ -170,7 +174,7 @@ with col_ben:
 with col_esp:
     st.text_input("Espécie", value="")
 
-# Linha 5: Senha Meu INSS (24), Senha Paraná (24), Data Nascimento (10), Idade (4), Idade 108m (4), Identidade (24)
+# Linha 5: Senha Meu INSS (24), Senha Paraná (24), Data Nascimento (10), Idade (4), 108 Meses (4), Identidade (24)
 col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([2.4, 2.4, 1.0, 0.4, 0.4, 2.4])
 with col_s1:
     st.text_input("Senha Meu INSS", value="")

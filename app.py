@@ -76,4 +76,6 @@ st.markdown("""
             gap: 2px !important;
         }
     </style>
-""", unsafe_unsafe_html=True)
+""", unsafe_allow_html=True)
+
+# Lógica da sua aplicação vem aqui abaixo

@@ -3,12 +3,12 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V30 - Soluções",
+    page_title="Act V31 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Ampliada (Homir, Ernerita, B Hamilton, Hamilton Silva, Hamilton Ferreira, Calma)
+# Base de Dados Atualizada e Sincronizada (Ernerita: CPF 69199485672)
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
@@ -44,7 +44,7 @@ BASE_DADOS = [
         "primeiro_nome": "ERNERITA",
         "gosta_chamado": "DONA ERNERITA",
         "data_visita": "08/11/2026",
-        "resumo": "INSS ERNERITA MARIA DOS SANTOS 32165498700 71",
+        "resumo": "INSS ERNERITA MARIA DOS SANTOS 69199485672 71",
         "loja": "Centro - OB",
         "atendido_por": "Jaedna",
         "orgao": "INSS",
@@ -55,8 +55,8 @@ BASE_DADOS = [
         "data_nasc": "20/03/1955",
         "idade": 71,
         "identidade": "MG-32.165.498",
-        "cpf": "32165498700",
-        "cpf_fmt": "321.654.987-00",
+        "cpf": "69199485672",
+        "cpf_fmt": "691.994.856-72",
         "endereco": "RUA DAS MONÇÕES, 120",
         "bairro": "BELO HORIZONTE",
         "uf": "MG",
@@ -311,12 +311,12 @@ def campo_com_copia_tique(label, valor, key_prefix):
     """
     components.html(html_code, height=58)
 
-# Topo / Barra Superior com Tabela Unificada para Alinhamento Perfeito
-c_busca, c_btn_busca, c_prev, c_next, c_novo, c_status = st.columns([4.0, 1.0, 0.8, 0.8, 1.8, 2.5])
-with c_busca:
+# Topo / Navegação (Localizar + Buscar Embutidos na Mesma Tabela Unificada de 38px)
+c_busca_box, c_prev, c_next, c_novo, c_status = st.columns([5.0, 0.8, 0.8, 1.8, 2.5])
+
+with c_busca_box:
     termo = st.text_input("Localizar (Nome / CPF / Benefício):", key="campo_busca")
-with c_btn_busca:
-    btn_buscar = st.button("🔍 Buscar", key="btn_buscar")
+
 with c_prev:
     st.button("◄ Ant...", use_container_width=True)
 with c_next:
@@ -324,10 +324,10 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V30<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V31<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
 # Lógica da Pesquisa com Pop-up (Modal) Automático
-if btn_buscar or (termo and len(termo.strip()) > 0):
+if termo and len(termo.strip()) > 0:
     resultados = buscar_contactos(termo)
     if len(resultados) == 1:
         st.session_state["contacto_atual"] = resultados[0]
@@ -338,7 +338,7 @@ if btn_buscar or (termo and len(termo.strip()) > 0):
             for idx, c in enumerate(lista):
                 if st.button(f"👤 {c['nome']} - CPF: {c['cpf_fmt']} (Espécie: {c['especie']})", key=f"sel_{idx}"):
                     st.session_state["contacto_atual"] = c
-                    st.rerun() # Fecha o modal e recarrega instantaneamente com o selecionado
+                    st.rerun()
         popup_selecao(resultados)
 
 contacto = st.session_state["contacto_atual"]

@@ -3,57 +3,99 @@ import streamlit.components.v1 as components
 
 # Configuração de página em tela cheia (Wide Mode)
 st.set_page_config(
-    page_title="Act V27 - Soluções",
+    page_title="Act V28 - Soluções",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Base de Dados Atualizada
+# Base de Dados Atualizada com Sincronia Correta dos Campos (Homir: Espécie 42)
 BASE_DADOS = [
     {
         "nome": "HOMIR ALVES DA SILVA",
         "primeiro_nome": "HOMIR",
+        "gosta_chamado": "HOMIR",
+        "data_visita": "10/11/2026",
         "resumo": "INSS HOMIR ALVES DA SILVA 00385663897 62",
         "loja": "Centro - OB",
+        "atendido_por": "Hamilton",
         "orgao": "INSS",
+        "num_beneficio": "1234567890",
+        "especie": "42",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "15/05/1964",
         "idade": 62,
+        "identidade": "MG-12.345.678",
         "cpf": "00385663897",
         "cpf_fmt": "003.856.638-97",
         "endereco": "RUA PRINCIPAL, 500",
+        "bairro": "CENTRO",
         "uf": "MG",
         "ddd": "31",
         "tel": "99887766",
-        "cidade": "OURO BRANCO"
+        "ref": "PROXIMO AO BANCO",
+        "cidade": "OURO BRANCO",
+        "cep": "36420-000",
+        "edificio": "",
+        "tels_consolidados": "3199887766"
     },
     {
         "nome": "HAMILTON SILVA",
         "primeiro_nome": "HAMILTON",
+        "gosta_chamado": "HAMILTON",
+        "data_visita": "05/11/2026",
         "resumo": "INSS HAMILTON SILVA 98765432100 50",
         "loja": "Centro - OB",
+        "atendido_por": "Jaedna",
         "orgao": "INSS",
+        "num_beneficio": "9876543210",
+        "especie": "21",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "10/02/1976",
         "idade": 50,
+        "identidade": "MG-98.765.432",
         "cpf": "98765432100",
         "cpf_fmt": "987.654.321-00",
         "endereco": "AVENIDA CENTRAL, 100",
+        "bairro": "SÃO SEBASTIÃO",
         "uf": "MG",
         "ddd": "31",
         "tel": "37429999",
-        "cidade": "CONSELHEIRO LAFAIETE"
+        "ref": "",
+        "cidade": "CONSELHEIRO LAFAIETE",
+        "cep": "36400-000",
+        "edificio": "",
+        "tels_consolidados": "3137429999"
     },
     {
         "nome": "CALMA DA SILVA MNIRANDA",
         "primeiro_nome": "CALMA",
+        "gosta_chamado": "CALMA",
+        "data_visita": "",
         "resumo": "INSS CALMA DA SILVA MNIRANDA 67570437691 45",
         "loja": "Centro - OB",
+        "atendido_por": "",
         "orgao": "INSS",
+        "num_beneficio": "",
+        "especie": "41",
+        "senha_inss": "",
+        "senha_parana": "",
+        "data_nasc": "",
         "idade": 45,
+        "identidade": "",
         "cpf": "67570437691",
         "cpf_fmt": "675.704.376-91",
         "endereco": "RUA AÇONORTE, 314",
+        "bairro": "",
         "uf": "MG",
         "ddd": "31",
         "tel": "37421019",
-        "cidade": "OURO BRANCO"
+        "ref": "",
+        "cidade": "OURO BRANCO",
+        "cep": "",
+        "edificio": "",
+        "tels_consolidados": "3137421019"
     }
 ]
 
@@ -93,7 +135,6 @@ st.markdown("""
             white-space: nowrap !important;
         }
 
-        /* Padronizar a altura exata dos campos normais para 38px */
         input[data-testid="stTextInputInput"] {
             height: 38px !important;
             min-height: 38px !important;
@@ -190,7 +231,7 @@ with c_next:
 with c_novo:
     st.button("+ Novo Contato", use_container_width=True)
 with c_status:
-    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V27<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: right; font-size: 11px; font-weight: bold; color: #000;'>Act V28<br><span style='font-size: 10px; font-weight: normal;'>Hamilton e Jaedna | Soluções</span></div>", unsafe_allow_html=True)
 
 # Executar Busca
 if btn_buscar or termo:
@@ -204,11 +245,11 @@ c1, c2, c3, c4 = st.columns([580, 200, 160, 100])
 with c1:
     campo_com_copia_tique("Nome", contacto["nome"], "nome")
 with c2:
-    st.text_input("1º Nome", value=contacto["primeiro_nome"])
+    st.text_input("1º Nome", value=contacto.get("primeiro_nome", ""))
 with c3:
-    st.text_input("Gosta de ser chamado por", value="")
+    st.text_input("Gosta de ser chamado por", value=contacto.get("gosta_chamado", ""))
 with c4:
-    st.text_input("Data da visita", value="")
+    st.text_input("Data da visita", value=contacto.get("data_visita", ""))
 
 # Linha 2: Nome sem acentos
 c_sa, c_empty = st.columns([580, 460])
@@ -223,30 +264,30 @@ with c_res:
 # Linha 4: Loja, Atendido por, Órgão, Nº benefício, Espécie
 col_loja, col_atend, col_org, col_ben, col_esp = st.columns([180, 220, 120, 200, 100])
 with col_loja:
-    st.text_input("Loja", value=contacto["loja"])
+    st.text_input("Loja", value=contacto.get("loja", ""))
 with col_atend:
-    st.text_input("Atendido por", value="")
+    st.text_input("Atendido por", value=contacto.get("atendido_por", ""))
 with col_org:
-    st.text_input("Órgão", value=contacto["orgao"])
+    st.text_input("Órgão", value=contacto.get("orgao", ""))
 with col_ben:
-    st.text_input("Nº benefício ou matrícula", value="")
+    st.text_input("Nº benefício ou matrícula", value=contacto.get("num_beneficio", ""))
 with col_esp:
-    st.text_input("Espécie", value="")
+    st.text_input("Espécie", value=contacto.get("especie", ""))
 
 # Linha 5: Senha Meu INSS, Senha Paraná, Data Nascimento, Idade, 108 Meses, Identidade
 col_s1, col_s2, col_dn, col_id, col_id108, col_rg = st.columns([160, 160, 110, 50, 60, 160])
 with col_s1:
-    st.text_input("Senha Meu INSS", value="")
+    st.text_input("Senha Meu INSS", value=contacto.get("senha_inss", ""))
 with col_s2:
-    st.text_input("Senha Paraná", value="")
+    st.text_input("Senha Paraná", value=contacto.get("senha_parana", ""))
 with col_dn:
-    st.text_input("Data Nascimento", value="")
+    st.text_input("Data Nascimento", value=contacto.get("data_nasc", ""))
 with col_id:
-    st.text_input("Idade", value=str(contacto["idade"]))
+    st.text_input("Idade", value=str(contacto.get("idade", "")))
 with col_id108:
     st.text_input("108 Meses", value=str(idade_108_meses))
 with col_rg:
-    st.text_input("Identidade", value="")
+    st.text_input("Identidade", value=contacto.get("identidade", ""))
 
 # Linha 6: CPF Números, CPF Formatado
 col_cpf, col_cpff, col_empty2 = st.columns([220, 240, 430])
@@ -258,25 +299,25 @@ with col_cpff:
 # Linha 7: Endereço 1, Bairro 1, UF, DDD, Tel_1, Ref_1
 c_end, c_bai, c_uf, c_ddd, c_tel, c_ref = st.columns([350, 200, 40, 40, 190, 180])
 with c_end:
-    st.text_input("Endereço 1", value=contacto["endereco"])
+    st.text_input("Endereço 1", value=contacto.get("endereco", ""))
 with c_bai:
-    st.text_input("Bairro 1", value="")
+    st.text_input("Bairro 1", value=contacto.get("bairro", ""))
 with c_uf:
-    st.text_input("UF", value=contacto["uf"])
+    st.text_input("UF", value=contacto.get("uf", ""))
 with c_ddd:
-    st.text_input("DDD", value=contacto["ddd"])
+    st.text_input("DDD", value=contacto.get("ddd", ""))
 with c_tel:
-    campo_com_copia_tique("Tel_1", contacto["tel"], "tel")
+    campo_com_copia_tique("Tel_1", contacto.get("tel", ""), "tel")
 with c_ref:
-    st.text_input("Ref_1", value="")
+    st.text_input("Ref_1", value=contacto.get("ref", ""))
 
 # Linha 8: Cidade 1, Cep 1, Edifício, Telefones Consolidados
 c_cid, c_cep, c_edi, c_tels = st.columns([220, 100, 200, 320])
 with c_cid:
-    st.text_input("Cidade 1", value=contacto["cidade"])
+    st.text_input("Cidade 1", value=contacto.get("cidade", ""))
 with c_cep:
-    st.text_input("Cep 1", value="")
+    st.text_input("Cep 1", value=contacto.get("cep", ""))
 with c_edi:
-    st.text_input("Edifício", value="")
+    st.text_input("Edifício", value=contacto.get("edificio", ""))
 with c_tels:
-    campo_com_copia_tique("Telefones Consolidados", contacto["tel"], "tels")
+    campo_com_copia_tique("Telefones Consolidados", contacto.get("tels_consolidados", ""), "tels")

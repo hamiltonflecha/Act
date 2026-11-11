@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-st.set_page_config(page_title="Act V33 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Act V33 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
 # 1. SEGURANÇA E LOGIN
@@ -31,7 +31,7 @@ if not verificar_senha():
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE DADOS E LEITURA
+# 2. TRATAMENTO DE TEXTO E LEITURA DE ARQUIVOS
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -76,7 +76,6 @@ def ler_arquivo(nome_base):
                 st.error(f"Erro ao ler {caminho}: {e}")
     return pd.DataFrame()
 
-# Função de fusão executada apenas sob demanda
 def executar_fusao():
     df1 = ler_arquivo('DBF1_Local')
     df2 = ler_arquivo('DBF2_Copia')
@@ -132,29 +131,36 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicializar estado dos dados na memória do navegador
+# Inicializar dados na sessão
 if "df_unificada" not in st.session_state or "df_quarentena" not in st.session_state:
     st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+
+if "idx_cliente" not in st.session_state:
+    st.session_state["idx_cliente"] = 0
 
 df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (CONTROLE E REPROCESSAMENTO)
+# 3. BARRA LATERAL (MENU E BOTÃO DE FUSÃO SOB DEMANDA)
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.subheader("⚙️ Gerenciamento de Bases")
-    st.write(f"Contatos Unificados: **{len(df_unificada)}**")
-    st.write(f"Em Quarentena: **{len(df_quarentena)}**")
+    st.title("⚙️ Painel de Controle")
+    st.markdown("**Sistema Act V33**")
+    st.markdown("👥 **Operadores:** Hamilton & Jaedna")
+    st.markdown("---")
+    st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")
+    st.write(f"⚠️ **Quarentena:** {len(df_quarentena)} fichas")
     st.markdown("---")
     if st.button("🔄 Recalcular / Atualizar Bases", use_container_width=True):
-        with st.spinner("Refazendo a fusão dos arquivos Excel..."):
+        with st.spinner("Refazendo a fusão das bases..."):
             st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+            st.session_state["idx_cliente"] = 0
             st.success("Bases atualizadas com sucesso!")
             st.rerun()
 
 # -----------------------------------------------------------------------------
-# 4. INTERFACE PRINCIPAL
+# 4. ESTRUTURA DE ABAS E INTERFACE ZEROSCROLL
 # -----------------------------------------------------------------------------
 aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     "👤 Ficha Act! (Trabalho)", 
@@ -162,70 +168,89 @@ aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     f"⚠️ Quarentena / Revisão ({len(df_quarentena)})"
 ])
 
-# ----- ABA 1: INTERFACE DE TRABALHO -----
+# ----- ABA 1: INTERFACE ZEROSCROLL DO ACT! -----
 with aba_ficha:
-    st.title("Act! Soluções - Ficha do Cliente")
-    
     if not df_unificada.empty:
-        busca_input = st.text_input("🔍 Buscar por CPF, Nome ou Benefício:", placeholder="Digite o CPF ou Nome e pressione Enter...")
+        # Linha Superior: Busca e Controles de Navegação (Anterior / Próximo)
+        c_busca, c_prev, c_pos, c_next = st.columns([3, 1, 1, 1])
         
-        if busca_input:
-            res = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_input, case=False)).any(axis=1)]
+        with c_busca:
+            termo_busca = st.text_input("🔍 Buscar por Nome, CPF ou Benefício:", placeholder="Digite para filtrar...", label_visibility="collapsed")
             
-            if not res.empty:
-                if len(res) > 1:
-                    opcoes = [f"{row.get('NAME', 'Sem Nome')} - CPF: {formatar_cpf(limpar_cpf(row.get('USR1000', '')))}" for _, row in res.iterrows()]
-                    escolha = st.selectbox("Selecione o registro encontrado:", opcoes)
-                    idx = opcoes.index(escolha)
-                    cliente = res.iloc[idx]
-                else:
-                    cliente = res.iloc[0]
-                
-                st.markdown("---")
-                cpf_bruto = cliente.get('USR1000', cliente.get('CPF', ''))
-                cpf_limpo = limpar_cpf(cpf_bruto)
-                cpf_formatado = formatar_cpf(cpf_limpo)
-                
-                c1, c2, c3 = st.columns([2, 2, 1])
-                with c1:
-                    st.markdown(f"### 👤 **{cliente.get('NAME', 'N/A')}**")
-                with c2:
-                    st.markdown(f"### 📄 **CPF: {cpf_formatado}**")
-                with c3:
-                    st.code(cpf_limpo, language=None)
-                
-                col_a, col_b, col_c = st.columns(3)
-                with col_a:
-                    st.markdown("**Telefone Principal:**")
-                    st.info(cliente.get('PHONE', 'Não informado'))
-                    st.markdown("**Endereço (ADDR1):**")
-                    st.write(cliente.get('ADDR1', '-'))
-                with col_b:
-                    st.markdown("**Bairro / Região (ADDR3):**")
-                    st.write(cliente.get('ADDR3', '-'))
-                    st.markdown("**Cidade / Estado:**")
-                    st.write(f"{cliente.get('CITY', '-')} / {cliente.get('STATE', '-')}")
-                with col_c:
-                    st.markdown("**CEP:**")
-                    st.write(cliente.get('ZIP', '-'))
-                    st.markdown("**Origem:**")
-                    st.caption(cliente.get('ORIGEM', 'Base Unificada'))
-                
-                st.markdown("---")
-                st.markdown("### 📝 Observações / Histórico (USER9)")
-                st.text_area("", value=cliente.get('USER9', ''), height=150, disabled=True)
-                
-                with st.expander("🛠️ Ver todos os 183 campos da ficha completa"):
-                    df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
-                    st.dataframe(df_campos, use_container_width=True, height=400)
-            else:
-                st.warning("Nenhum cliente encontrado com esse termo de busca.")
+        # Filtragem dinâmica conforme digitação
+        if termo_busca:
+            df_filtrado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(termo_busca, case=False)).any(axis=1)]
         else:
-            st.info("Digite um Nome ou CPF na caixa acima para abrir a ficha de trabalho zeroscroll.")
+            df_filtrado = df_unificada
 
-# ----- ABA 2: VISUALIZAÇÃO EM TABELA COMPLETA -----
+        total_registros = len(df_filtrado)
+        
+        # Manter índice nos limites da busca
+        if st.session_state["idx_cliente"] >= total_registros:
+            st.session_state["idx_cliente"] = max(0, total_registros - 1)
+            
+        with c_prev:
+            if st.button("◀ Anterior", use_container_width=True):
+                if st.session_state["idx_cliente"] > 0:
+                    st.session_state["idx_cliente"] -= 1
+                    st.rerun()
+                    
+        with c_pos:
+            st.markdown(f"<h5 style='text-align: center; margin-top: 5px;'>{st.session_state['idx_cliente'] + 1} de {total_registros}</h5>", unsafe_allow_html=True)
+            
+        with c_next:
+            if st.button("Próximo ▶", use_container_width=True):
+                if st.session_state["idx_cliente"] < total_registros - 1:
+                    st.session_state["idx_cliente"] += 1
+                    st.rerun()
+
+        st.markdown("---")
+        
+        # Exibição da Ficha de Cadastro Zeroscroll do Cliente Atual
+        if total_registros > 0:
+            cliente = df_filtrado.iloc[st.session_state["idx_cliente"]]
+            
+            cpf_bruto = cliente.get('USR1000', cliente.get('CPF', ''))
+            cpf_limpo = limpar_cpf(cpf_bruto)
+            cpf_formatado = formatar_cpf(cpf_limpo)
+            
+            # Cabeçalho da Ficha de Trabalho
+            col_nome, col_cpf, col_copy = st.columns([3, 2, 1])
+            with col_nome:
+                st.subheader(f"👤 {cliente.get('NAME', 'Sem Nome')}")
+            with col_cpf:
+                st.subheader(f"📄 CPF: {cpf_formatado}")
+            with col_copy:
+                st.code(cpf_limpo if cpf_limpo else "SEM_CPF", language=None)
+                
+            # Grade de Campos do Act!
+            g1, g2, g3 = st.columns(3)
+            with g1:
+                st.text_input("Telefone (PHONE):", value=cliente.get('PHONE', ''), disabled=True)
+                st.text_input("Endereço (ADDR1):", value=cliente.get('ADDR1', ''), disabled=True)
+            with g2:
+                st.text_input("Bairro (ADDR3):", value=cliente.get('ADDR3', ''), disabled=True)
+                st.text_input("Cidade / UF:", value=f"{cliente.get('CITY', '')} / {cliente.get('STATE', '')}", disabled=True)
+            with g3:
+                st.text_input("CEP (ZIP):", value=cliente.get('ZIP', ''), disabled=True)
+                st.text_input("Origem do Registro:", value=cliente.get('ORIGEM', 'Unificado'), disabled=True)
+
+            # Histórico de Observações (USER9)
+            st.markdown("### 📝 Histórico / Observações (USER9)")
+            st.text_area("USER9", value=cliente.get('USER9', ''), height=140, label_visibility="collapsed", disabled=True)
+
+            # Sanfona com todos os 183 campos do DBF
+            with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
+                df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
+                st.dataframe(df_campos, use_container_width=True, height=350)
+        else:
+            st.warning("Nenhum registro encontrado para o termo pesquisado.")
+    else:
+        st.warning("Nenhuma base carregada no repositório.")
+
+# ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
 with aba_tabela:
-    st.subheader("Base Geral Consolidada")
+    st.subheader("Base Consolidação Geral")
     if not df_unificada.empty:
         busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
         if busca_tab:
@@ -238,7 +263,4 @@ with aba_tabela:
 with aba_quarentena:
     st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
     if not df_quarentena.empty:
-        colunas_exibir = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
-        st.dataframe(df_quarentena[colunas_exibir], use_container_width=True)
-    else:
-        st.success("Nenhum contacto em quarentena! Todas as fichas foram unificadas sem divergências.")
+        colunas_exibir = [c for c in ['NAME',

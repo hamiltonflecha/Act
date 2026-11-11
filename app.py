@@ -236,4 +236,28 @@ with aba_ficha:
 
             with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
                 df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
-                st.dataframe(df
+                st.dataframe(df_campos, use_container_width=True, height=350)
+        else:
+            st.warning("Nenhum registro encontrado para o termo pesquisado.")
+    else:
+        st.warning("Nenhuma base carregada. Clique em 'Recalcular / Atualizar Bases' no menu lateral.")
+
+# ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
+with aba_tabela:
+    st.subheader("Base Consolidação Geral")
+    if not df_unificada.empty:
+        busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
+        if busca_tab:
+            res_tab = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_tab, case=False)).any(axis=1)]
+            st.dataframe(res_tab, use_container_width=True)
+        else:
+            st.dataframe(df_unificada.head(100), use_container_width=True)
+
+# ----- ABA 3: QUARENTENA -----
+with aba_quarentena:
+    st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
+    if not df_quarentena.empty:
+        cols_quarantena = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
+        st.dataframe(df_quarentena[cols_quarantena], use_container_width=True)
+    else:
+        st.success("Nenhum contacto em quarentena! Todas as fichas foram unificadas sem divergências.")

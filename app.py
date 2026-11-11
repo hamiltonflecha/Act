@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import re
+import os
 
-# Configuração da página em modo Wide
 st.set_page_config(page_title="Act V33 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
 # -----------------------------------------------------------------------------
-# 1. SISTEMA DE SEGURANÇA E LOGIN
+# 1. SEGURANÇA E LOGIN
 # -----------------------------------------------------------------------------
 def verificar_senha():
     if "autenticado" not in st.session_state:
@@ -20,8 +20,6 @@ def verificar_senha():
             st.title("🔒 Act V33 - Soluções")
             st.subheader("Acesso Restrito")
             senha_digitada = st.text_input("Digite a senha de acesso:", type="password")
-            
-            # Senha padrão de acesso (pode alterar aqui se desejar)
             if st.button("Entrar", use_container_width=True):
                 if senha_digitada == "solucoes1986":
                     st.session_state["autenticado"] = True
@@ -35,7 +33,7 @@ if not verificar_senha():
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE TRATAMENTO DE DADOS (CPF E FUSÃO)
+# 2. CARREGAMENTO E FUSÃO DOS DADOS
 # -----------------------------------------------------------------------------
 def limpar_cpf(val):
     if not val or pd.isna(val):
@@ -47,37 +45,38 @@ def limpar_cpf(val):
         return digitos.zfill(11)
     return ""
 
-def formatar_cpf(digitos):
-    if len(digitos) == 11:
-        return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
-    return digitos
+def ler_arquivo(nome_base):
+    for ext in ['.xlsx', '.csv', '.XLSX', '.CSV']:
+        caminho = f"{nome_base}{ext}"
+        if os.path.exists(caminho):
+            try:
+                if ext.lower() == '.csv':
+                    return pd.read_csv(caminho, dtype=str).fillna("")
+                else:
+                    return pd.read_excel(caminho, dtype=str).fillna("")
+            except Exception as e:
+                st.error(f"Erro ao ler {caminho}: {e}")
+    return pd.DataFrame()
 
 @st.cache_data(ttl=3600)
 def carregar_e_fundir_bases():
-    try:
-        df1 = pd.read_excel('DBF1_Local.xlsx', dtype=str).fillna("")
-    except:
-        df1 = pd.DataFrame()
-        
-    try:
-        df2 = pd.read_excel('DBF2_Copia.xlsx', dtype=str).fillna("")
-    except:
-        df2 = pd.DataFrame()
+    df1 = ler_arquivo('DBF1_Local')
+    df2 = ler_arquivo('DBF2_Copia')
 
-    df1['ORIGEM'] = 'PC 1 (Hamilton)'
-    df2['ORIGEM'] = 'PC 2 (Jaedna)'
-    
-    col_cpf_1 = 'USR1000' if 'USR1000' in df1.columns else ('CPF' if 'CPF' in df1.columns else df1.columns[0] if not df1.empty else '')
-    col_cpf_2 = 'USR1000' if 'USR1000' in df2.columns else ('CPF' if 'CPF' in df2.columns else df2.columns[0] if not df2.empty else '')
+    if df1.empty and df2.empty:
+        return pd.DataFrame(), pd.DataFrame()
 
     if not df1.empty:
+        df1['ORIGEM'] = 'PC 1 (Hamilton)'
+        col_cpf_1 = 'USR1000' if 'USR1000' in df1.columns else ('CPF' if 'CPF' in df1.columns else df1.columns[0])
         df1['CPF_LIMPO'] = df1[col_cpf_1].apply(limpar_cpf)
+
     if not df2.empty:
+        df2['ORIGEM'] = 'PC 2 (Jaedna)'
+        col_cpf_2 = 'USR1000' if 'USR1000' in df2.columns else ('CPF' if 'CPF' in df2.columns else df2.columns[0])
         df2['CPF_LIMPO'] = df2[col_cpf_2].apply(limpar_cpf)
 
     df_todos = pd.concat([df1, df2], ignore_index=True)
-    if df_todos.empty:
-        return pd.DataFrame(), pd.DataFrame()
 
     base_unificada = []
     base_quarentena = []
@@ -103,15 +102,12 @@ def carregar_e_fundir_bases():
                 for _, row in group.iterrows():
                     base_quarentena.append(row.to_dict())
 
-    df_unificada = pd.DataFrame(base_unificada)
-    df_quarentena = pd.DataFrame(base_quarentena)
-    return df_unificada, df_quarentena
+    return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Carregar dados
 df_unificada, df_quarentena = carregar_e_fundir_bases()
 
 # -----------------------------------------------------------------------------
-# 3. INTERFACE PRINCIPAL (ABAS DE NAVEGAÇÃO)
+# 3. INTERFACE PRINCIPAL
 # -----------------------------------------------------------------------------
 aba_principal, aba_quarentena = st.tabs([
     "🔍 Consulta de Contatos (Base Unificada)", 
@@ -128,13 +124,12 @@ with aba_principal:
             resultado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca, case=False)).any(axis=1)]
             st.dataframe(resultado, use_container_width=True)
         else:
-            st.dataframe(df_unificada.head(50), use_container_width=True)
+            st.dataframe(df_unificada.head(100), use_container_width=True)
     else:
-        st.warning("Nenhuma base encontrada. Verifique se os ficheiros DBF1_Local.xlsx e DBF2_Copia.xlsx estão no repositório.")
+        st.warning("Nenhuma base encontrada no repositório. Verifique se os arquivos DBF1_Local e DBF2_Copia estão salvos no GitHub.")
 
 with aba_quarentena:
     st.subheader("Contatos com Divergência entre PC 1 (Hamilton) e PC 2 (Jaedna)")
-    st.write("Estes registos possuem telefones ou observações diferentes nas duas máquinas:")
     if not df_quarentena.empty:
         colunas_exibir = [c for c in ['CPF_LIMPO', 'NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
         st.dataframe(df_quarentena[colunas_exibir], use_container_width=True)

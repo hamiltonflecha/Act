@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import re
 import os
 
 st.set_page_config(page_title="Act V33 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
@@ -32,12 +31,11 @@ if not verificar_senha():
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE TRATAMENTO E CORREÇÃO DE TEXTO
+# 2. FUNÇÕES DE DADOS E LEITURA
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
         return ""
-    # Mapeamento para corrigir a tabela de caracteres antigos do DOS (cp850/IBM850)
     substituicoes = {
         '╔': 'É', '┴': 'Á', '├': 'Ç', '╙': 'ÃO', '├╙': 'ÇÃO',
         '═': 'Í', 'Ò': 'Â', 'Ì': 'Ê', '╘': 'Õ', '╒': 'Ô',
@@ -57,6 +55,11 @@ def limpar_cpf(val):
         return digitos.zfill(11)
     return ""
 
+def formatar_cpf(digitos):
+    if len(digitos) == 11:
+        return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
+    return digitos
+
 def ler_arquivo(nome_base):
     for ext in ['.xlsx', '.csv', '.XLSX', '.CSV']:
         caminho = f"{nome_base}{ext}"
@@ -66,8 +69,6 @@ def ler_arquivo(nome_base):
                     df = pd.read_csv(caminho, dtype=str).fillna("")
                 else:
                     df = pd.read_excel(caminho, dtype=str).fillna("")
-                
-                # Corrigir acentuação em todas as colunas de texto
                 for col in df.columns:
                     df[col] = df[col].astype(str).apply(corrigir_acentos)
                 return df
@@ -90,10 +91,8 @@ def carregar_e_fundir_bases():
 
     df_todos = pd.concat([df1, df2], ignore_index=True)
 
-    # Identificar colunas chaves
     col_nome = 'NAME' if 'NAME' in df_todos.columns else df_todos.columns[0]
     
-    # Criar chave de agrupamento (Usar CPF se existir, senão usa o NOME)
     col_cpf = None
     for c in ['USR1000', 'CPF', 'USER1000']:
         if c in df_todos.columns:
@@ -102,7 +101,6 @@ def carregar_e_fundir_bases():
             
     if col_cpf:
         df_todos['CHAVE_BUSCA'] = df_todos[col_cpf].apply(limpar_cpf)
-        # Se CPF estiver vazio, usa o Nome limpo como chave secundária
         mask_vazio = df_todos['CHAVE_BUSCA'] == ""
         df_todos.loc[mask_vazio, 'CHAVE_BUSCA'] = df_todos.loc[mask_vazio, col_nome].str.upper().str.strip()
     else:
@@ -126,11 +124,9 @@ def carregar_e_fundir_bases():
             obs_distintas = set(filter(None, group[col_obs].str.strip().tolist()))
             tels_distintos = set(filter(None, group[col_phone].str.strip().tolist()))
             
-            # Se a observação e os telefones forem idênticos nas duas máquinas, consolida
             if len(obs_distintas) <= 1 and len(tels_distintos) <= 1:
                 base_unificada.append(group.iloc[-1].to_dict())
             else:
-                # Se houver anotações diferentes entre Hamilton e Jaedna, envia para a quarentena para conferência
                 for _, row in group.iterrows():
                     base_quarentena.append(row.to_dict())
 
@@ -139,27 +135,92 @@ def carregar_e_fundir_bases():
 df_unificada, df_quarentena = carregar_e_fundir_bases()
 
 # -----------------------------------------------------------------------------
-# 3. INTERFACE PRINCIPAL
+# 3. INTERFACE COMPLETA (FICHA DE TRABALHO + TABELA + QUARENTENA)
 # -----------------------------------------------------------------------------
-aba_principal, aba_quarentena = st.tabs([
-    f"🔍 Consulta de Contatos Unificados ({len(df_unificada)})", 
+aba_ficha, aba_tabela, aba_quarentena = st.tabs([
+    "👤 Ficha Act! (Trabalho)", 
+    f"📊 Tabela Unificada ({len(df_unificada)})", 
     f"⚠️ Quarentena / Revisão ({len(df_quarentena)})"
 ])
 
-with aba_principal:
-    st.title("Act V33 - Soluções Financeiras")
-    st.markdown(f"Total de contactos consolidados e ativos: **{len(df_unificada)}**")
+# ----- ABA 1: INTERFACE DE TRABALHO (FICHA DO CLIENTE) -----
+with aba_ficha:
+    st.title("Act! Soluções - Ficha do Cliente")
     
     if not df_unificada.empty:
-        busca = st.text_input("Pesquisar por Nome, CPF ou Benefício:", placeholder="Digite para buscar...")
-        if busca:
-            resultado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca, case=False)).any(axis=1)]
-            st.dataframe(resultado, use_container_width=True)
+        busca_input = st.text_input("🔍 Buscar por CPF, Nome ou Benefício:", placeholder="Digite o CPF ou Nome e pressione Enter...")
+        
+        if busca_input:
+            res = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_input, case=False)).any(axis=1)]
+            
+            if not res.empty:
+                # Se houver mais de um resultado, permite selecionar o cliente
+                if len(res) > 1:
+                    opcoes = [f"{row.get('NAME', 'Sem Nome')} - CPF: {formatar_cpf(limpar_cpf(row.get('USR1000', '')))}" for _, row in res.iterrows()]
+                    escolha = st.selectbox("Selecione o registro encontrado:", opcoes)
+                    idx = opcoes.index(escolha)
+                    cliente = res.iloc[idx]
+                else:
+                    cliente = res.iloc[0]
+                
+                st.markdown("---")
+                # Cabeçalho Principal da Ficha
+                cpf_bruto = cliente.get('USR1000', cliente.get('CPF', ''))
+                cpf_limpo = limpar_cpf(cpf_bruto)
+                cpf_formatado = formatar_cpf(cpf_limpo)
+                
+                c1, c2, c3 = st.columns([2, 2, 1])
+                with c1:
+                    st.markdown(f"### 👤 **{cliente.get('NAME', 'N/A')}**")
+                with c2:
+                    st.markdown(f"### 📄 **CPF: {cpf_formatado}**")
+                with c3:
+                    st.code(cpf_limpo, language=None) # Clique para copiar fácil
+                
+                # Dados Principais de Contato e Endereço
+                col_a, col_b, col_c = st.columns(3)
+                with col_a:
+                    st.markdown("**Telefone Principal:**")
+                    st.info(cliente.get('PHONE', 'Não informado'))
+                    st.markdown("**Endereço (ADDR1):**")
+                    st.write(cliente.get('ADDR1', '-'))
+                with col_b:
+                    st.markdown("**Bairro / Região (ADDR3):**")
+                    st.write(cliente.get('ADDR3', '-'))
+                    st.markdown("**Cidade / Estado:**")
+                    st.write(f"{cliente.get('CITY', '-')} / {cliente.get('STATE', '-')}")
+                with col_c:
+                    st.markdown("**CEP:**")
+                    st.write(cliente.get('ZIP', '-'))
+                    st.markdown("**Origem do Ficheiro:**")
+                    st.caption(cliente.get('ORIGEM', 'Base Unificada'))
+                
+                st.markdown("---")
+                # Campo de Observações (USER9) estilo Act!
+                st.markdown("### 📝 Observações / Histórico (USER9)")
+                st.text_area("", value=cliente.get('USER9', ''), height=150, disabled=True)
+                
+                # Sanfona com TODOS OS CAMPOS do DBF (183 campos)
+                with st.expander("🛠️ Ver todos os 183 campos da ficha completa"):
+                    df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
+                    st.dataframe(df_campos, use_container_width=True, height=400)
+            else:
+                st.warning("Nenhum cliente encontrado com esse termo de busca.")
+        else:
+            st.info("Digite um Nome ou CPF na caixa acima para abrir a ficha de trabalho zeroscroll.")
+
+# ----- ABA 2: VISUALIZAÇÃO EM TABELA COMPLETA -----
+with aba_tabela:
+    st.subheader("Base Geral Consolidada")
+    if not df_unificada.empty:
+        busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
+        if busca_tab:
+            res_tab = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_tab, case=False)).any(axis=1)]
+            st.dataframe(res_tab, use_container_width=True)
         else:
             st.dataframe(df_unificada.head(100), use_container_width=True)
-    else:
-        st.warning("Nenhuma base encontrada no repositório.")
 
+# ----- ABA 3: QUARENTENA -----
 with aba_quarentena:
     st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
     if not df_quarentena.empty:

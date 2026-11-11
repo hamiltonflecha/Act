@@ -3,38 +3,32 @@ import pandas as pd
 import numpy as np
 import os
 
-# Versão do Aplicativo (Incrementada para V35)
-VERSAO_APP = "Act V35"
+VERSAO_APP = "Act V36"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E LOGIN
+# 1. SEGURANÇA E LOGIN DIRETO
 # -----------------------------------------------------------------------------
-def verificar_senha():
-    if "autenticado" not in st.session_state:
-        st.session_state["autenticado"] = False
+if "autenticado" not in st.session_state:
+    st.session_state["autenticado"] = False
 
-    if not st.session_state["autenticado"]:
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.title(f"🔒 {VERSAO_APP} - Soluções")
-            st.subheader("Acesso Restrito")
-            senha_digitada = st.text_input("Digite a senha de acesso:", type="password", key="pwd_input")
-            if st.button("Entrar", use_container_width=True):
-                if senha_digitada == "solucoes1986":
-                    st.session_state["autenticado"] = True
-                    st.rerun()
-                else:
-                    st.error("Senha incorreta. Tente novamente.")
-        return False
-    return True
-
-if not verificar_senha():
+if not st.session_state["autenticado"]:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.title(f"🔒 {VERSAO_APP} - Soluções")
+        st.subheader("Acesso Restrito")
+        senha_input = st.text_input("Digite a senha de acesso:", type="password")
+        if st.button("Entrar", use_container_width=True):
+            if senha_input == "solucoes1986":
+                st.session_state["autenticado"] = True
+                st.rerun()
+            else:
+                st.error("Senha incorreta. Tente novamente.")
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE TRATAMENTO E PROCESSAMENTO
+# 2. FUNÇÕES DE TRATAMENTO E LEITURA
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -134,7 +128,7 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicialização na sessão
+# Estado global da sessão
 if "df_unificada" not in st.session_state:
     st.session_state["df_unificada"] = pd.DataFrame()
 if "df_quarentena" not in st.session_state:
@@ -142,6 +136,7 @@ if "df_quarentena" not in st.session_state:
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
 
+# Executa fusão só se a base estiver vazia
 if st.session_state["df_unificada"].empty:
     st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
 
@@ -149,7 +144,7 @@ df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (PAINEL DE CONTROLE)
+# 3. BARRA LATERAL (MENU E CONTROLE)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ Painel de Controle")
@@ -241,28 +236,4 @@ with aba_ficha:
 
             with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
                 df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
-                st.dataframe(df_campos, use_container_width=True, height=350)
-        else:
-            st.warning("Nenhum registro encontrado para o termo pesquisado.")
-    else:
-        st.warning("Nenhuma base carregada. Clique em 'Recalcular / Atualizar Bases' no menu lateral.")
-
-# ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
-with aba_tabela:
-    st.subheader("Base Consolidação Geral")
-    if not df_unificada.empty:
-        busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
-        if busca_tab:
-            res_tab = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_tab, case=False)).any(axis=1)]
-            st.dataframe(res_tab, use_container_width=True)
-        else:
-            st.dataframe(df_unificada.head(100), use_container_width=True)
-
-# ----- ABA 3: QUARENTENA -----
-with aba_quarentena:
-    st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
-    if not df_quarentena.empty:
-        cols_quarantena = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
-        st.dataframe(df_quarentena[cols_quarantena], use_container_width=True)
-    else:
-        st.success("Nenhum contacto em quarentena! Todas as fichas foram unificadas sem divergências.")
+                st.dataframe(df

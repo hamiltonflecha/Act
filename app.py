@@ -17,7 +17,7 @@ def verificar_senha():
         with col2:
             st.title("🔒 Act V34 - Soluções")
             st.subheader("Acesso Restrito")
-            senha_digitada = st.text_input("Digite a senha de acesso:", type="password")
+            senha_digitada = st.text_input("Digite a senha de acesso:", type="password", key="pwd_input")
             if st.button("Entrar", use_container_width=True):
                 if senha_digitada == "solucoes1986":
                     st.session_state["autenticado"] = True
@@ -31,7 +31,7 @@ if not verificar_senha():
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. TRATAMENTO DE TEXTO E LEITURA DE ARQUIVOS
+# 2. FUNÇÕES DE TRATAMENTO LEVES
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -131,18 +131,23 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicializar dados na sessão
-if "df_unificada" not in st.session_state or "df_quarentena" not in st.session_state:
-    st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
-
+# Inicialização leve
+if "df_unificada" not in st.session_state:
+    st.session_state["df_unificada"] = pd.DataFrame()
+if "df_quarentena" not in st.session_state:
+    st.session_state["df_quarentena"] = pd.DataFrame()
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
+
+# Carrega se estiver vazio na primeira sessão após o login
+if st.session_state["df_unificada"].empty:
+    st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
 
 df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (PAINEL DE CONTROLE E REPROCESSAMENTO)
+# 3. BARRA LATERAL (PAINEL DE CONTROLE)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ Painel de Controle")
@@ -168,7 +173,7 @@ aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     f"⚠️ Quarentena / Revisão ({len(df_quarentena)})"
 ])
 
-# ----- ABA 1: INTERFACE ZEROSCROLL DO ACT! -----
+# ----- ABA 1: FICHA ZEROSCROLL -----
 with aba_ficha:
     if not df_unificada.empty:
         c_busca, c_prev, c_pos, c_next = st.columns([3, 1, 1, 1])
@@ -238,7 +243,7 @@ with aba_ficha:
         else:
             st.warning("Nenhum registro encontrado para o termo pesquisado.")
     else:
-        st.warning("Nenhuma base carregada no repositório.")
+        st.warning("Nenhuma base carregada. Clique em 'Recalcular / Atualizar Bases' no menu lateral.")
 
 # ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
 with aba_tabela:

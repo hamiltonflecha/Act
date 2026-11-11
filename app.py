@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V37"
+VERSAO_APP = "Act V38"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E LOGIN DIRETO
+# 1. SEGURANÇA E LOGIN DIRETO (SEM PROCESSAMENTO DE FICHEIROS)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -18,7 +18,7 @@ if not st.session_state["autenticado"]:
     with col2:
         st.title(f"🔒 {VERSAO_APP} - Soluções")
         st.subheader("Acesso Restrito")
-        senha_input = st.text_input("Digite a senha de acesso:", type="password")
+        senha_input = st.text_input("Digite a senha de acesso:", type="password", key="pass_key")
         if st.button("Entrar", use_container_width=True):
             if senha_input == "solucoes1986":
                 st.session_state["autenticado"] = True
@@ -28,7 +28,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE TRATAMENTO E LEITURA
+# 2. FUNÇÕES DE DADOS E LEITURA (ADIADAS)
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -128,7 +128,7 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Estado global da sessão
+# Inicialização de memória leve
 if "df_unificada" not in st.session_state:
     st.session_state["df_unificada"] = pd.DataFrame()
 if "df_quarentena" not in st.session_state:
@@ -136,15 +136,11 @@ if "df_quarentena" not in st.session_state:
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
 
-# Executa fusão só se a base estiver vazia
-if st.session_state["df_unificada"].empty:
-    st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
-
 df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (MENU E CONTROLE)
+# 3. BARRA LATERAL (PAINEL DE CONTROLE)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ Painel de Controle")
@@ -154,11 +150,11 @@ with st.sidebar:
     st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")
     st.write(f"⚠️ **Quarentena:** {len(df_quarentena)} fichas")
     st.markdown("---")
-    if st.button("🔄 Recalcular / Atualizar Bases", use_container_width=True):
-        with st.spinner("Refazendo a fusão das bases..."):
+    if st.button("🔄 Recalcular / Carregar Bases", use_container_width=True):
+        with st.spinner("Processando fusão das bases no servidor..."):
             st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
             st.session_state["idx_cliente"] = 0
-            st.success("Bases atualizadas com sucesso!")
+            st.success("Bases carregadas com sucesso!")
             st.rerun()
 
 # -----------------------------------------------------------------------------
@@ -240,7 +236,7 @@ with aba_ficha:
         else:
             st.warning("Nenhum registro encontrado para o termo pesquisado.")
     else:
-        st.warning("Nenhuma base carregada. Clique em 'Recalcular / Atualizar Bases' no menu lateral.")
+        st.info("💡 Acedeu ao sistema com sucesso! Abra o menu lateral (à esquerda) e clique em '🔄 Recalcular / Carregar Bases' para carregar a base unificada.")
 
 # ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
 with aba_tabela:

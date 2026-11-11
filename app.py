@@ -1,8 +1,12 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
 import re
 
+st.set_page_config(page_title="Act V33 - Soluções", layout="wide", initial_sidebar_state="collapsed")
+
+# Função de higienização de CPF (Chave Primária Absoluta)
 def limpar_cpf(val):
     if not val or pd.isna(val):
         return ""
@@ -18,68 +22,79 @@ def formatar_cpf(digitos):
         return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
     return digitos
 
-def fundir_bases_dbf(caminho_dbf1, caminho_dbf2, caminho_saida_csv):
-    print("Iniciando fusão dos DBFs 1 e 2...")
+# Função para carregar, fundir os 2 DBFs (Excel) e aplicar a Quarentena
+@st.cache_data(ttl=3600)
+def carregar_e_fundir_bases():
+    try:
+        df1 = pd.read_excel('DBF1_Local.xlsx', dtype=str).fillna("")
+    except:
+        df1 = pd.DataFrame()
+        
+    try:
+        df2 = pd.read_excel('DBF2_Copia.xlsx', dtype=str).fillna("")
+    except:
+        df2 = pd.DataFrame()
+
+    df1['ORIGEM'] = 'PC 1 (Hamilton)'
+    df2['ORIGEM'] = 'PC 2 (Jaedna)'
     
-    # 1. Carregar os dois ficheiros
-    df1 = pd.read_csv(caminho_dbf1, dtype=str).fillna("") if caminho_dbf1.endswith('.csv') else pd.read_excel(caminho_dbf1, dtype=str).fillna("")
-    df2 = pd.read_csv(caminho_dbf2, dtype=str).fillna("") if caminho_dbf2.endswith('.csv') else pd.read_excel(caminho_dbf2, dtype=str).fillna("")
-    
-    # 2. Higienizar CPFs nas duas bases
-    df1['CPF_LIMPO'] = df1['USR1000'].apply(limpar_cpf)
-    df2['CPF_LIMPO'] = df2['USR1000'].apply(limpar_cpf)
-    
-    # 3. Concatenar as duas bases
-    df_unificado = pd.concat([df1, df2], ignore_index=True)
-    
-    # 4. Agrupar por CPF_LIMPO (Chave Absoluta) e mesclar informações mais recentes
-    # Registos com o mesmo CPF têm os seus campos consolidados (priorizando textos válidos/acentuados)
-    registos_finais = []
-    
-    hoje = datetime.now()
-    
-    for cpf, group in df_unificado.groupby('CPF_LIMPO'):
+    col_cpf_1 = 'USR1000' if 'USR1000' in df1.columns else ('CPF' if 'CPF' in df1.columns else df1.columns[0] if not df1.empty else '')
+    col_cpf_2 = 'USR1000' if 'USR1000' in df2.columns else ('CPF' if 'CPF' in df2.columns else df2.columns[0] if not df2.empty else '')
+
+    if not df1.empty:
+        df1['CPF_LIMPO'] = df1[col_cpf_1].apply(limpar_cpf)
+    if not df2.empty:
+        df2['CPF_LIMPO'] = df2[col_cpf_2].apply(limpar_cpf)
+
+    df_todos = pd.concat([df1, df2], ignore_index=True)
+    if df_todos.empty:
+        return pd.DataFrame(), pd.DataFrame()
+
+    base_unificada = []
+    base_quarentena = []
+
+    col_obs = 'USER9' if 'USER9' in df_todos.columns else ('OBSERVACOES' if 'OBSERVACOES' in df_todos.columns else df_todos.columns[1])
+    col_phone = 'PHONE' if 'PHONE' in df_todos.columns else df_todos.columns[2]
+
+    for cpf, group in df_todos.groupby('CPF_LIMPO'):
         if cpf == "":
+            for _, row in group.iterrows():
+                base_quarentena.append(row.to_dict())
             continue
             
-        # Pega a melhor versão do nome (a que tiver mais acentos/carateres válidos)
-        nomes = group['NAME'].tolist()
-        melhor_nome = max(nomes, key=lambda x: len(re.sub(r'[^a-zA-ZÀ-ÿ]', '', str(x))))
-        
-        # Junta observações de ambos os computadores
-        obs_combinadas = " | ".join(filter(None, set(group['USER9'].tolist())))
-        
-        # Pega a melhor data de nascimento
-        datas_nasc = filter(None, group['USR1003'].tolist())
-        data_nasc_str = next(datas_nasc, "")
-        
-        # Recalcula idade real
-        data_dt = pd.to_datetime(data_nasc_str, errors='coerce', dayfirst=True)
-        if pd.notnull(data_dt):
-            idade = hoje.year - data_dt.year - ((hoje.month, hoje.day) < (data_dt.month, data_dt.day))
-            data_nasc_fmt = data_dt.strftime('%d/%m/%Y')
+        if len(group) == 1:
+            base_unificada.append(group.iloc[0].to_dict())
         else:
-            idade = ""
-            data_nasc_fmt = data_nasc_str
+            obs_distintas = set(filter(None, group[col_obs].str.strip().tolist()))
+            tels_distintos = set(filter(None, group[col_phone].str.strip().tolist()))
             
-        idade_108 = (idade + 9) if isinstance(idade, int) else ""
-        
-        # Pega o primeiro registo como base e atualiza os campos unificados
-        registo = group.iloc[-1].to_dict()
-        registo['NAME'] = melhor_nome
-        registo['CPF_LIMPO'] = cpf
-        registo['CPF_FORMATADO'] = formatar_cpf(cpf)
-        registo['USER9'] = obs_combinadas
-        registo['DATA_NASC'] = data_nasc_fmt
-        registo['IDADE'] = idade
-        registo['IDADE_108_MESES'] = idade_108
-        registo['RESUMO'] = f"{registo.get('USR1001', 'INSS')} {melhor_nome} {cpf} {idade}".strip()
-        
-        registos_finais.append(registo)
-        
-    df_final = pd.DataFrame(registos_finais)
-    df_final.to_csv(caminho_saida_csv, index=False, encoding='utf-8-sig')
-    print(f"Fusão concluída! Total de contatos únicos consolidados: {len(df_final)}")
+            if len(obs_distintas) <= 1 and len(tels_distintos) <= 1:
+                base_unificada.append(group.iloc[-1].to_dict())
+            else:
+                for _, row in group.iterrows():
+                    base_quarentena.append(row.to_dict())
 
-if __name__ == "__main__":
-    fundir_bases_dbf("DBF1_MaquinaLocal.csv", "DBF2_CopiaOutroPC.csv", "Base_Consolidada_ACT_UNIFICADA.csv")
+    df_unificada = pd.DataFrame(base_unificada)
+    df_quarentena = pd.DataFrame(base_quarentena)
+    return df_unificada, df_quarentena
+
+df_unificada, df_quarentena = carregar_e_fundir_bases()
+
+# Interface em Abas (Main App e Quarentena)
+aba_principal, aba_quarentena = st.tabs(["🔍 Consulta de Contatos (Base Unificada)", f"⚠️ Quarentena / Revisão ({len(df_quarentena)})"])
+
+with aba_principal:
+    st.title("Act V33 - Soluções Financeiras")
+    st.write(f"Total de contatos consolidados e ativos: **{len(df_unificada)}**")
+    # Aqui renderiza a busca zeroscroll tradicional de 38px
+    if not df_unificada.empty:
+        busca = st.text_input("Pesquisar por Nome, CPF ou Benefício:", "")
+        if busca:
+            resultado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca, case=False)).any(axis=1)]
+            st.dataframe(resultado, use_container_width=True)
+
+with aba_quarentena:
+    st.subheader("Contatos com Divergência entre PC 1 e PC 2")
+    st.write("Estes registros possuem telefones ou observações diferentes nas duas máquinas. Escolha a ficha correta para aprovar:")
+    if not df_quarentena.empty:
+        st.dataframe(df_quarentena[['CPF_LIMPO', 'NAME', 'ORIGEM', 'USER9', 'PHONE']], use_container_width=True)

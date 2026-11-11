@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V36"
+VERSAO_APP = "Act V37"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 

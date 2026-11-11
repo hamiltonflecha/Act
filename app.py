@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-st.set_page_config(page_title="Act V33 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Act V34 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
 # 1. SEGURANÇA E LOGIN
@@ -15,7 +15,7 @@ def verificar_senha():
     if not st.session_state["autenticado"]:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.title("🔒 Act V33 - Soluções")
+            st.title("🔒 Act V34 - Soluções")
             st.subheader("Acesso Restrito")
             senha_digitada = st.text_input("Digite a senha de acesso:", type="password")
             if st.button("Entrar", use_container_width=True):
@@ -142,11 +142,11 @@ df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (MENU E BOTÃO DE FUSÃO SOB DEMANDA)
+# 3. BARRA LATERAL (PAINEL DE CONTROLE E REPROCESSAMENTO)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ Painel de Controle")
-    st.markdown("**Sistema Act V33**")
+    st.markdown("**Sistema Act V34**")
     st.markdown("👥 **Operadores:** Hamilton & Jaedna")
     st.markdown("---")
     st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")
@@ -220,14 +220,42 @@ with aba_ficha:
                 
             g1, g2, g3 = st.columns(3)
             with g1:
-                st.text_input("Telefone (PHONE):", value=cliente.get('PHONE', ''), disabled=True)
-                st.text_input("Endereço (ADDR1):", value=cliente.get('ADDR1', ''), disabled=True)
+                st.text_input("Telefone (PHONE):", value=str(cliente.get('PHONE', '')), disabled=True)
+                st.text_input("Endereço (ADDR1):", value=str(cliente.get('ADDR1', '')), disabled=True)
             with g2:
-                st.text_input("Bairro (ADDR3):", value=cliente.get('ADDR3', ''), disabled=True)
+                st.text_input("Bairro (ADDR3):", value=str(cliente.get('ADDR3', '')), disabled=True)
                 st.text_input("Cidade / UF:", value=f"{cliente.get('CITY', '')} / {cliente.get('STATE', '')}", disabled=True)
             with g3:
-                st.text_input("CEP (ZIP):", value=cliente.get('ZIP', ''), disabled=True)
-                st.text_input("Origem do Registro:", value=cliente.get('ORIGEM', 'Unificado'), disabled=True)
+                st.text_input("CEP (ZIP):", value=str(cliente.get('ZIP', '')), disabled=True)
+                st.text_input("Origem do Registro:", value=str(cliente.get('ORIGEM', 'Unificado')), disabled=True)
 
             st.markdown("### 📝 Histórico / Observações (USER9)")
-            st.text_area("USER9", value=cliente.get('USER9', ''), height=140, label_visibility="collapsed", disabled
+            st.text_area("USER9_AREA", value=str(cliente.get('USER9', '')), height=140, disabled=True)
+
+            with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
+                df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
+                st.dataframe(df_campos, use_container_width=True, height=350)
+        else:
+            st.warning("Nenhum registro encontrado para o termo pesquisado.")
+    else:
+        st.warning("Nenhuma base carregada no repositório.")
+
+# ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
+with aba_tabela:
+    st.subheader("Base Consolidação Geral")
+    if not df_unificada.empty:
+        busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
+        if busca_tab:
+            res_tab = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_tab, case=False)).any(axis=1)]
+            st.dataframe(res_tab, use_container_width=True)
+        else:
+            st.dataframe(df_unificada.head(100), use_container_width=True)
+
+# ----- ABA 3: QUARENTENA -----
+with aba_quarentena:
+    st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
+    if not df_quarentena.empty:
+        cols_quarantena = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
+        st.dataframe(df_quarentena[cols_quarantena], use_container_width=True)
+    else:
+        st.success("Nenhum contacto em quarentena! Todas as fichas foram unificadas sem divergências.")

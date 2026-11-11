@@ -171,13 +171,11 @@ aba_ficha, aba_tabela, aba_quarentena = st.tabs([
 # ----- ABA 1: INTERFACE ZEROSCROLL DO ACT! -----
 with aba_ficha:
     if not df_unificada.empty:
-        # Linha Superior: Busca e Controles de Navegação (Anterior / Próximo)
         c_busca, c_prev, c_pos, c_next = st.columns([3, 1, 1, 1])
         
         with c_busca:
             termo_busca = st.text_input("🔍 Buscar por Nome, CPF ou Benefício:", placeholder="Digite para filtrar...", label_visibility="collapsed")
             
-        # Filtragem dinâmica conforme digitação
         if termo_busca:
             df_filtrado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(termo_busca, case=False)).any(axis=1)]
         else:
@@ -185,7 +183,6 @@ with aba_ficha:
 
         total_registros = len(df_filtrado)
         
-        # Manter índice nos limites da busca
         if st.session_state["idx_cliente"] >= total_registros:
             st.session_state["idx_cliente"] = max(0, total_registros - 1)
             
@@ -206,7 +203,6 @@ with aba_ficha:
 
         st.markdown("---")
         
-        # Exibição da Ficha de Cadastro Zeroscroll do Cliente Atual
         if total_registros > 0:
             cliente = df_filtrado.iloc[st.session_state["idx_cliente"]]
             
@@ -214,7 +210,6 @@ with aba_ficha:
             cpf_limpo = limpar_cpf(cpf_bruto)
             cpf_formatado = formatar_cpf(cpf_limpo)
             
-            # Cabeçalho da Ficha de Trabalho
             col_nome, col_cpf, col_copy = st.columns([3, 2, 1])
             with col_nome:
                 st.subheader(f"👤 {cliente.get('NAME', 'Sem Nome')}")
@@ -223,7 +218,6 @@ with aba_ficha:
             with col_copy:
                 st.code(cpf_limpo if cpf_limpo else "SEM_CPF", language=None)
                 
-            # Grade de Campos do Act!
             g1, g2, g3 = st.columns(3)
             with g1:
                 st.text_input("Telefone (PHONE):", value=cliente.get('PHONE', ''), disabled=True)
@@ -235,35 +229,5 @@ with aba_ficha:
                 st.text_input("CEP (ZIP):", value=cliente.get('ZIP', ''), disabled=True)
                 st.text_input("Origem do Registro:", value=cliente.get('ORIGEM', 'Unificado'), disabled=True)
 
-            # Histórico de Observações (USER9)
             st.markdown("### 📝 Histórico / Observações (USER9)")
-            st.text_area("USER9", value=cliente.get('USER9', ''), height=140, label_visibility="collapsed", disabled=True)
-
-            # Sanfona com todos os 183 campos do DBF
-            with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
-                df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
-                st.dataframe(df_campos, use_container_width=True, height=350)
-        else:
-            st.warning("Nenhum registro encontrado para o termo pesquisado.")
-    else:
-        st.warning("Nenhuma base carregada no repositório.")
-
-# ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
-with aba_tabela:
-    st.subheader("Base Consolidação Geral")
-    if not df_unificada.empty:
-        busca_tab = st.text_input("Filtrar Tabela:", placeholder="Filtrar dados...")
-        if busca_tab:
-            res_tab = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_tab, case=False)).any(axis=1)]
-            st.dataframe(res_tab, use_container_width=True)
-        else:
-            st.dataframe(df_unificada.head(100), use_container_width=True)
-
-# ----- ABA 3: QUARENTENA -----
-with aba_quarentena:
-    st.subheader("Contatos com Anotações Diferentes entre PC 1 (Hamilton) e PC 2 (Jaedna)")
-    if not df_quarentena.empty:
-        cols_quarantena = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
-        st.dataframe(df_quarentena[cols_quarantena], use_container_width=True)
-    else:
-        st.success("Nenhum contacto em quarentena! Todas as fichas foram unificadas sem divergências.")
+            st.text_area("USER9", value=cliente.get('USER9', ''), height=140, label_visibility="collapsed", disabled

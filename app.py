@@ -3,7 +3,10 @@ import pandas as pd
 import numpy as np
 import os
 
-st.set_page_config(page_title="Act V34 - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
+# Versão do Aplicativo (Incrementada para V35)
+VERSAO_APP = "Act V35"
+
+st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
 # 1. SEGURANÇA E LOGIN
@@ -15,7 +18,7 @@ def verificar_senha():
     if not st.session_state["autenticado"]:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.title("🔒 Act V34 - Soluções")
+            st.title(f"🔒 {VERSAO_APP} - Soluções")
             st.subheader("Acesso Restrito")
             senha_digitada = st.text_input("Digite a senha de acesso:", type="password", key="pwd_input")
             if st.button("Entrar", use_container_width=True):
@@ -31,7 +34,7 @@ if not verificar_senha():
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE TRATAMENTO LEVES
+# 2. FUNÇÕES DE TRATAMENTO E PROCESSAMENTO
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -131,7 +134,7 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicialização leve
+# Inicialização na sessão
 if "df_unificada" not in st.session_state:
     st.session_state["df_unificada"] = pd.DataFrame()
 if "df_quarentena" not in st.session_state:
@@ -139,7 +142,6 @@ if "df_quarentena" not in st.session_state:
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
 
-# Carrega se estiver vazio na primeira sessão após o login
 if st.session_state["df_unificada"].empty:
     st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
 
@@ -151,7 +153,7 @@ df_quarentena = st.session_state["df_quarentena"]
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("⚙️ Painel de Controle")
-    st.markdown("**Sistema Act V34**")
+    st.markdown(f"**Sistema {VERSAO_APP}**")
     st.markdown("👥 **Operadores:** Hamilton & Jaedna")
     st.markdown("---")
     st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")

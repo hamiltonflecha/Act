@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V39"
+VERSAO_APP = "Act V40"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
@@ -28,7 +28,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE DADOS E LEITURA (PROCESSAMENTO UNIFICADO)
+# 2. FUNÇÕES DE DADOS E LEITURA
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -128,10 +128,11 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicialização automática da sessão pós-login
-if "df_unificada" not in st.session_state or st.session_state["df_unificada"].empty:
-    st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
-
+# Inicialização da sessão pós-login
+if "df_unificada" not in st.session_state:
+    st.session_state["df_unificada"] = pd.DataFrame()
+if "df_quarentena" not in st.session_state:
+    st.session_state["df_quarentena"] = pd.DataFrame()
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
 
@@ -149,11 +150,11 @@ with st.sidebar:
     st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")
     st.write(f"⚠️ **Quarentena:** {len(df_quarentena)} fichas")
     st.markdown("---")
-    if st.button("🔄 Recalcular / Atualizar Bases", use_container_width=True):
-        with st.spinner("Recalculando fusão das bases..."):
+    if st.button("🔄 Recalcular / Carregar Bases", use_container_width=True):
+        with st.spinner("Processando fusão das bases..."):
             st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
             st.session_state["idx_cliente"] = 0
-            st.success("Bases atualizadas com sucesso!")
+            st.success("Bases carregadas com sucesso!")
             st.rerun()
 
 # -----------------------------------------------------------------------------
@@ -235,7 +236,7 @@ with aba_ficha:
         else:
             st.warning("Nenhum registro encontrado para o termo pesquisado.")
     else:
-        st.warning("Nenhuma base carregada. Verifique se os arquivos DBF1_Local e DBF2_Copia estão salvos no repositório.")
+        st.info("💡 Clique no botão '🔄 Recalcular / Carregar Bases' no menu lateral (à esquerda) para exibir os contatos.")
 
 # ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
 with aba_tabela:

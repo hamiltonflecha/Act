@@ -76,8 +76,8 @@ def ler_arquivo(nome_base):
                 st.error(f"Erro ao ler {caminho}: {e}")
     return pd.DataFrame()
 
-@st.cache_data(ttl=3600)
-def carregar_e_fundir_bases():
+# Função de fusão executada apenas sob demanda
+def executar_fusao():
     df1 = ler_arquivo('DBF1_Local')
     df2 = ler_arquivo('DBF2_Copia')
 
@@ -132,10 +132,29 @@ def carregar_e_fundir_bases():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-df_unificada, df_quarentena = carregar_e_fundir_bases()
+# Inicializar estado dos dados na memória do navegador
+if "df_unificada" not in st.session_state or "df_quarentena" not in st.session_state:
+    st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+
+df_unificada = st.session_state["df_unificada"]
+df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. INTERFACE COMPLETA (FICHA DE TRABALHO + TABELA + QUARENTENA)
+# 3. BARRA LATERAL (CONTROLE E REPROCESSAMENTO)
+# -----------------------------------------------------------------------------
+with st.sidebar:
+    st.subheader("⚙️ Gerenciamento de Bases")
+    st.write(f"Contatos Unificados: **{len(df_unificada)}**")
+    st.write(f"Em Quarentena: **{len(df_quarentena)}**")
+    st.markdown("---")
+    if st.button("🔄 Recalcular / Atualizar Bases", use_container_width=True):
+        with st.spinner("Refazendo a fusão dos arquivos Excel..."):
+            st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+            st.success("Bases atualizadas com sucesso!")
+            st.rerun()
+
+# -----------------------------------------------------------------------------
+# 4. INTERFACE PRINCIPAL
 # -----------------------------------------------------------------------------
 aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     "👤 Ficha Act! (Trabalho)", 
@@ -143,7 +162,7 @@ aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     f"⚠️ Quarentena / Revisão ({len(df_quarentena)})"
 ])
 
-# ----- ABA 1: INTERFACE DE TRABALHO (FICHA DO CLIENTE) -----
+# ----- ABA 1: INTERFACE DE TRABALHO -----
 with aba_ficha:
     st.title("Act! Soluções - Ficha do Cliente")
     
@@ -154,7 +173,6 @@ with aba_ficha:
             res = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(busca_input, case=False)).any(axis=1)]
             
             if not res.empty:
-                # Se houver mais de um resultado, permite selecionar o cliente
                 if len(res) > 1:
                     opcoes = [f"{row.get('NAME', 'Sem Nome')} - CPF: {formatar_cpf(limpar_cpf(row.get('USR1000', '')))}" for _, row in res.iterrows()]
                     escolha = st.selectbox("Selecione o registro encontrado:", opcoes)
@@ -164,7 +182,6 @@ with aba_ficha:
                     cliente = res.iloc[0]
                 
                 st.markdown("---")
-                # Cabeçalho Principal da Ficha
                 cpf_bruto = cliente.get('USR1000', cliente.get('CPF', ''))
                 cpf_limpo = limpar_cpf(cpf_bruto)
                 cpf_formatado = formatar_cpf(cpf_limpo)
@@ -175,9 +192,8 @@ with aba_ficha:
                 with c2:
                     st.markdown(f"### 📄 **CPF: {cpf_formatado}**")
                 with c3:
-                    st.code(cpf_limpo, language=None) # Clique para copiar fácil
+                    st.code(cpf_limpo, language=None)
                 
-                # Dados Principais de Contato e Endereço
                 col_a, col_b, col_c = st.columns(3)
                 with col_a:
                     st.markdown("**Telefone Principal:**")
@@ -192,15 +208,13 @@ with aba_ficha:
                 with col_c:
                     st.markdown("**CEP:**")
                     st.write(cliente.get('ZIP', '-'))
-                    st.markdown("**Origem do Ficheiro:**")
+                    st.markdown("**Origem:**")
                     st.caption(cliente.get('ORIGEM', 'Base Unificada'))
                 
                 st.markdown("---")
-                # Campo de Observações (USER9) estilo Act!
                 st.markdown("### 📝 Observações / Histórico (USER9)")
                 st.text_area("", value=cliente.get('USER9', ''), height=150, disabled=True)
                 
-                # Sanfona com TODOS OS CAMPOS do DBF (183 campos)
                 with st.expander("🛠️ Ver todos os 183 campos da ficha completa"):
                     df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
                     st.dataframe(df_campos, use_container_width=True, height=400)

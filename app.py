@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V47"
+VERSAO_APP = "Act V48"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (ACABAMENTO SIMÉTRICO)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (BARRA AZUL SIMÉTRICA)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -32,15 +32,15 @@ if not st.session_state["autenticado"]:
             margin: 0 !important;
             max-width: 100% !important;
         }
-        /* Janela Modal "Login to Banco.dbf" */
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) {
+        /* Janela Modal "Login to Banco.dbf" (Moldura externa única) */
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) {
             background-color: #D4D0C8 !important;
             border-top: 2px solid #FFFFFF !important;
             border-left: 2px solid #FFFFFF !important;
             border-right: 2px solid #404040 !important;
             border-bottom: 2px solid #404040 !important;
             box-shadow: 1px 1px 0px #000000 !important;
-            padding: 3px 3px 12px 3px !important;
+            padding: 2px 2px 12px 2px !important;
             width: 332px !important;
             min-width: 332px !important;
             max-width: 332px !important;
@@ -48,17 +48,20 @@ if not st.session_state["autenticado"]:
             box-sizing: border-box !important;
             gap: 0.4rem !important;
         }
-        /* Neutraliza largura excessiva nos wrappers do Markdown da barra azul */
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) > div:first-child,
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) > div:first-child > div,
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) [data-testid="stMarkdownContainer"] {
-            width: auto !important;
+        /* Zera bordas e largura do wrapper interno do st.markdown */
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) > div:first-child,
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) > div:first-child > div,
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) [data-testid="stMarkdownContainer"] {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 100% !important;
             max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
             box-sizing: border-box !important;
         }
-        /* Barra de Título Azul Degradê com acabamento simétrico nos dois lados */
+        /* Barra de Título Azul Degradê preenchida por igual nos dois lados */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
@@ -68,8 +71,8 @@ if not st.session_state["autenticado"]:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 1px 8px 1px;
-            width: calc(100% - 2px);
+            margin: 0 0 8px 0;
+            width: 100%;
             box-sizing: border-box;
             white-space: nowrap;
         }
@@ -90,28 +93,28 @@ if not st.session_state["autenticado"]:
             line-height: 1;
             flex-shrink: 0;
         }
-        /* Remoção total de qualquer fundo branco arredondado externo nos inputs */
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput {
+        /* Inputs clássicos sem bordas arredondadas */
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stTextInput {
             padding: 0 12px !important;
             margin-bottom: 0px !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput label {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stTextInput label {
             color: #000000 !important;
             font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
             margin-bottom: 2px !important;
             min-height: 0 !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stTextInput div {
             background: transparent !important;
             background-color: transparent !important;
             border: none !important;
             border-radius: 0px !important;
             box-shadow: none !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput input {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stTextInput input {
             background-color: #FFFFFF !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -126,24 +129,24 @@ if not st.session_state["autenticado"]:
             font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput button {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stTextInput button {
             display: none !important;
         }
         /* Checkbox Clássica */
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stCheckbox {
             padding: 4px 12px 4px 12px !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox label p {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stCheckbox label p {
             color: #000000 !important;
             font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
             white-space: nowrap !important;
         }
         /* Botões OK e Cancel */
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) [data-testid="column"] {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) [data-testid="column"] {
             padding: 0 4px !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stButton button {
             background-color: #D4D0C8 !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -162,14 +165,14 @@ if not st.session_state["autenticado"]:
             display: block !important;
             margin: 0 auto !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button p {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stButton button p {
             font-size: 11px !important;
             color: #000000 !important;
             margin: 0 !important;
             line-height: 19px !important;
             white-space: nowrap !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button:active {
+        div[data-testid="stVerticalBlock"]:has(> div div.act-titlebar) .stButton button:active {
             border-top: 2px solid #404040 !important;
             border-left: 2px solid #404040 !important;
             border-right: 2px solid #FFFFFF !important;

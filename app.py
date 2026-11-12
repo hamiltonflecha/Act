@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V40"
+VERSAO_APP = "Act V41"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
@@ -128,11 +128,11 @@ def executar_fusao():
 
     return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
 
-# Inicialização da sessão pós-login
-if "df_unificada" not in st.session_state:
-    st.session_state["df_unificada"] = pd.DataFrame()
-if "df_quarentena" not in st.session_state:
-    st.session_state["df_quarentena"] = pd.DataFrame()
+# Inicialização e carregamento automático das bases
+if "df_unificada" not in st.session_state or st.session_state["df_unificada"].empty:
+    with st.spinner("Carregando e unificando as bases de dados..."):
+        st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
 
@@ -143,18 +143,18 @@ df_quarentena = st.session_state["df_quarentena"]
 # 3. BARRA LATERAL (PAINEL DE CONTROLE)
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.title("⚙️ Painel de Controle")
+    st.title("Painel de Controle")
     st.markdown(f"**Sistema {VERSAO_APP}**")
-    st.markdown("👥 **Operadores:** Hamilton & Jaedna")
+    st.markdown("Operadores: Hamilton & Jaedna")
     st.markdown("---")
-    st.write(f"📊 **Base Unificada:** {len(df_unificada)} fichas")
-    st.write(f"⚠️ **Quarentena:** {len(df_quarentena)} fichas")
+    st.write(f"Base Unificada: **{len(df_unificada)}** fichas")
+    st.write(f"Quarentena: **{len(df_quarentena)}** fichas")
     st.markdown("---")
-    if st.button("🔄 Recalcular / Carregar Bases", use_container_width=True):
+    if st.button("Recalcular / Atualizar Bases", use_container_width=True):
         with st.spinner("Processando fusão das bases..."):
             st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
             st.session_state["idx_cliente"] = 0
-            st.success("Bases carregadas com sucesso!")
+            st.success("Bases atualizadas com sucesso!")
             st.rerun()
 
 # -----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ with aba_ficha:
         c_busca, c_prev, c_pos, c_next = st.columns([3, 1, 1, 1])
         
         with c_busca:
-            termo_busca = st.text_input("🔍 Buscar por Nome, CPF ou Benefício:", placeholder="Digite para filtrar...", label_visibility="collapsed")
+            termo_busca = st.text_input("Buscar por Nome, CPF ou Benefício:", placeholder="Digite para filtrar...", label_visibility="collapsed")
             
         if termo_busca:
             df_filtrado = df_unificada[df_unificada.astype(str).apply(lambda x: x.str.contains(termo_busca, case=False)).any(axis=1)]
@@ -230,13 +230,13 @@ with aba_ficha:
             st.markdown("### 📝 Histórico / Observações (USER9)")
             st.text_area("USER9_AREA", value=str(cliente.get('USER9', '')), height=140, label_visibility="collapsed", disabled=True)
 
-            with st.expander("🛠️ Ver todos os 183 campos desta ficha"):
+            with st.expander("Ver todos os 183 campos desta ficha"):
                 df_campos = pd.DataFrame(list(cliente.items()), columns=["Campo", "Valor"])
                 st.dataframe(df_campos, use_container_width=True, height=350)
         else:
             st.warning("Nenhum registro encontrado para o termo pesquisado.")
     else:
-        st.info("💡 Clique no botão '🔄 Recalcular / Carregar Bases' no menu lateral (à esquerda) para exibir os contatos.")
+        st.warning("Nenhuma base carregada. Verifique se os arquivos DBF1_Local e DBF2_Copia estão salvos no repositório.")
 
 # ----- ABA 2: VISUALIZAÇÃO EM TABELA -----
 with aba_tabela:

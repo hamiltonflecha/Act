@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V42"
+VERSAO_APP = "Act V43"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (ESTILO WINDOWS 2000)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (PROPORÇÕES EXATAS)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -16,65 +16,83 @@ if "autenticado" not in st.session_state:
 if not st.session_state["autenticado"]:
     st.markdown("""
         <style>
-        /* Oculta elementos padrão do Streamlit na tela de login */
-        header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"] {
+        /* Oculta elementos padrão do Streamlit */
+        header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"], [data-testid="stToolbar"] {
             display: none !important;
         }
-        /* Fundo cinza clássico da área de trabalho do Act! */
+        /* Fundo cinza da área de trabalho do Act! */
         .stApp {
             background-color: #808080 !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
         }
-        .block-container {
-            padding-top: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+        .main .block-container {
+            padding: 0 !important;
+            margin: 0 !important;
             max-width: 100% !important;
         }
-        /* Barra de Menu Superior Clássica */
+        /* Barra de Menu Superior (File / Help) */
         .act-menubar {
             background-color: #D4D0C8;
             border-bottom: 1px solid #808080;
-            padding: 3px 10px;
-            font-size: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
             color: #000000;
             width: 100%;
             user-select: none;
         }
         .act-menubar span {
-            margin-right: 16px;
+            margin-right: 14px;
         }
+        /* Barra de Ferramentas com Ícones */
         .act-toolbar {
             background-color: #D4D0C8;
             border-top: 1px solid #FFFFFF;
             border-bottom: 1px solid #404040;
-            padding: 4px 10px;
-            font-size: 14px;
-            color: #000000;
-            margin-bottom: 110px;
+            padding: 3px 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 130px;
         }
-        /* Janela Modal "Login to Banco.dbf" */
+        .act-handle {
+            border-left: 1px solid #FFFFFF;
+            border-right: 1px solid #808080;
+            height: 16px;
+            width: 3px;
+            margin-right: 2px;
+        }
+        .act-sep {
+            border-left: 1px solid #808080;
+            border-right: 1px solid #FFFFFF;
+            height: 18px;
+            margin: 0 2px;
+        }
+        /* Janela Modal "Login to Banco.dbf" com largura exata */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) {
-            background-color: #D4D0C8;
-            border-top: 2px solid #FFFFFF;
-            border-left: 2px solid #FFFFFF;
-            border-right: 2px solid #404040;
-            border-bottom: 2px solid #404040;
-            box-shadow: 1px 1px 0px #000000;
-            padding: 2px 2px 14px 2px;
-            max-width: 390px;
-            margin: 0 auto;
+            background-color: #D4D0C8 !important;
+            border-top: 2px solid #FFFFFF !important;
+            border-left: 2px solid #FFFFFF !important;
+            border-right: 2px solid #404040 !important;
+            border-bottom: 2px solid #404040 !important;
+            box-shadow: 1px 1px 0px #000000 !important;
+            padding: 2px 2px 12px 2px !important;
+            width: 335px !important;
+            min-width: 335px !important;
+            max-width: 335px !important;
+            margin: 0 auto !important;
         }
+        /* Barra de Título Azul Degradê em 1 linha */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
             font-weight: bold;
-            font-size: 12px;
-            padding: 3px 6px;
+            font-size: 11px;
+            padding: 2px 4px 2px 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            white-space: nowrap;
         }
         .act-close-btn {
             background-color: #D4D0C8;
@@ -83,47 +101,65 @@ if not st.session_state["autenticado"]:
             border-left: 1px solid #FFFFFF;
             border-right: 1px solid #404040;
             border-bottom: 1px solid #404040;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
-            padding: 0px 4px;
-            line-height: 12px;
+            width: 14px;
+            height: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
-        /* Rótulos e Inputs estilo Windows Clássico */
-        .stTextInput label, .stCheckbox label p {
+        /* Labels e Inputs Clássicos */
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput {
+            padding: 0 12px !important;
+            margin-bottom: -6px !important;
+        }
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput label {
             color: #000000 !important;
-            font-size: 12px !important;
+            font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
             margin-bottom: 2px !important;
+            min-height: 0 !important;
         }
-        .stTextInput {
-            padding: 0 14px;
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="input"] {
+            border-radius: 0px !important;
+            border: none !important;
+            background: transparent !important;
         }
-        .stTextInput input {
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput input {
             background-color: #FFFFFF !important;
             color: #000000 !important;
             border-radius: 0px !important;
             border-top: 2px solid #808080 !important;
             border-left: 2px solid #808080 !important;
-            border-right: 2px solid #FFFFFF !important;
-            border-bottom: 2px solid #FFFFFF !important;
-            height: 24px !important;
-            min-height: 24px !important;
-            padding: 2px 6px !important;
-            font-size: 12px !important;
+            border-right: 1px solid #FFFFFF !important;
+            border-bottom: 1px solid #FFFFFF !important;
+            box-shadow: inset 1px 1px 0px #404040 !important;
+            height: 22px !important;
+            min-height: 22px !important;
+            padding: 1px 4px !important;
+            font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
         }
-        /* Ocultar ícone de olho padrão dentro da senha para ficar idêntico */
-        .stTextInput button {
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput button {
             display: none !important;
         }
-        .stCheckbox {
-            padding: 2px 14px 6px 14px;
+        /* Checkbox Clássica */
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox {
+            padding: 4px 12px 6px 12px !important;
         }
-        /* Botões OK e Cancel */
-        .stButton {
-            padding: 0 14px;
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox label p {
+            color: #000000 !important;
+            font-size: 11px !important;
+            font-family: 'Tahoma', Arial, sans-serif !important;
+            white-space: nowrap !important;
         }
-        .stButton button {
+        /* Botões OK e Cancel sem corte de texto */
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) [data-testid="column"] {
+            padding: 0 4px !important;
+        }
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button {
             background-color: #D4D0C8 !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -132,13 +168,24 @@ if not st.session_state["autenticado"]:
             border-right: 2px solid #404040 !important;
             border-bottom: 2px solid #404040 !important;
             box-shadow: inset -1px -1px 0px #808080 !important;
-            height: 25px !important;
-            min-height: 25px !important;
-            padding: 0px 12px !important;
-            font-size: 12px !important;
+            height: 23px !important;
+            min-height: 23px !important;
+            width: 78px !important;
+            min-width: 78px !important;
+            padding: 0px !important;
+            font-size: 11px !important;
             font-family: 'Tahoma', Arial, sans-serif !important;
+            display: block !important;
+            margin: 0 auto !important;
         }
-        .stButton button:active {
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button p {
+            font-size: 11px !important;
+            color: #000000 !important;
+            margin: 0 !important;
+            line-height: 19px !important;
+            white-space: nowrap !important;
+        }
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stButton button:active {
             border-top: 2px solid #404040 !important;
             border-left: 2px solid #404040 !important;
             border-right: 2px solid #FFFFFF !important;
@@ -146,15 +193,23 @@ if not st.session_state["autenticado"]:
         }
         </style>
         <div class="act-menubar"><span><u>F</u>ile</span><span><u>H</u>elp</span></div>
-        <div class="act-toolbar">📄 &nbsp; 📂 &nbsp; 📇 &nbsp; 📠 &nbsp; <b style="color:#000080;">?</b></div>
+        <div class="act-toolbar">
+            <div class="act-handle"></div>
+            <span title="New">📄</span>
+            <span title="Open">📂</span>
+            <div class="act-sep"></div>
+            <span title="Contacts">📇</span>
+            <div class="act-sep"></div>
+            <span title="Modem/Fax">📠</span>
+            <span title="Help" style="color:#000080; font-weight:bold; font-size:13px;">?</span>
+        </div>
     """, unsafe_allow_html=True)
 
-    _, col_modal, _ = st.columns([1, 1.2, 1])
-    with col_modal:
+    with st.container():
         st.markdown(f"""
             <div class="act-titlebar">
-                <span>Login to Banco.dbf ({VERSAO_APP})</span>
-                <span class="act-close-btn">✕</span>
+                <span>Login to Banco.dbf</span>
+                <span class="act-close-btn">×</span>
             </div>
         """, unsafe_allow_html=True)
 
@@ -162,11 +217,11 @@ if not st.session_state["autenticado"]:
         senha_input = st.text_input("Enter your password for this database:", type="password", key="pass_key")
         st.checkbox("Remember password", value=True, key="rem_key")
 
-        b1, b2, b3, b4 = st.columns([0.5, 1.3, 1.3, 0.5])
-        with b2:
-            btn_ok = st.button("OK", use_container_width=True)
-        with b3:
-            btn_cancel = st.button("Cancel", use_container_width=True)
+        _, b_ok, b_cancel, _ = st.columns([0.8, 1.2, 1.2, 0.8])
+        with b_ok:
+            btn_ok = st.button("OK", key="btn_ok_act")
+        with b_cancel:
+            btn_cancel = st.button("Cancel", key="btn_cancel_act")
 
         if btn_ok:
             if senha_input == "solucoes1986":

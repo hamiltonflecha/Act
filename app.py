@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V44"
+VERSAO_APP = "Act V45"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (SEM BARRA SUPERIOR E SEM HALO BRANCO)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (LIMPA E SEM BORDAS ARREDONDADAS)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -41,12 +41,13 @@ if not st.session_state["autenticado"]:
             border-bottom: 2px solid #404040 !important;
             box-shadow: 1px 1px 0px #000000 !important;
             padding: 2px 2px 12px 2px !important;
-            width: 335px !important;
-            min-width: 335px !important;
-            max-width: 335px !important;
+            width: 330px !important;
+            min-width: 330px !important;
+            max-width: 330px !important;
             margin: 0 auto !important;
+            box-sizing: border-box !important;
         }
-        /* Barra de Título Azul Degradê */
+        /* Barra de Título Azul Degradê perfeitamente encaixada */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
@@ -57,6 +58,8 @@ if not st.session_state["autenticado"]:
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
             white-space: nowrap;
         }
         .act-close-btn {
@@ -75,10 +78,10 @@ if not st.session_state["autenticado"]:
             justify-content: center;
             line-height: 1;
         }
-        /* Labels e Inputs Clássicos (Eliminando o fundo branco arredondado do BaseWeb) */
+        /* Remoção total de qualquer fundo branco arredondado externo nos inputs */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput {
             padding: 0 12px !important;
-            margin-bottom: -4px !important;
+            margin-bottom: -2px !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput label {
             color: #000000 !important;
@@ -87,14 +90,12 @@ if not st.session_state["autenticado"]:
             margin-bottom: 2px !important;
             min-height: 0 !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="input"],
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="base-input"] {
-            border-radius: 0px !important;
-            border: none !important;
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div {
             background: transparent !important;
             background-color: transparent !important;
+            border: none !important;
+            border-radius: 0px !important;
             box-shadow: none !important;
-            padding: 0 !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput input {
             background-color: #FFFFFF !important;

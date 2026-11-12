@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V43"
+VERSAO_APP = "Act V44"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (PROPORÇÕES EXATAS)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (SEM BARRA SUPERIOR E SEM HALO BRANCO)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -26,48 +26,13 @@ if not st.session_state["autenticado"]:
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
         }
         .main .block-container {
-            padding: 0 !important;
+            padding-top: 160px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
             margin: 0 !important;
             max-width: 100% !important;
         }
-        /* Barra de Menu Superior (File / Help) */
-        .act-menubar {
-            background-color: #D4D0C8;
-            border-bottom: 1px solid #808080;
-            padding: 2px 8px;
-            font-size: 11px;
-            color: #000000;
-            width: 100%;
-            user-select: none;
-        }
-        .act-menubar span {
-            margin-right: 14px;
-        }
-        /* Barra de Ferramentas com Ícones */
-        .act-toolbar {
-            background-color: #D4D0C8;
-            border-top: 1px solid #FFFFFF;
-            border-bottom: 1px solid #404040;
-            padding: 3px 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 130px;
-        }
-        .act-handle {
-            border-left: 1px solid #FFFFFF;
-            border-right: 1px solid #808080;
-            height: 16px;
-            width: 3px;
-            margin-right: 2px;
-        }
-        .act-sep {
-            border-left: 1px solid #808080;
-            border-right: 1px solid #FFFFFF;
-            height: 18px;
-            margin: 0 2px;
-        }
-        /* Janela Modal "Login to Banco.dbf" com largura exata */
+        /* Janela Modal "Login to Banco.dbf" */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) {
             background-color: #D4D0C8 !important;
             border-top: 2px solid #FFFFFF !important;
@@ -81,7 +46,7 @@ if not st.session_state["autenticado"]:
             max-width: 335px !important;
             margin: 0 auto !important;
         }
-        /* Barra de Título Azul Degradê em 1 linha */
+        /* Barra de Título Azul Degradê */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
@@ -110,10 +75,10 @@ if not st.session_state["autenticado"]:
             justify-content: center;
             line-height: 1;
         }
-        /* Labels e Inputs Clássicos */
+        /* Labels e Inputs Clássicos (Eliminando o fundo branco arredondado do BaseWeb) */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput {
             padding: 0 12px !important;
-            margin-bottom: -6px !important;
+            margin-bottom: -4px !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput label {
             color: #000000 !important;
@@ -122,10 +87,14 @@ if not st.session_state["autenticado"]:
             margin-bottom: 2px !important;
             min-height: 0 !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="input"] {
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="input"],
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput div[data-baseweb="base-input"] {
             border-radius: 0px !important;
             border: none !important;
             background: transparent !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput input {
             background-color: #FFFFFF !important;
@@ -147,7 +116,7 @@ if not st.session_state["autenticado"]:
         }
         /* Checkbox Clássica */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox {
-            padding: 4px 12px 6px 12px !important;
+            padding: 6px 12px 6px 12px !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stCheckbox label p {
             color: #000000 !important;
@@ -155,7 +124,7 @@ if not st.session_state["autenticado"]:
             font-family: 'Tahoma', Arial, sans-serif !important;
             white-space: nowrap !important;
         }
-        /* Botões OK e Cancel sem corte de texto */
+        /* Botões OK e Cancel */
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) [data-testid="column"] {
             padding: 0 4px !important;
         }
@@ -192,21 +161,10 @@ if not st.session_state["autenticado"]:
             border-bottom: 2px solid #FFFFFF !important;
         }
         </style>
-        <div class="act-menubar"><span><u>F</u>ile</span><span><u>H</u>elp</span></div>
-        <div class="act-toolbar">
-            <div class="act-handle"></div>
-            <span title="New">📄</span>
-            <span title="Open">📂</span>
-            <div class="act-sep"></div>
-            <span title="Contacts">📇</span>
-            <div class="act-sep"></div>
-            <span title="Modem/Fax">📠</span>
-            <span title="Help" style="color:#000080; font-weight:bold; font-size:13px;">?</span>
-        </div>
     """, unsafe_allow_html=True)
 
     with st.container():
-        st.markdown(f"""
+        st.markdown("""
             <div class="act-titlebar">
                 <span>Login to Banco.dbf</span>
                 <span class="act-close-btn">×</span>

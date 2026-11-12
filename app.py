@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V45"
+VERSAO_APP = "Act V46"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (LIMPA E SEM BORDAS ARREDONDADAS)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (ALINHAMENTO PERFEITO)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -46,6 +46,17 @@ if not st.session_state["autenticado"]:
             max-width: 330px !important;
             margin: 0 auto !important;
             box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+        /* Remove deslocamentos do container interno do Markdown da barra azul */
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) > div:first-child,
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) > div:first-child > div,
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) [data-testid="stMarkdownContainer"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
         }
         /* Barra de Título Azul Degradê perfeitamente encaixada */
         .act-titlebar {
@@ -57,7 +68,7 @@ if not st.session_state["autenticado"]:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
             width: 100%;
             box-sizing: border-box;
             white-space: nowrap;
@@ -82,6 +93,8 @@ if not st.session_state["autenticado"]:
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput {
             padding: 0 12px !important;
             margin-bottom: -2px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
         div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) .stTextInput label {
             color: #000000 !important;
@@ -161,6 +174,13 @@ if not st.session_state["autenticado"]:
             border-right: 2px solid #FFFFFF !important;
             border-bottom: 2px solid #FFFFFF !important;
         }
+        .act-msg-erro {
+            color: #800000;
+            font-size: 11px;
+            text-align: center;
+            padding-top: 6px;
+            font-family: 'Tahoma', Arial, sans-serif;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -188,9 +208,9 @@ if not st.session_state["autenticado"]:
                 st.session_state["operador_atual"] = user_input
                 st.rerun()
             else:
-                st.error("Invalid password for Banco.dbf.")
+                st.markdown('<div class="act-msg-erro">Invalid password for Banco.dbf.</div>', unsafe_allow_html=True)
         if btn_cancel:
-            st.warning("Login cancelled.")
+            st.markdown('<div class="act-msg-erro">Login cancelled.</div>', unsafe_allow_html=True)
 
     st.stop()
 

@@ -3,32 +3,185 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V41"
+VERSAO_APP = "Act V42"
 
-st.set_page_config(page_title=f"{VERSAO_APP} - Soluções", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E LOGIN DIRETO
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (ESTILO WINDOWS 2000)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 
 if not st.session_state["autenticado"]:
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.title(f"🔒 {VERSAO_APP} - Soluções")
-        st.subheader("Acesso Restrito")
-        senha_input = st.text_input("Digite a senha de acesso:", type="password", key="pass_key")
-        if st.button("Entrar", use_container_width=True):
+    st.markdown("""
+        <style>
+        /* Oculta elementos padrão do Streamlit na tela de login */
+        header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"] {
+            display: none !important;
+        }
+        /* Fundo cinza clássico da área de trabalho do Act! */
+        .stApp {
+            background-color: #808080 !important;
+            font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
+        }
+        .block-container {
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            max-width: 100% !important;
+        }
+        /* Barra de Menu Superior Clássica */
+        .act-menubar {
+            background-color: #D4D0C8;
+            border-bottom: 1px solid #808080;
+            padding: 3px 10px;
+            font-size: 12px;
+            color: #000000;
+            width: 100%;
+            user-select: none;
+        }
+        .act-menubar span {
+            margin-right: 16px;
+        }
+        .act-toolbar {
+            background-color: #D4D0C8;
+            border-top: 1px solid #FFFFFF;
+            border-bottom: 1px solid #404040;
+            padding: 4px 10px;
+            font-size: 14px;
+            color: #000000;
+            margin-bottom: 110px;
+        }
+        /* Janela Modal "Login to Banco.dbf" */
+        div[data-testid="stVerticalBlock"] > div:has(div.act-titlebar) {
+            background-color: #D4D0C8;
+            border-top: 2px solid #FFFFFF;
+            border-left: 2px solid #FFFFFF;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            box-shadow: 1px 1px 0px #000000;
+            padding: 2px 2px 14px 2px;
+            max-width: 390px;
+            margin: 0 auto;
+        }
+        .act-titlebar {
+            background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .act-close-btn {
+            background-color: #D4D0C8;
+            color: #000000;
+            border-top: 1px solid #FFFFFF;
+            border-left: 1px solid #FFFFFF;
+            border-right: 1px solid #404040;
+            border-bottom: 1px solid #404040;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 0px 4px;
+            line-height: 12px;
+        }
+        /* Rótulos e Inputs estilo Windows Clássico */
+        .stTextInput label, .stCheckbox label p {
+            color: #000000 !important;
+            font-size: 12px !important;
+            font-family: 'Tahoma', Arial, sans-serif !important;
+            margin-bottom: 2px !important;
+        }
+        .stTextInput {
+            padding: 0 14px;
+        }
+        .stTextInput input {
+            background-color: #FFFFFF !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+            border-top: 2px solid #808080 !important;
+            border-left: 2px solid #808080 !important;
+            border-right: 2px solid #FFFFFF !important;
+            border-bottom: 2px solid #FFFFFF !important;
+            height: 24px !important;
+            min-height: 24px !important;
+            padding: 2px 6px !important;
+            font-size: 12px !important;
+            font-family: 'Tahoma', Arial, sans-serif !important;
+        }
+        /* Ocultar ícone de olho padrão dentro da senha para ficar idêntico */
+        .stTextInput button {
+            display: none !important;
+        }
+        .stCheckbox {
+            padding: 2px 14px 6px 14px;
+        }
+        /* Botões OK e Cancel */
+        .stButton {
+            padding: 0 14px;
+        }
+        .stButton button {
+            background-color: #D4D0C8 !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+            border-top: 2px solid #FFFFFF !important;
+            border-left: 2px solid #FFFFFF !important;
+            border-right: 2px solid #404040 !important;
+            border-bottom: 2px solid #404040 !important;
+            box-shadow: inset -1px -1px 0px #808080 !important;
+            height: 25px !important;
+            min-height: 25px !important;
+            padding: 0px 12px !important;
+            font-size: 12px !important;
+            font-family: 'Tahoma', Arial, sans-serif !important;
+        }
+        .stButton button:active {
+            border-top: 2px solid #404040 !important;
+            border-left: 2px solid #404040 !important;
+            border-right: 2px solid #FFFFFF !important;
+            border-bottom: 2px solid #FFFFFF !important;
+        }
+        </style>
+        <div class="act-menubar"><span><u>F</u>ile</span><span><u>H</u>elp</span></div>
+        <div class="act-toolbar">📄 &nbsp; 📂 &nbsp; 📇 &nbsp; 📠 &nbsp; <b style="color:#000080;">?</b></div>
+    """, unsafe_allow_html=True)
+
+    _, col_modal, _ = st.columns([1, 1.2, 1])
+    with col_modal:
+        st.markdown(f"""
+            <div class="act-titlebar">
+                <span>Login to Banco.dbf ({VERSAO_APP})</span>
+                <span class="act-close-btn">✕</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+        user_input = st.text_input("Enter your user name for this database:", value="Hamilton Flecha", key="user_key")
+        senha_input = st.text_input("Enter your password for this database:", type="password", key="pass_key")
+        st.checkbox("Remember password", value=True, key="rem_key")
+
+        b1, b2, b3, b4 = st.columns([0.5, 1.3, 1.3, 0.5])
+        with b2:
+            btn_ok = st.button("OK", use_container_width=True)
+        with b3:
+            btn_cancel = st.button("Cancel", use_container_width=True)
+
+        if btn_ok:
             if senha_input == "solucoes1986":
                 st.session_state["autenticado"] = True
+                st.session_state["operador_atual"] = user_input
                 st.rerun()
             else:
-                st.error("Senha incorreta. Tente novamente.")
+                st.error("Invalid password for Banco.dbf.")
+        if btn_cancel:
+            st.warning("Login cancelled.")
+
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE DADOS E LEITURA
+# 2. FUNÇÕES DE DADOS E LEITURA (INALTERADAS)
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:

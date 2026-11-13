@@ -3,12 +3,16 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act!   V62"
+VERSAO_APP = "Act!   V63"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
+ARQ_UNIFICADA = "Base_Unificada_Master.csv"
+ARQ_QUARENTENA = "Base_Quarentena_Master.csv"
+ARQ_TRAVA = "fusao_concluida.lock"
+
 # -----------------------------------------------------------------------------
-# 1. FUNÇÕES DE DADOS E LEITURA COM CACHE (@st.cache_data)
+# 1. FUNÇÕES DE DADOS, LEITURA E PERSISTÊNCIA ÚNICA
 # -----------------------------------------------------------------------------
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -53,8 +57,24 @@ def ler_arquivo(nome_base):
                 st.error(f"Erro ao ler {caminho}: {e}")
     return pd.DataFrame()
 
-@st.cache_data(show_spinner=False)
-def executar_fusao():
+def salvar_bases_master(df_u, df_q):
+    df_u.to_csv(ARQ_UNIFICADA, index=False, encoding="utf-8-sig")
+    df_q.to_csv(ARQ_QUARENTENA, index=False, encoding="utf-8-sig")
+    with open(ARQ_TRAVA, "w", encoding="utf-8") as f:
+        f.write("UNIFICADO=TRUE")
+
+def carregar_bases_master():
+    if os.path.exists(ARQ_UNIFICADA):
+        df_u = pd.read_csv(ARQ_UNIFICADA, dtype=str).fillna("")
+    else:
+        df_u = pd.DataFrame()
+    if os.path.exists(ARQ_QUARENTENA):
+        df_q = pd.read_csv(ARQ_QUARENTENA, dtype=str).fillna("")
+    else:
+        df_q = pd.DataFrame()
+    return df_u, df_q
+
+def executar_fusao_unica():
     df1 = ler_arquivo('DBF1_Local')
     df2 = ler_arquivo('DBF2_Copia')
 
@@ -107,10 +127,13 @@ def executar_fusao():
                 for _, row in group.iterrows():
                     base_quarentena.append(row.to_dict())
 
-    return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
+    df_u = pd.DataFrame(base_unificada)
+    df_q = pd.DataFrame(base_quarentena)
+    salvar_bases_master(df_u, df_q)
+    return df_u, df_q
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V62 - BLOQUEIO REAL E INSTANTÂNEO)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V63)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -118,21 +141,16 @@ if "autenticado" not in st.session_state:
 if not st.session_state["autenticado"]:
     css_login = """
         <style>
-        /* Oculta elementos padrão do Streamlit */
         header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"],
         [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] {
             display: none !important;
         }
-
-        /* Fundo cinza sólido exato (#808080) */
         html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], section.main {
             background-color: #808080 !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
             margin: 0 !important;
             padding: 0 !important;
         }
-
-        /* Centraliza vertical e horizontalmente na janela */
         .main .block-container {
             padding: 0 !important;
             margin: 0 auto !important;
@@ -142,8 +160,6 @@ if not st.session_state["autenticado"]:
             align-items: center !important;
             justify-content: center !important;
         }
-
-        /* Janela modal Windows 2000 exata (286px) */
         [data-testid="stForm"] {
             width: 286px !important;
             min-width: 286px !important;
@@ -159,8 +175,6 @@ if not st.session_state["autenticado"]:
             margin: 0 auto !important;
             box-sizing: border-box !important;
         }
-
-        /* Impede que o Streamlit corte descendentes (como a letra 'g') ou comprima blocos */
         [data-testid="stForm"] [data-testid="stVerticalBlock"] {
             gap: 0px !important;
             overflow: visible !important;
@@ -176,8 +190,6 @@ if not st.session_state["autenticado"]:
             padding: 0 !important;
             overflow: visible !important;
         }
-
-        /* Barra de título degradê azul Windows 2000 (#0A246A -> #A6CAF0) */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
@@ -193,7 +205,6 @@ if not st.session_state["autenticado"]:
             width: 100%;
             box-sizing: border-box;
         }
-
         .act-close-btn {
             background-color: #D4D0C8;
             color: #000000;
@@ -211,8 +222,6 @@ if not st.session_state["autenticado"]:
             justify-content: center;
             line-height: 1;
         }
-
-        /* Labels exatos com altura livre para não cortar o 'g' nem encostar nos campos */
         .act-label {
             color: #000000;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
@@ -228,8 +237,6 @@ if not st.session_state["autenticado"]:
         .act-label-pass {
             padding-top: 10px;
         }
-
-        /* Inputs 3D afundados (Sunken) sem cápsulas arredondadas */
         [data-testid="stForm"] [data-testid="stTextInput"] {
             padding: 0 11px !important;
             margin: 0 !important;
@@ -271,8 +278,6 @@ if not st.session_state["autenticado"]:
         [data-testid="stForm"] [data-testid="InputInstructions"] {
             display: none !important;
         }
-
-        /* Checkbox Clássica Windows 2000 */
         [data-testid="stForm"] [data-testid="stCheckbox"] {
             padding: 11px 11px 13px 11px !important;
             margin: 0 !important;
@@ -322,8 +327,6 @@ if not st.session_state["autenticado"]:
         [data-testid="stForm"] [data-testid="stCheckbox"] label p::first-letter {
             text-decoration: underline !important;
         }
-
-        /* Linha dos botões OK e Cancelar lado a lado e perfeitamente centralizados */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
@@ -391,7 +394,6 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #FFFFFF !important;
             box-shadow: inset 1px 1px 0px #808080 !important;
         }
-
         .act-msg-erro {
             color: #800000;
             font-size: 11px;
@@ -426,7 +428,6 @@ if not st.session_state["autenticado"]:
             btn_cancel = st.form_submit_button("Cancelar")
 
         if btn_ok:
-            # Remove espaços acidentais antes/depois e valida senha
             if senha_input.strip() == "solucoes1986":
                 st.session_state["autenticado"] = True
                 st.session_state["operador_atual"] = user_input
@@ -436,43 +437,77 @@ if not st.session_state["autenticado"]:
         if btn_cancel:
             st.markdown('<div class="act-msg-erro">Entrada cancelada.</div>', unsafe_allow_html=True)
 
-    # Interrompe imediatamente aqui: não carrega nada do banco enquanto não autenticar
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. CARREGAMENTO INSTANTÂNEO DAS BASES (APENAS APÓS LOGIN ACEITO)
+# 3. CARREGAMENTO PASSIVO (LÊ APENAS A BASE MASTER SALVA — NÃO UNIFICA SOZINHO)
 # -----------------------------------------------------------------------------
-if "df_unificada" not in st.session_state or st.session_state["df_unificada"].empty:
-    with st.spinner("Carregando e unificando as bases de dados..."):
-        st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
+ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
+
+if "df_unificada" not in st.session_state:
+    if ja_unificado:
+        st.session_state["df_unificada"], st.session_state["df_quarentena"] = carregar_bases_master()
+    else:
+        st.session_state["df_unificada"] = pd.DataFrame()
+        st.session_state["df_quarentena"] = pd.DataFrame()
 
 if "idx_cliente" not in st.session_state:
     st.session_state["idx_cliente"] = 0
+
+if "confirmar_nova_fusao" not in st.session_state:
+    st.session_state["confirmar_nova_fusao"] = False
 
 df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 4. BARRA LATERAL (PAINEL DE CONTROLE)
+# 4. BARRA LATERAL (PAINEL DE CONTROLE COM CONTROLE DE UNIFICAÇÃO ÚNICA)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("Painel de Controle")
     st.markdown(f"**Sistema {VERSAO_APP}**")
-    st.markdown("Operadores: Hamilton & Jaedna")
+    st.markdown(f"Operador: **{st.session_state.get('operador_atual', 'Hamilton Flecha')}**")
     st.markdown("---")
     st.write(f"Base Unificada: **{len(df_unificada)}** fichas")
     st.write(f"Quarentena: **{len(df_quarentena)}** fichas")
     st.markdown("---")
-    if st.button("Recalcular / Atualizar Bases", use_container_width=True):
-        st.cache_data.clear()
-        with st.spinner("Processando fusão das bases..."):
-            st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
-            st.session_state["idx_cliente"] = 0
-            st.success("Bases atualizadas com sucesso!")
-            st.rerun()
+
+    if not ja_unificado:
+        st.warning("Status: Aguardando comando único de unificação.")
+        if st.button("⚡ Unificar Bases (Comando Único)", type="primary", use_container_width=True):
+            with st.spinner("Executando unificação única..."):
+                u, q = executar_fusao_unica()
+                st.session_state["df_unificada"] = u
+                st.session_state["df_quarentena"] = q
+                st.session_state["idx_cliente"] = 0
+                st.rerun()
+    else:
+        st.success("🔒 Base Master Travada (Não unifica ao entrar)")
+        st.caption("As próximas entradas abrem direto a Base Master preservando seus ajustes.")
+        
+        if not st.session_state["confirmar_nova_fusao"]:
+            if st.button("🔓 Destravar p/ Nova Unificação (Dia da Troca)", use_container_width=True):
+                st.session_state["confirmar_nova_fusao"] = True
+                st.rerun()
+        else:
+            st.error("Atenção: Isso vai reprocessar DBF1_Local e DBF2_Copia e substituir a Base Master atual.")
+            c_sim, c_nao = st.columns(2)
+            with c_sim:
+                if st.button("Confirmar", type="primary", use_container_width=True):
+                    with st.spinner("Reunificando novas bases..."):
+                        u, q = executar_fusao_unica()
+                        st.session_state["df_unificada"] = u
+                        st.session_state["df_quarentena"] = q
+                        st.session_state["idx_cliente"] = 0
+                        st.session_state["confirmar_nova_fusao"] = False
+                        st.rerun()
+            with c_nao:
+                if st.button("Cancelar", use_container_width=True):
+                    st.session_state["confirmar_nova_fusao"] = False
+                    st.rerun()
 
 # -----------------------------------------------------------------------------
-# 5. ESTRUTURA DE ABAS E INTERFACE ZEROSCROLL
+# 5. ESTRUTURA DE ABAS E INTERFACE DE TRABALHO
 # -----------------------------------------------------------------------------
 aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     "👤 Ficha Act! (Trabalho)", 
@@ -481,7 +516,9 @@ aba_ficha, aba_tabela, aba_quarentena = st.tabs([
 ])
 
 with aba_ficha:
-    if not df_unificada.empty:
+    if not ja_unificado and df_unificada.empty:
+        st.info("A unificação automática está desativada conforme combinado. Clique no botão **⚡ Unificar Bases (Comando Único)** no Painel de Controle à esquerda para gerar a Base Master pela primeira vez.")
+    elif not df_unificada.empty:
         c_busca, c_prev, c_pos, c_next = st.columns([3, 1, 1, 1])
         
         with c_busca:

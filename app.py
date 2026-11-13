@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V55"
+VERSAO_APP = "Act V56"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (CLONE EXATO EM PORTUGUÊS - V55)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (CLONE 100% FIEL EM PORTUGUÊS - V56)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -16,39 +16,35 @@ if "autenticado" not in st.session_state:
 if not st.session_state["autenticado"]:
     css_login = """
         <style>
-        /* Oculta toda a interface padrão do Streamlit */
-        header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
+        /* Oculta elementos padrão do Streamlit */
+        header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"],
+        [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] {
             display: none !important;
         }
+
         /* Fundo cinza sólido exato (#808080) */
-        html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+        html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], section.main {
             background-color: #808080 !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
-            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
+
         .main .block-container {
             padding: 0 !important;
-            margin: 0 !important;
-            max-width: 100vw !important;
-            width: 100vw !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
             height: 100vh !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
         }
-        /* Centraliza o bloco horizontal da janela modal na tela */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) {
-            justify-content: center !important;
-            align-items: center !important;
-            width: 100% !important;
-            margin: 0 !important;
-        }
-        /* Caixa Modal Windows 2000 exata (282px de largura, bordas 3D clássicas) */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) > div[data-testid="column"]:nth-child(2) {
-            width: 282px !important;
-            min-width: 282px !important;
-            max-width: 282px !important;
-            flex: 0 0 282px !important;
+
+        /* A própria stForm vira a janela modal Windows 2000 exata (284px) */
+        [data-testid="stForm"] {
+            width: 284px !important;
+            min-width: 284px !important;
+            max-width: 284px !important;
             background-color: #D4D0C8 !important;
             border-radius: 0px !important;
             border-top: 1px solid #FFFFFF !important;
@@ -57,16 +53,20 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #404040 !important;
             box-shadow: inset 1px 1px 0px #D4D0C8, inset -1px -1px 0px #808080, 1px 1px 0px #000000 !important;
             padding: 3px 3px 14px 3px !important;
+            margin: 0 auto !important;
             box-sizing: border-box !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) > div[data-testid="column"]:nth-child(1),
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) > div[data-testid="column"]:nth-child(3) {
-            flex: 1 1 auto !important;
-        }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) > div[data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"] {
+
+        /* Zera espaçamentos internos padrão do Streamlit dentro do Form */
+        [data-testid="stForm"] [data-testid="stVerticalBlock"] {
             gap: 0px !important;
         }
-        /* Barra de Título Azul Degradê (#0A246A -> #A6CAF0) */
+        [data-testid="stForm"] [data-testid="stElementContainer"] {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Barra de título degradê azul Windows 2000 (#0A246A -> #A6CAF0) */
         .act-titlebar {
             background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
             color: #FFFFFF;
@@ -74,15 +74,15 @@ if not st.session_state["autenticado"]:
             font-weight: bold;
             font-size: 11px;
             height: 18px;
-            padding: 0 2px 0 4px;
+            padding: 0 2px 0 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 0 0 11px 0;
             width: 100%;
             box-sizing: border-box;
-            letter-spacing: 0px;
         }
+
         .act-close-btn {
             background-color: #D4D0C8;
             color: #000000;
@@ -99,40 +99,44 @@ if not st.session_state["autenticado"]:
             align-items: center;
             justify-content: center;
             line-height: 1;
-            cursor: default;
         }
-        /* Labels exatos acima dos campos */
+
+        /* Labels exatos */
         .act-label {
             color: #000000;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
             font-size: 11px;
-            line-height: 13px;
-            padding: 0 10px 2px 10px;
+            line-height: 14px;
+            padding: 0 11px 2px 11px;
             margin: 0;
             white-space: nowrap;
         }
         .act-label-pass {
             padding-top: 10px;
         }
-        /* Inputs 3D afundados (Sunken) exatos */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput {
-            padding: 0 10px !important;
+
+        /* Remove qualquer cápsula arredondada branca do BaseWeb nos TextInputs */
+        [data-testid="stForm"] [data-testid="stTextInput"] {
+            padding: 0 11px !important;
             margin: 0 !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput label {
+        [data-testid="stForm"] [data-testid="stTextInput"] label {
             display: none !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput div[data-baseweb="input"],
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput div[data-baseweb="base-input"] {
+        [data-testid="stForm"] [data-testid="stTextInput"] > div,
+        [data-testid="stForm"] [data-testid="stTextInput"] > div > div {
             background: transparent !important;
+            background-color: transparent !important;
             border: none !important;
             border-radius: 0px !important;
             box-shadow: none !important;
             padding: 0 !important;
+            margin: 0 !important;
+            min-height: 0 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput input {
+        [data-testid="stForm"] [data-testid="stTextInput"] input {
             background-color: #FFFFFF !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -143,27 +147,31 @@ if not st.session_state["autenticado"]:
             box-shadow: inset 1px 1px 0px #404040, inset -1px -1px 0px #D4D0C8 !important;
             height: 20px !important;
             min-height: 20px !important;
-            padding: 1px 3px !important;
+            max-height: 20px !important;
+            padding: 1px 4px !important;
             font-size: 11px !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
             line-height: 16px !important;
         }
-        /* Oculta o ícone de olho do Streamlit no campo senha */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stTextInput button {
+        /* Oculta botão de olho da senha e dica "Press Enter to submit form" */
+        [data-testid="stForm"] [data-testid="stTextInput"] button,
+        [data-testid="stForm"] [data-testid="InputInstructions"] {
             display: none !important;
         }
-        /* Checkbox Clássica Windows 2000 */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stCheckbox {
-            padding: 10px 10px 12px 10px !important;
+
+        /* Checkbox Clássica Windows 2000 (quadrada branca com V preto) */
+        [data-testid="stForm"] [data-testid="stCheckbox"] {
+            padding: 10px 11px 12px 11px !important;
             margin: 0 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stCheckbox label {
+        [data-testid="stForm"] [data-testid="stCheckbox"] label {
             display: flex !important;
             align-items: center !important;
             gap: 6px !important;
             min-height: 0 !important;
+            cursor: default !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stCheckbox label span[data-baseweb="checkbox"] {
+        [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child {
             width: 13px !important;
             height: 13px !important;
             min-width: 13px !important;
@@ -176,29 +184,39 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #FFFFFF !important;
             box-shadow: inset 1px 1px 0px #404040 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stCheckbox label span[data-baseweb="checkbox"] svg {
+        [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child svg {
             fill: #000000 !important;
             color: #000000 !important;
-            width: 11px !important;
-            height: 11px !important;
+            width: 10px !important;
+            height: 10px !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stCheckbox label p {
+        [data-testid="stForm"] [data-testid="stCheckbox"] label p {
             color: #000000 !important;
             font-size: 11px !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
             line-height: 13px !important;
             margin: 0 !important;
-            white-space: nowrap !important;
         }
-        /* Botões OK (com borda preta de foco) e Cancelar */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) [data-testid="stHorizontalBlock"] {
+
+        /* Linha dos botões OK e Cancelar lado a lado sem sobreposição */
+        [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
             gap: 10px !important;
-            padding: 0 42px !important;
+            padding: 0 40px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) [data-testid="stHorizontalBlock"] [data-testid="column"] {
+        [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div {
+            width: 75px !important;
+            min-width: 75px !important;
+            max-width: 75px !important;
+            flex: 0 0 75px !important;
             padding: 0 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stButton button {
+        [data-testid="stForm"] button {
             background-color: #D4D0C8 !important;
             color: #000000 !important;
             border-radius: 0px !important;
@@ -214,42 +232,44 @@ if not st.session_state["autenticado"]:
             padding: 0px !important;
             font-size: 11px !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
-            display: block !important;
-            margin: 0 auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
-        /* Destaque do botão padrão OK (contorno externo preto + pontilhado interno) */
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child .stButton button {
-            outline: 1px solid #000000 !important;
-            outline-offset: -1px !important;
+        /* Contorno preto do botão padrão OK (primeiro botão) */
+        [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:first-child button {
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            border-bottom: 1px solid #000000 !important;
+            box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #404040, inset -2px -2px 0px #808080 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stButton button p {
+        [data-testid="stForm"] button p {
             font-size: 11px !important;
             color: #000000 !important;
             margin: 0 !important;
-            line-height: 20px !important;
-            white-space: nowrap !important;
+            line-height: 1 !important;
         }
-        [data-testid="stHorizontalBlock"]:has(.act-titlebar) .stButton button:active {
+        [data-testid="stForm"] button:active {
             border-top: 1px solid #404040 !important;
             border-left: 1px solid #404040 !important;
             border-right: 1px solid #FFFFFF !important;
             border-bottom: 1px solid #FFFFFF !important;
             box-shadow: inset 1px 1px 0px #808080 !important;
         }
+
         .act-msg-erro {
             color: #800000;
             font-size: 11px;
             text-align: center;
-            padding-top: 6px;
+            padding-top: 8px;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
         }
         </style>
     """
     st.markdown(css_login, unsafe_allow_html=True)
 
-    _, col_modal, _ = st.columns([1, 0.3, 1])
-
-    with col_modal:
+    with st.form("form_login_act", border=False):
         st.markdown("""
             <div class="act-titlebar">
                 <span>Entrar em Banco.dbf</span>
@@ -267,9 +287,9 @@ if not st.session_state["autenticado"]:
 
         b_ok, b_cancel = st.columns(2)
         with b_ok:
-            btn_ok = st.button("OK", key="btn_ok_act")
+            btn_ok = st.form_submit_button("OK")
         with b_cancel:
-            btn_cancel = st.button("Cancelar", key="btn_cancel_act")
+            btn_cancel = st.form_submit_button("Cancelar")
 
         if btn_ok:
             if senha_input == "solucoes1986":

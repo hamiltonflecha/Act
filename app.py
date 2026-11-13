@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V57"
+VERSAO_APP = "Act!   V58"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (CLONE EXATO - V57)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V58)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -16,7 +16,7 @@ if "autenticado" not in st.session_state:
 if not st.session_state["autenticado"]:
     css_login = """
         <style>
-        /* Oculta barra superior, rodapé, sidebar e decorações do Streamlit */
+        /* Oculta elementos padrão do Streamlit */
         header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"],
         [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] {
             display: none !important;
@@ -270,9 +270,9 @@ if not st.session_state["autenticado"]:
     st.markdown(css_login, unsafe_allow_html=True)
 
     with st.form("form_login_act", border=False):
-        st.markdown("""
+        st.markdown(f"""
             <div class="act-titlebar">
-                <span>Act!</span>
+                <span style="white-space: pre;">{VERSAO_APP}</span>
                 <span class="act-close-btn">×</span>
             </div>
         """, unsafe_allow_html=True)

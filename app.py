@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act!   V58"
+VERSAO_APP = "Act!   V59"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V58)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V59 - CLONE EXATO)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -41,11 +41,11 @@ if not st.session_state["autenticado"]:
             justify-content: center !important;
         }
 
-        /* A própria stForm é a janela modal Windows 2000 exata (284px) */
+        /* Janela modal Windows 2000 exata (286px) */
         [data-testid="stForm"] {
-            width: 284px !important;
-            min-width: 284px !important;
-            max-width: 284px !important;
+            width: 286px !important;
+            min-width: 286px !important;
+            max-width: 286px !important;
             background-color: #D4D0C8 !important;
             border-radius: 0px !important;
             border-top: 1px solid #FFFFFF !important;
@@ -58,11 +58,15 @@ if not st.session_state["autenticado"]:
             box-sizing: border-box !important;
         }
 
-        /* Zera espaçamentos internos padrão do Streamlit dentro do Form */
+        /* Zera espaçamentos extras do Streamlit sem comprimir textos */
         [data-testid="stForm"] [data-testid="stVerticalBlock"] {
             gap: 0px !important;
         }
         [data-testid="stForm"] [data-testid="stElementContainer"] {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        [data-testid="stForm"] [data-testid="stMarkdownContainer"] p {
             margin: 0 !important;
             padding: 0 !important;
         }
@@ -79,7 +83,7 @@ if not st.session_state["autenticado"]:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 0 11px 0;
+            margin: 0 0 12px 0;
             width: 100%;
             box-sizing: border-box;
         }
@@ -102,21 +106,22 @@ if not st.session_state["autenticado"]:
             line-height: 1;
         }
 
-        /* Labels exatos */
+        /* Labels exatos com respiro limpo acima dos inputs */
         .act-label {
             color: #000000;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
             font-size: 11px;
-            line-height: 14px;
-            padding: 0 11px 2px 11px;
+            line-height: 15px;
+            padding: 0 11px 4px 11px;
             margin: 0;
+            display: block;
             white-space: nowrap;
         }
         .act-label-pass {
             padding-top: 10px;
         }
 
-        /* Remove cápsulas arredondadas brancas do BaseWeb nos TextInputs */
+        /* Inputs 3D afundados (Sunken) sem cápsulas arredondadas */
         [data-testid="stForm"] [data-testid="stTextInput"] {
             padding: 0 11px !important;
             margin: 0 !important;
@@ -159,9 +164,9 @@ if not st.session_state["autenticado"]:
             display: none !important;
         }
 
-        /* Checkbox Clássica Windows 2000 (quadrada branca com V preto) */
+        /* Checkbox Clássica Windows 2000 (força fundo branco e V preto sobre o tema vermelho) */
         [data-testid="stForm"] [data-testid="stCheckbox"] {
-            padding: 10px 11px 12px 11px !important;
+            padding: 11px 11px 13px 11px !important;
             margin: 0 !important;
         }
         [data-testid="stForm"] [data-testid="stCheckbox"] label {
@@ -171,20 +176,24 @@ if not st.session_state["autenticado"]:
             min-height: 0 !important;
             cursor: default !important;
         }
-        [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child {
+        [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child,
+        [data-testid="stForm"] [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child {
             width: 13px !important;
             height: 13px !important;
             min-width: 13px !important;
             min-height: 13px !important;
+            max-width: 13px !important;
+            max-height: 13px !important;
             border-radius: 0px !important;
             background-color: #FFFFFF !important;
+            background: #FFFFFF !important;
             border-top: 1px solid #808080 !important;
             border-left: 1px solid #808080 !important;
             border-right: 1px solid #FFFFFF !important;
             border-bottom: 1px solid #FFFFFF !important;
             box-shadow: inset 1px 1px 0px #404040 !important;
         }
-        [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child svg {
+        [data-testid="stForm"] [data-testid="stCheckbox"] svg {
             fill: #000000 !important;
             color: #000000 !important;
             width: 10px !important;
@@ -198,7 +207,7 @@ if not st.session_state["autenticado"]:
             margin: 0 !important;
         }
 
-        /* Linha dos botões OK e Cancelar lado a lado sem sobreposição */
+        /* Linha dos botões OK e Cancelar lado a lado e perfeitamente centralizados */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
@@ -227,6 +236,7 @@ if not st.session_state["autenticado"]:
             box-shadow: inset -1px -1px 0px #808080 !important;
             height: 22px !important;
             min-height: 22px !important;
+            max-height: 22px !important;
             width: 75px !important;
             min-width: 75px !important;
             padding: 0px !important;
@@ -235,6 +245,7 @@ if not st.session_state["autenticado"]:
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            line-height: 20px !important;
         }
         /* Contorno preto do botão padrão OK */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:first-child button {
@@ -244,11 +255,16 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #000000 !important;
             box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #404040, inset -2px -2px 0px #808080 !important;
         }
-        [data-testid="stForm"] button p {
+        [data-testid="stForm"] button p,
+        [data-testid="stForm"] button div {
             font-size: 11px !important;
             color: #000000 !important;
             margin: 0 !important;
-            line-height: 1 !important;
+            padding: 0 !important;
+            line-height: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         [data-testid="stForm"] button:active {
             border-top: 1px solid #404040 !important;

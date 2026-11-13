@@ -3,12 +3,114 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act!   V61"
+VERSAO_APP = "Act!   V62"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V61 - CLONE 100% FIEL)
+# 1. FUNÇÕES DE DADOS E LEITURA COM CACHE (@st.cache_data)
+# -----------------------------------------------------------------------------
+def corrigir_acentos(texto):
+    if not isinstance(texto, str) or not texto:
+        return ""
+    substituicoes = {
+        '╔': 'É', '┴': 'Á', '├': 'Ç', '╙': 'ÃO', '├╙': 'ÇÃO',
+        '═': 'Í', 'Ò': 'Â', 'Ì': 'Ê', '╘': 'Õ', '╒': 'Ô',
+        '┌': 'Ú', '╓': 'Ã', '╛': 'Ü', 'Â': 'Ô', 'Õ': 'Õ'
+    }
+    for char_errado, char_certo in substituicoes.items():
+        texto = texto.replace(char_errado, char_certo)
+    return texto.strip()
+
+def limpar_cpf(val):
+    if not val or pd.isna(val):
+        return ""
+    digitos = ''.join(filter(str.isdigit, str(val)))
+    if len(digitos) >= 11:
+        return digitos[-11:]
+    elif len(digitos) > 0:
+        return digitos.zfill(11)
+    return ""
+
+def formatar_cpf(digitos):
+    if len(digitos) == 11:
+        return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
+    return digitos
+
+def ler_arquivo(nome_base):
+    for ext in ['.xlsx', '.csv', '.XLSX', '.CSV']:
+        caminho = f"{nome_base}{ext}"
+        if os.path.exists(caminho):
+            try:
+                if ext.lower() == '.csv':
+                    df = pd.read_csv(caminho, dtype=str).fillna("")
+                else:
+                    df = pd.read_excel(caminho, dtype=str).fillna("")
+                for col in df.columns:
+                    df[col] = df[col].astype(str).apply(corrigir_acentos)
+                return df
+            except Exception as e:
+                st.error(f"Erro ao ler {caminho}: {e}")
+    return pd.DataFrame()
+
+@st.cache_data(show_spinner=False)
+def executar_fusao():
+    df1 = ler_arquivo('DBF1_Local')
+    df2 = ler_arquivo('DBF2_Copia')
+
+    if df1.empty and df2.empty:
+        return pd.DataFrame(), pd.DataFrame()
+
+    if not df1.empty:
+        df1['ORIGEM'] = 'PC 1 (Hamilton)'
+    if not df2.empty:
+        df2['ORIGEM'] = 'PC 2 (Jaedna)'
+
+    df_todos = pd.concat([df1, df2], ignore_index=True)
+
+    col_nome = 'NAME' if 'NAME' in df_todos.columns else df_todos.columns[0]
+    
+    col_cpf = None
+    for c in ['USR1000', 'CPF', 'USER1000']:
+        if c in df_todos.columns:
+            col_cpf = c
+            break
+            
+    if col_cpf:
+        df_todos['CHAVE_BUSCA'] = df_todos[col_cpf].apply(limpar_cpf)
+        mask_vazio = df_todos['CHAVE_BUSCA'] == ""
+        df_todos.loc[mask_vazio, 'CHAVE_BUSCA'] = df_todos.loc[mask_vazio, col_nome].str.upper().str.strip()
+    else:
+        df_todos['CHAVE_BUSCA'] = df_todos[col_nome].str.upper().str.strip()
+
+    col_obs = 'USER9' if 'USER9' in df_todos.columns else ('OBSERVACOES' if 'OBSERVACOES' in df_todos.columns else df_todos.columns[1])
+    col_phone = 'PHONE' if 'PHONE' in df_todos.columns else df_todos.columns[2]
+
+    base_unificada = []
+    base_quarentena = []
+
+    for chave, group in df_todos.groupby('CHAVE_BUSCA'):
+        if not chave or len(chave) < 3:
+            for _, row in group.iterrows():
+                base_quarentena.append(row.to_dict())
+            continue
+            
+        if len(group) == 1:
+            base_unificada.append(group.iloc[0].to_dict())
+        else:
+            obs_distintas = set(filter(None, group[col_obs].str.strip().tolist()))
+            tels_distintos = set(filter(None, group[col_phone].str.strip().tolist()))
+            
+            if len(obs_distintas) <= 1 and len(tels_distintos) <= 1:
+                base_unificada.append(group.iloc[-1].to_dict())
+            else:
+                for _, row in group.iterrows():
+                    base_quarentena.append(row.to_dict())
+
+    return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
+
+# -----------------------------------------------------------------------------
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V62 - BLOQUEIO REAL E INSTANTÂNEO)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -170,7 +272,7 @@ if not st.session_state["autenticado"]:
             display: none !important;
         }
 
-        /* Checkbox Clássica Windows 2000 (elimina totalmente o vermelho do tema Streamlit) */
+        /* Checkbox Clássica Windows 2000 */
         [data-testid="stForm"] [data-testid="stCheckbox"] {
             padding: 11px 11px 13px 11px !important;
             margin: 0 !important;
@@ -182,7 +284,6 @@ if not st.session_state["autenticado"]:
             min-height: 0 !important;
             cursor: default !important;
         }
-        /* Força fundo branco em todos os possíveis wrappers da caixinha do checkbox */
         [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child,
         [data-testid="stForm"] [data-testid="stCheckbox"] [data-baseweb="checkbox"] > span:first-child,
         [data-testid="stForm"] [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child {
@@ -211,7 +312,6 @@ if not st.session_state["autenticado"]:
             width: 10px !important;
             height: 10px !important;
         }
-        /* Oculta texto padrão do checkbox para usar o label com 'L' sublinhado */
         [data-testid="stForm"] [data-testid="stCheckbox"] label p {
             color: #000000 !important;
             font-size: 11px !important;
@@ -263,7 +363,6 @@ if not st.session_state["autenticado"]:
             justify-content: center !important;
             line-height: 20px !important;
         }
-        /* Contorno preto do botão padrão OK */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:first-child button {
             border-top: 1px solid #000000 !important;
             border-left: 1px solid #000000 !important;
@@ -271,7 +370,6 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #000000 !important;
             box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #404040, inset -2px -2px 0px #808080 !important;
         }
-        /* Sublinhado no 'C' de Cancelar (segundo botão) */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:nth-child(2) button p::first-letter {
             text-decoration: underline !important;
         }
@@ -328,7 +426,8 @@ if not st.session_state["autenticado"]:
             btn_cancel = st.form_submit_button("Cancelar")
 
         if btn_ok:
-            if senha_input == "solucoes1986":
+            # Remove espaços acidentais antes/depois e valida senha
+            if senha_input.strip() == "solucoes1986":
                 st.session_state["autenticado"] = True
                 st.session_state["operador_atual"] = user_input
                 st.rerun()
@@ -337,109 +436,12 @@ if not st.session_state["autenticado"]:
         if btn_cancel:
             st.markdown('<div class="act-msg-erro">Entrada cancelada.</div>', unsafe_allow_html=True)
 
+    # Interrompe imediatamente aqui: não carrega nada do banco enquanto não autenticar
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 2. FUNÇÕES DE DADOS E LEITURA
+# 3. CARREGAMENTO INSTANTÂNEO DAS BASES (APENAS APÓS LOGIN ACEITO)
 # -----------------------------------------------------------------------------
-def corrigir_acentos(texto):
-    if not isinstance(texto, str) or not texto:
-        return ""
-    substituicoes = {
-        '╔': 'É', '┴': 'Á', '├': 'Ç', '╙': 'ÃO', '├╙': 'ÇÃO',
-        '═': 'Í', 'Ò': 'Â', 'Ì': 'Ê', '╘': 'Õ', '╒': 'Ô',
-        '┌': 'Ú', '╓': 'Ã', '╛': 'Ü', 'Â': 'Ô', 'Õ': 'Õ'
-    }
-    for char_errado, char_certo in substituicoes.items():
-        texto = texto.replace(char_errado, char_certo)
-    return texto.strip()
-
-def limpar_cpf(val):
-    if not val or pd.isna(val):
-        return ""
-    digitos = ''.join(filter(str.isdigit, str(val)))
-    if len(digitos) >= 11:
-        return digitos[-11:]
-    elif len(digitos) > 0:
-        return digitos.zfill(11)
-    return ""
-
-def formatar_cpf(digitos):
-    if len(digitos) == 11:
-        return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
-    return digitos
-
-def ler_arquivo(nome_base):
-    for ext in ['.xlsx', '.csv', '.XLSX', '.CSV']:
-        caminho = f"{nome_base}{ext}"
-        if os.path.exists(caminho):
-            try:
-                if ext.lower() == '.csv':
-                    df = pd.read_csv(caminho, dtype=str).fillna("")
-                else:
-                    df = pd.read_excel(caminho, dtype=str).fillna("")
-                for col in df.columns:
-                    df[col] = df[col].astype(str).apply(corrigir_acentos)
-                return df
-            except Exception as e:
-                st.error(f"Erro ao ler {caminho}: {e}")
-    return pd.DataFrame()
-
-def executar_fusao():
-    df1 = ler_arquivo('DBF1_Local')
-    df2 = ler_arquivo('DBF2_Copia')
-
-    if df1.empty and df2.empty:
-        return pd.DataFrame(), pd.DataFrame()
-
-    if not df1.empty:
-        df1['ORIGEM'] = 'PC 1 (Hamilton)'
-    if not df2.empty:
-        df2['ORIGEM'] = 'PC 2 (Jaedna)'
-
-    df_todos = pd.concat([df1, df2], ignore_index=True)
-
-    col_nome = 'NAME' if 'NAME' in df_todos.columns else df_todos.columns[0]
-    
-    col_cpf = None
-    for c in ['USR1000', 'CPF', 'USER1000']:
-        if c in df_todos.columns:
-            col_cpf = c
-            break
-            
-    if col_cpf:
-        df_todos['CHAVE_BUSCA'] = df_todos[col_cpf].apply(limpar_cpf)
-        mask_vazio = df_todos['CHAVE_BUSCA'] == ""
-        df_todos.loc[mask_vazio, 'CHAVE_BUSCA'] = df_todos.loc[mask_vazio, col_nome].str.upper().str.strip()
-    else:
-        df_todos['CHAVE_BUSCA'] = df_todos[col_nome].str.upper().str.strip()
-
-    col_obs = 'USER9' if 'USER9' in df_todos.columns else ('OBSERVACOES' if 'OBSERVACOES' in df_todos.columns else df_todos.columns[1])
-    col_phone = 'PHONE' if 'PHONE' in df_todos.columns else df_todos.columns[2]
-
-    base_unificada = []
-    base_quarentena = []
-
-    for chave, group in df_todos.groupby('CHAVE_BUSCA'):
-        if not chave or len(chave) < 3:
-            for _, row in group.iterrows():
-                base_quarentena.append(row.to_dict())
-            continue
-            
-        if len(group) == 1:
-            base_unificada.append(group.iloc[0].to_dict())
-        else:
-            obs_distintas = set(filter(None, group[col_obs].str.strip().tolist()))
-            tels_distintos = set(filter(None, group[col_phone].str.strip().tolist()))
-            
-            if len(obs_distintas) <= 1 and len(tels_distintos) <= 1:
-                base_unificada.append(group.iloc[-1].to_dict())
-            else:
-                for _, row in group.iterrows():
-                    base_quarentena.append(row.to_dict())
-
-    return pd.DataFrame(base_unificada), pd.DataFrame(base_quarentena)
-
 if "df_unificada" not in st.session_state or st.session_state["df_unificada"].empty:
     with st.spinner("Carregando e unificando as bases de dados..."):
         st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
@@ -451,7 +453,7 @@ df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
 # -----------------------------------------------------------------------------
-# 3. BARRA LATERAL (PAINEL DE CONTROLE)
+# 4. BARRA LATERAL (PAINEL DE CONTROLE)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("Painel de Controle")
@@ -462,6 +464,7 @@ with st.sidebar:
     st.write(f"Quarentena: **{len(df_quarentena)}** fichas")
     st.markdown("---")
     if st.button("Recalcular / Atualizar Bases", use_container_width=True):
+        st.cache_data.clear()
         with st.spinner("Processando fusão das bases..."):
             st.session_state["df_unificada"], st.session_state["df_quarentena"] = executar_fusao()
             st.session_state["idx_cliente"] = 0
@@ -469,7 +472,7 @@ with st.sidebar:
             st.rerun()
 
 # -----------------------------------------------------------------------------
-# 4. ESTRUTURA DE ABAS E INTERFACE ZEROSCROLL
+# 5. ESTRUTURA DE ABAS E INTERFACE ZEROSCROLL
 # -----------------------------------------------------------------------------
 aba_ficha, aba_tabela, aba_quarentena = st.tabs([
     "👤 Ficha Act! (Trabalho)", 

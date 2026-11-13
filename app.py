@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act V56"
+VERSAO_APP = "Act V57"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (CLONE 100% FIEL EM PORTUGUÊS - V56)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (CLONE EXATO - V57)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -16,7 +16,7 @@ if "autenticado" not in st.session_state:
 if not st.session_state["autenticado"]:
     css_login = """
         <style>
-        /* Oculta elementos padrão do Streamlit */
+        /* Oculta barra superior, rodapé, sidebar e decorações do Streamlit */
         header, footer, [data-testid="stSidebar"], [data-testid="collapsedControl"],
         [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stStatusWidget"] {
             display: none !important;
@@ -30,17 +30,18 @@ if not st.session_state["autenticado"]:
             padding: 0 !important;
         }
 
+        /* Centraliza vertical e horizontalmente na janela */
         .main .block-container {
             padding: 0 !important;
             margin: 0 auto !important;
             max-width: 100% !important;
-            height: 100vh !important;
+            min-height: 100vh !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
         }
 
-        /* A própria stForm vira a janela modal Windows 2000 exata (284px) */
+        /* A própria stForm é a janela modal Windows 2000 exata (284px) */
         [data-testid="stForm"] {
             width: 284px !important;
             min-width: 284px !important;
@@ -115,7 +116,7 @@ if not st.session_state["autenticado"]:
             padding-top: 10px;
         }
 
-        /* Remove qualquer cápsula arredondada branca do BaseWeb nos TextInputs */
+        /* Remove cápsulas arredondadas brancas do BaseWeb nos TextInputs */
         [data-testid="stForm"] [data-testid="stTextInput"] {
             padding: 0 11px !important;
             margin: 0 !important;
@@ -153,7 +154,6 @@ if not st.session_state["autenticado"]:
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
             line-height: 16px !important;
         }
-        /* Oculta botão de olho da senha e dica "Press Enter to submit form" */
         [data-testid="stForm"] [data-testid="stTextInput"] button,
         [data-testid="stForm"] [data-testid="InputInstructions"] {
             display: none !important;
@@ -236,7 +236,7 @@ if not st.session_state["autenticado"]:
             align-items: center !important;
             justify-content: center !important;
         }
-        /* Contorno preto do botão padrão OK (primeiro botão) */
+        /* Contorno preto do botão padrão OK */
         [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:first-child button {
             border-top: 1px solid #000000 !important;
             border-left: 1px solid #000000 !important;
@@ -272,7 +272,7 @@ if not st.session_state["autenticado"]:
     with st.form("form_login_act", border=False):
         st.markdown("""
             <div class="act-titlebar">
-                <span>Entrar em Banco.dbf</span>
+                <span>Act!</span>
                 <span class="act-close-btn">×</span>
             </div>
         """, unsafe_allow_html=True)

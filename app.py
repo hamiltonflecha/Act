@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act!   V59"
+VERSAO_APP = "Act!   V60"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V59 - CLONE EXATO)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V60 - CLONE 100% FIEL)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -58,17 +58,21 @@ if not st.session_state["autenticado"]:
             box-sizing: border-box !important;
         }
 
-        /* Zera espaçamentos extras do Streamlit sem comprimir textos */
+        /* Impede que o Streamlit corte descendentes (como a letra 'g') ou comprima blocos */
         [data-testid="stForm"] [data-testid="stVerticalBlock"] {
             gap: 0px !important;
+            overflow: visible !important;
         }
-        [data-testid="stForm"] [data-testid="stElementContainer"] {
+        [data-testid="stForm"] [data-testid="stElementContainer"],
+        [data-testid="stForm"] [data-testid="stMarkdownContainer"] {
             margin: 0 !important;
             padding: 0 !important;
+            overflow: visible !important;
         }
         [data-testid="stForm"] [data-testid="stMarkdownContainer"] p {
             margin: 0 !important;
             padding: 0 !important;
+            overflow: visible !important;
         }
 
         /* Barra de título degradê azul Windows 2000 (#0A246A -> #A6CAF0) */
@@ -106,16 +110,18 @@ if not st.session_state["autenticado"]:
             line-height: 1;
         }
 
-        /* Labels exatos com respiro limpo acima dos inputs */
+        /* Labels exatos com altura livre para não cortar o 'g' nem encostar nos campos */
         .act-label {
             color: #000000;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
             font-size: 11px;
-            line-height: 15px;
-            padding: 0 11px 4px 11px;
+            line-height: 16px;
+            height: auto;
+            padding: 2px 11px 4px 11px;
             margin: 0;
             display: block;
             white-space: nowrap;
+            overflow: visible;
         }
         .act-label-pass {
             padding-top: 10px;
@@ -164,7 +170,7 @@ if not st.session_state["autenticado"]:
             display: none !important;
         }
 
-        /* Checkbox Clássica Windows 2000 (força fundo branco e V preto sobre o tema vermelho) */
+        /* Checkbox Clássica Windows 2000 (elimina totalmente o vermelho do tema Streamlit) */
         [data-testid="stForm"] [data-testid="stCheckbox"] {
             padding: 11px 11px 13px 11px !important;
             margin: 0 !important;
@@ -176,7 +182,9 @@ if not st.session_state["autenticado"]:
             min-height: 0 !important;
             cursor: default !important;
         }
+        /* Força fundo branco em todos os possíveis wrappers da caixinha do checkbox */
         [data-testid="stForm"] [data-testid="stCheckbox"] label > span:first-child,
+        [data-testid="stForm"] [data-testid="stCheckbox"] [data-baseweb="checkbox"] > span:first-child,
         [data-testid="stForm"] [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child {
             width: 13px !important;
             height: 13px !important;
@@ -193,18 +201,26 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #FFFFFF !important;
             box-shadow: inset 1px 1px 0px #404040 !important;
         }
+        [data-testid="stForm"] [data-testid="stCheckbox"] input[type="checkbox"] {
+            accent-color: #FFFFFF !important;
+        }
         [data-testid="stForm"] [data-testid="stCheckbox"] svg {
             fill: #000000 !important;
             color: #000000 !important;
+            stroke: #000000 !important;
             width: 10px !important;
             height: 10px !important;
         }
+        /* Oculta texto padrão do checkbox para usar o label com 'L' sublinhado */
         [data-testid="stForm"] [data-testid="stCheckbox"] label p {
             color: #000000 !important;
             font-size: 11px !important;
             font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
-            line-height: 13px !important;
+            line-height: 14px !important;
             margin: 0 !important;
+        }
+        [data-testid="stForm"] [data-testid="stCheckbox"] label p::first-letter {
+            text-decoration: underline !important;
         }
 
         /* Linha dos botões OK e Cancelar lado a lado e perfeitamente centralizados */
@@ -255,6 +271,10 @@ if not st.session_state["autenticado"]:
             border-bottom: 1px solid #000000 !important;
             box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #404040, inset -2px -2px 0px #808080 !important;
         }
+        /* Sublinhado no 'C' de Cancelar (segundo botão) */
+        [data-testid="stForm"] [data-testid="stHorizontalBlock"] > div:nth-child(2) button p::first-letter {
+            text-decoration: underline !important;
+        }
         [data-testid="stForm"] button p,
         [data-testid="stForm"] button div {
             font-size: 11px !important;
@@ -293,7 +313,7 @@ if not st.session_state["autenticado"]:
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div class="act-label">Digite seu <u>n</u>ome de usuário para este banco de dados:</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-label">Digite seu nome de <u>u</u>suário para este banco de dados:</div>', unsafe_allow_html=True)
         user_input = st.text_input("user_label", value="Hamilton Flecha", key="user_key", label_visibility="collapsed")
 
         st.markdown('<div class="act-label act-label-pass">Digite sua <u>s</u>enha para este banco de dados:</div>', unsafe_allow_html=True)

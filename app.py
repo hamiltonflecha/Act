@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 
-VERSAO_APP = "Act!   V60"
+VERSAO_APP = "Act!   V61"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="expanded")
 
 # -----------------------------------------------------------------------------
-# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V60 - CLONE 100% FIEL)
+# 1. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V61 - CLONE 100% FIEL)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -313,7 +313,7 @@ if not st.session_state["autenticado"]:
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div class="act-label">Digite seu nome de <u>u</u>suário para este banco de dados:</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-label">Digite seu nome de <u>u</u>suário:</div>', unsafe_allow_html=True)
         user_input = st.text_input("user_label", value="Hamilton Flecha", key="user_key", label_visibility="collapsed")
 
         st.markdown('<div class="act-label act-label-pass">Digite sua <u>s</u>enha para este banco de dados:</div>', unsafe_allow_html=True)

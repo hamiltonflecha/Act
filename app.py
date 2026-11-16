@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V70"
+VERSAO_APP = "Act!   V71"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -197,7 +197,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V70)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V71)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -377,7 +377,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V70)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V71)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -431,13 +431,13 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! V70
+# 4. CSS CLÁSSICO ACT! V71 (RÓTULOS VISÍVEIS + CAIXA SEXO M/F 20PX EXATOS)
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v70 = f"""
+css_act_v71 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
     header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
@@ -466,30 +466,47 @@ css_act_v70 = f"""
     [data-testid="stElementContainer"] {{
         margin: 0 !important;
         padding: 0 !important;
+        overflow: visible !important;
     }}
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
     }}
 
+    /* Garantia total de visibilidade dos rótulos (etiquetas) acima dos campos */
+    [data-testid="stMarkdownContainer"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }}
     .act-lbl {{
-        font-size: 10.5px;
-        font-weight: normal;
-        color: #000000;
-        line-height: 12px;
-        margin: 1px 0 1px 0;
-        padding: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        font-size: 10.5px !important;
+        font-weight: normal !important;
+        color: #000000 !important;
+        line-height: 13px !important;
+        min-height: 13px !important;
+        height: 13px !important;
+        margin: 2px 0 1px 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }}
     .act-lbl-zap {{
-        font-size: 10.5px;
-        font-weight: bold;
-        color: #004400;
-        line-height: 12px;
-        margin: 1px 0 1px 0;
-        text-align: center;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        font-size: 10.5px !important;
+        font-weight: bold !important;
+        color: #004400 !important;
+        line-height: 13px !important;
+        min-height: 13px !important;
+        height: 13px !important;
+        margin: 2px 0 1px 0 !important;
+        padding: 0 !important;
+        text-align: center !important;
     }}
 
     [data-testid="stTextInput"] label {{
@@ -610,25 +627,51 @@ css_act_v70 = f"""
         font-weight: bold !important;
     }}
 
+    /* Caixa de Sexo (M / F) exatamente com 20px de altura igual às vizinhas */
+    [data-testid="stRadio"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+        overflow: hidden !important;
+    }}
     [data-testid="stRadio"] > label {{
         display: none !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] {{
         display: flex !important;
         flex-direction: row !important;
-        gap: 6px !important;
+        justify-content: space-around !important;
+        gap: 4px !important;
         align-items: center !important;
         height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
         background-color: #D4D0C8 !important;
         border: 1px solid #6E6659 !important;
-        padding: 0 5px !important;
+        padding: 0 4px !important;
+        margin: 0 !important;
         box-sizing: border-box !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] label {{
+        display: flex !important;
+        align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
         gap: 3px !important;
-        min-height: 0 !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+    }}
+    [data-testid="stRadio"] [role="radiogroup"] label > div:first-child {{
+        width: 12px !important;
+        height: 12px !important;
+        min-width: 12px !important;
+        min-height: 12px !important;
+        max-width: 12px !important;
+        max-height: 12px !important;
+        margin: 0 !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] label p {{
         font-size: 11px !important;
@@ -694,7 +737,7 @@ css_act_v70 = f"""
     }}
     </style>
 """
-st.markdown(css_act_v70, unsafe_allow_html=True)
+st.markdown(css_act_v71, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 5. BARRA ÚNICA SUPERIOR (990px, WIDGETS NATIVOS ALINHADOS AO PIXEL)
@@ -885,7 +928,6 @@ if st.session_state["lookup_modal_aberto"]:
     if len(cand_indices) == 0:
         st.warning(f"Nenhum registro encontrado contendo '{st.session_state['lookup_termo']}'.")
     else:
-        # Largura reduzida em 50% (Nome: 1.5, CPF: 0.6, Abrir: 0.4, Espaço vazio: 6.2)
         h1, h2, h3, _ = st.columns([1.5, 0.6, 0.4, 6.2], vertical_alignment="center")
         h1.markdown('<div class="act-lbl"><b>Nome</b></div>', unsafe_allow_html=True)
         h2.markdown('<div class="act-lbl"><b>CPF</b></div>', unsafe_allow_html=True)
@@ -907,7 +949,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V70
+# 7. VISÃO PRINCIPAL: FICHA ACT! V71
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:
@@ -915,9 +957,8 @@ elif st.session_state["visao_ativa"] == "ficha":
         real_idx = cliente.name
 
         nome_val = get_campo(cliente, ['NAME', 'NOME'])
-        sexo_val = get_campo(cliente, ['SEXO', 'GENDER'])
-        if sexo_val not in ["Masculino", "Feminino"]:
-            sexo_val = "Masculino"
+        sexo_raw = get_campo(cliente, ['SEXO', 'GENDER']).upper()
+        sexo_val = "F" if sexo_raw.startswith("F") else "M"
         primeiro_nome = nome_val.split()[0] if nome_val else ""
         apelido_val = get_campo(cliente, ['FIRST_NAME', 'SALUTATION', 'APELIDO'])
         data_visita_val = get_campo(cliente, ['LAST_REACH', 'USER5', 'DATA_VISITA'])
@@ -987,7 +1028,7 @@ elif st.session_state["visao_ativa"] == "ficha":
     else:
         real_idx = "vazio"
         nome_val = primeiro_nome = apelido_val = data_visita_val = nome_sem_acento = ""
-        sexo_val = "Masculino"
+        sexo_val = "M"
         cpf_limpo = cpf_fmt = data_nasc_val = idade_val = resumo_val = ""
         orgao1_val = esp1_val = ben1_val = ""
         orgao2_val = esp2_val = ben2_val = ""
@@ -1001,7 +1042,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         obs_val = ""
 
     # --- LINHA 1 ---
-    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([2.9, 0.52, 1.55, 1.15, 1.35, 1.05])
+    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.95, 1.35, 1.45, 1.10])
     with r1_1:
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
         ed_nome = st.text_input("f_nome", value=nome_val, key=f"nome_{real_idx}", label_visibility="collapsed")
@@ -1011,7 +1052,7 @@ elif st.session_state["visao_ativa"] == "ficha":
             copiar_texto_js(ed_nome)
     with r1_3:
         st.markdown('<div class="act-lbl">Sexo</div>', unsafe_allow_html=True)
-        ed_sexo = st.radio("f_sexo", ["Masculino", "Feminino"], index=0 if sexo_val == "Masculino" else 1, horizontal=True, key=f"sexo_{real_idx}", label_visibility="collapsed")
+        ed_sexo = st.radio("f_sexo", ["M", "F"], index=0 if sexo_val == "M" else 1, horizontal=True, key=f"sexo_{real_idx}", label_visibility="collapsed")
     with r1_4:
         st.markdown('<div class="act-lbl">1º Nome</div>', unsafe_allow_html=True)
         st.text_input("f_pnome", value=primeiro_nome, key=f"pnome_{real_idx}", label_visibility="collapsed")
@@ -1023,7 +1064,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         ed_visita = st.text_input("f_visita", value=data_visita_val, key=f"visita_{real_idx}", label_visibility="collapsed")
 
     # --- LINHA 2 ---
-    r2_1, r2_2, r2_3, r2_4 = st.columns([2.9, 0.52, 4.58, 0.52])
+    r2_1, r2_2, r2_3, r2_4 = st.columns([3.15, 0.52, 4.33, 0.52])
     with r2_1:
         st.markdown('<div class="act-lbl">Nome (Sem Acentos)</div>', unsafe_allow_html=True)
         st.text_input("f_nsem", value=nome_sem_acento, key=f"nsem_{real_idx}", label_visibility="collapsed")
@@ -1098,7 +1139,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         ed_nasc = st.text_input("f_nasc", value=data_nasc_val, key=f"nasc_{real_idx}", label_visibility="collapsed")
     with r4_6:
         lbl_idade = "Idade (ALERTA 80+)" if alerta_idade_80 else "Idade (Anos)"
-        st.markdown(f'<div class="act-lbl" style="color:{"#800000" if alerta_idade_80 else "#000000"}; font-weight:{"bold" if alerta_idade_80 else "normal"};">{lbl_idade}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="act-lbl" style="color:{"#800000" if alerta_idade_80 else "#000000"} !important; font-weight:{"bold" if alerta_idade_80 else "normal"} !important;">{lbl_idade}</div>', unsafe_allow_html=True)
         st.text_input("f_idade", value=idade_val, key=f"idade_{real_idx}", label_visibility="collapsed")
     with r4_7:
         st.markdown('<div class="act-lbl">Identidade</div>', unsafe_allow_html=True)

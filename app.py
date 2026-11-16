@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V72"
+VERSAO_APP = "Act!   V73"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -197,7 +197,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V72)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V73)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -377,7 +377,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V72)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V73)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -431,13 +431,13 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! V72
+# 4. CSS CLÁSSICO ACT! V73 (ALTA DENSIDADE VERTICAL — CABE SEM ROLAGEM)
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v72 = f"""
+css_act_v73 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
     header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
@@ -450,18 +450,20 @@ css_act_v72 = f"""
         font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
         color: #000000 !important;
         overflow-x: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
 
     .main .block-container {{
         max-width: 990px !important;
         width: 990px !important;
-        padding: 4px 6px 4px 6px !important;
+        padding: 2px 6px 2px 6px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }}
 
     [data-testid="stVerticalBlock"] {{
-        gap: 2px !important;
+        gap: 0px !important;
     }}
     [data-testid="stElementContainer"] {{
         margin: 0 !important;
@@ -471,6 +473,8 @@ css_act_v72 = f"""
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
 
     [data-testid="stMarkdownContainer"] {{
@@ -482,13 +486,13 @@ css_act_v72 = f"""
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        font-size: 10.5px !important;
+        font-size: 10px !important;
         font-weight: normal !important;
         color: #000000 !important;
-        line-height: 13px !important;
-        min-height: 13px !important;
-        height: 13px !important;
-        margin: 2px 0 1px 0 !important;
+        line-height: 11px !important;
+        min-height: 11px !important;
+        height: 11px !important;
+        margin: 1px 0 0 0 !important;
         padding: 0 !important;
         white-space: nowrap !important;
         overflow: visible !important;
@@ -497,13 +501,13 @@ css_act_v72 = f"""
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        font-size: 10.5px !important;
+        font-size: 10px !important;
         font-weight: bold !important;
         color: #004400 !important;
-        line-height: 13px !important;
-        min-height: 13px !important;
-        height: 13px !important;
-        margin: 2px 0 1px 0 !important;
+        line-height: 11px !important;
+        min-height: 11px !important;
+        height: 11px !important;
+        margin: 1px 0 0 0 !important;
         padding: 0 !important;
         text-align: center !important;
     }}
@@ -519,8 +523,8 @@ css_act_v72 = f"""
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
-        min-height: 20px !important;
-        height: 20px !important;
+        min-height: 18px !important;
+        height: 18px !important;
     }}
     [data-testid="stTextInput"] input {{
         background-color: #FFFFFF !important;
@@ -528,14 +532,14 @@ css_act_v72 = f"""
         -webkit-text-fill-color: #000000 !important;
         border-radius: 1px !important;
         border: 1px solid #6E6659 !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
         padding: 0px 4px !important;
         margin: 0 !important;
         font-size: 11px !important;
         font-family: 'Tahoma', Arial, sans-serif !important;
-        line-height: 18px !important;
+        line-height: 16px !important;
         opacity: 1 !important;
         box-sizing: border-box !important;
     }}
@@ -587,8 +591,8 @@ css_act_v72 = f"""
         border: 1px solid #6E6659 !important;
         font-size: 11px !important;
         font-family: 'Tahoma', Arial, sans-serif !important;
-        padding: 2px 4px !important;
-        line-height: 13px !important;
+        padding: 1px 4px !important;
+        line-height: 12px !important;
         opacity: 1 !important;
     }}
 
@@ -600,13 +604,13 @@ css_act_v72 = f"""
         border-left: 1px solid #FFFFFF !important;
         border-right: 1px solid #404040 !important;
         border-bottom: 1px solid #404040 !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
         padding: 0 4px !important;
-        font-size: 11px !important;
+        font-size: 10.5px !important;
         font-family: 'Tahoma', Arial, sans-serif !important;
-        line-height: 18px !important;
+        line-height: 16px !important;
         margin: 0 !important;
         box-sizing: border-box !important;
     }}
@@ -614,10 +618,10 @@ css_act_v72 = f"""
         background-color: #E4E0D8 !important;
     }}
     [data-testid="stButton"] button p {{
-        font-size: 11px !important;
+        font-size: 10.5px !important;
         color: #000000 !important;
         margin: 0 !important;
-        line-height: 18px !important;
+        line-height: 16px !important;
         white-space: nowrap !important;
     }}
     [data-testid="stButton"] button[kind="primary"] {{
@@ -626,13 +630,13 @@ css_act_v72 = f"""
         font-weight: bold !important;
     }}
 
-    /* Caixa de Sexo (M / F) compacta (20px de altura, sem gap) */
+    /* Caixa de Sexo (M / F) compacta (18px de altura) */
     [data-testid="stRadio"] {{
         margin: 0 !important;
         padding: 0 !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
         overflow: hidden !important;
     }}
     [data-testid="stRadio"] > label {{
@@ -644,9 +648,9 @@ css_act_v72 = f"""
         justify-content: space-between !important;
         gap: 6px !important;
         align-items: center !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
         background-color: #D4D0C8 !important;
         border: 1px solid #6E6659 !important;
         padding: 0 6px !important;
@@ -659,24 +663,24 @@ css_act_v72 = f"""
         margin: 0 !important;
         padding: 0 !important;
         gap: 4px !important;
-        height: 18px !important;
-        min-height: 18px !important;
-        max-height: 18px !important;
+        height: 16px !important;
+        min-height: 16px !important;
+        max-height: 16px !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] label > div:first-child {{
-        width: 12px !important;
-        height: 12px !important;
-        min-width: 12px !important;
-        min-height: 12px !important;
-        max-width: 12px !important;
-        max-height: 12px !important;
+        width: 11px !important;
+        height: 11px !important;
+        min-width: 11px !important;
+        min-height: 11px !important;
+        max-width: 11px !important;
+        max-height: 11px !important;
         margin: 0 !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] label p {{
-        font-size: 11px !important;
+        font-size: 10.5px !important;
         color: #000000 !important;
         margin: 0 !important;
-        line-height: 16px !important;
+        line-height: 15px !important;
     }}
 
     [data-testid="stCheckbox"] {{
@@ -685,7 +689,7 @@ css_act_v72 = f"""
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        height: 20px !important;
+        height: 18px !important;
     }}
     [data-testid="stCheckbox"] label {{
         gap: 3px !important;
@@ -693,7 +697,7 @@ css_act_v72 = f"""
         margin: 0 !important;
     }}
     [data-testid="stCheckbox"] label p {{
-        font-size: 10.5px !important;
+        font-size: 10px !important;
         color: #000000 !important;
         margin: 0 !important;
     }}
@@ -704,23 +708,23 @@ css_act_v72 = f"""
         border-left: 2px solid #FFFFFF;
         border-right: 2px solid #404040;
         border-bottom: 2px solid #404040;
-        padding: 4px 6px 6px 6px;
-        margin: 4px 0;
+        padding: 3px 6px 4px 6px;
+        margin: 2px 0;
     }}
     .act-lookup-title {{
         background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
         color: #FFFFFF;
         font-size: 11px;
         font-weight: bold;
-        padding: 2px 6px;
-        margin-bottom: 4px;
+        padding: 1px 6px;
+        margin-bottom: 2px;
     }}
 
     .act-hr {{
         border: none;
         border-top: 1px solid #6E6659;
         border-bottom: 1px solid #B5AC9D;
-        margin: 3px 0;
+        margin: 2px 0 1px 0;
         height: 2px;
     }}
 
@@ -728,15 +732,15 @@ css_act_v72 = f"""
         background-color: #D4D0C8;
         border-top: 1px solid #808080;
         padding: 1px 6px;
-        font-size: 10.5px;
+        font-size: 10px;
         color: #000000;
         display: flex;
         justify-content: space-between;
-        margin-top: 3px;
+        margin-top: 2px;
     }}
     </style>
 """
-st.markdown(css_act_v72, unsafe_allow_html=True)
+st.markdown(css_act_v73, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 5. BARRA ÚNICA SUPERIOR (990px, WIDGETS NATIVOS ALINHADOS AO PIXEL)
@@ -880,7 +884,7 @@ with b_sair:
 if st.session_state["confirmar_exclusao"] and total_registros > 0:
     ex_msg, ex_sim, ex_nao = st.columns([6, 1, 1], vertical_alignment="center")
     with ex_msg:
-        st.markdown(f'<div style="background:#FFF3CD; border:1px solid #806600; padding:2px 6px; font-size:11px;">Confirma a exclusão definitiva de <b>{df_ativo.iloc[st.session_state["idx_cliente"]].get("NAME", "")}</b>?</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background:#FFF3CD; border:1px solid #806600; padding:1px 6px; font-size:11px;">Confirma a exclusão definitiva de <b>{df_ativo.iloc[st.session_state["idx_cliente"]].get("NAME", "")}</b>?</div>', unsafe_allow_html=True)
     with ex_sim:
         if st.button("Sim, Excluir", type="primary", use_container_width=True):
             idx_del = df_ativo.iloc[st.session_state["idx_cliente"]].name
@@ -948,7 +952,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V72
+# 7. VISÃO PRINCIPAL: FICHA ACT! V73
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:
@@ -1040,7 +1044,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         zap1_val = zap2_val = zap3_val = False
         obs_val = ""
 
-    # --- LINHA 1 (SEM GAP NO MEIO) ---
+    # --- LINHA 1 ---
     r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.72, 1.45, 1.55, 1.13])
     with r1_1:
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
@@ -1084,13 +1088,13 @@ elif st.session_state["visao_ativa"] == "ficha":
     # --- LINHAS 3A, 3B e 3C: ÓRGÃO, ESPÉCIE E MATRÍCULA/BENEFÍCIO UM ABAIXO DO OUTRO ---
     b1_org, b1_esp, b1_mat, b1_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b1_org:
-        st.markdown('<div class="act-lbl">Órgão 1</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Órgão (1 / 2 / 3)</div>', unsafe_allow_html=True)
         ed_org1 = st.text_input("f_org1", value=orgao1_val, key=f"org1_{real_idx}", label_visibility="collapsed")
     with b1_esp:
-        st.markdown('<div class="act-lbl">Espécie 1</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Espécie</div>', unsafe_allow_html=True)
         ed_esp1 = st.text_input("f_esp1", value=esp1_val, key=f"esp1_{real_idx}", label_visibility="collapsed")
     with b1_mat:
-        st.markdown('<div class="act-lbl">Benefício / Matrícula 1</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Benefício / Matrícula</div>', unsafe_allow_html=True)
         ed_ben1 = st.text_input("f_ben1", value=ben1_val, key=f"ben1_{real_idx}", label_visibility="collapsed")
     with b1_cp:
         st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
@@ -1099,31 +1103,23 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     b2_org, b2_esp, b2_mat, b2_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b2_org:
-        st.markdown('<div class="act-lbl">Órgão 2</div>', unsafe_allow_html=True)
         ed_org2 = st.text_input("f_org2", value=orgao2_val, key=f"org2_{real_idx}", label_visibility="collapsed")
     with b2_esp:
-        st.markdown('<div class="act-lbl">Espécie 2</div>', unsafe_allow_html=True)
         ed_esp2 = st.text_input("f_esp2", value=esp2_val, key=f"esp2_{real_idx}", label_visibility="collapsed")
     with b2_mat:
-        st.markdown('<div class="act-lbl">Benefício / Matrícula 2</div>', unsafe_allow_html=True)
         ed_ben2 = st.text_input("f_ben2", value=ben2_val, key=f"ben2_{real_idx}", label_visibility="collapsed")
     with b2_cp:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_ben2_{real_idx}", use_container_width=True):
             copiar_texto_js(ed_ben2)
 
     b3_org, b3_esp, b3_mat, b3_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b3_org:
-        st.markdown('<div class="act-lbl">Órgão 3</div>', unsafe_allow_html=True)
         ed_org3 = st.text_input("f_org3", value=orgao3_val, key=f"org3_{real_idx}", label_visibility="collapsed")
     with b3_esp:
-        st.markdown('<div class="act-lbl">Espécie 3</div>', unsafe_allow_html=True)
         ed_esp3 = st.text_input("f_esp3", value=esp3_val, key=f"esp3_{real_idx}", label_visibility="collapsed")
     with b3_mat:
-        st.markdown('<div class="act-lbl">Benefício / Matrícula 3</div>', unsafe_allow_html=True)
         ed_ben3 = st.text_input("f_ben3", value=ben3_val, key=f"ben3_{real_idx}", label_visibility="collapsed")
     with b3_cp:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_ben3_{real_idx}", use_container_width=True):
             copiar_texto_js(ed_ben3)
 
@@ -1267,7 +1263,7 @@ elif st.session_state["visao_ativa"] == "ficha":
     o1, o2 = st.columns([6.8, 1.2])
     with o1:
         st.markdown('<div class="act-lbl">Histórico / Observações (USER9)</div>', unsafe_allow_html=True)
-        ed_obs = st.text_area("f_obs", value=obs_val, height=42, key=f"obs_{real_idx}", label_visibility="collapsed")
+        ed_obs = st.text_area("f_obs", value=obs_val, height=38, key=f"obs_{real_idx}", label_visibility="collapsed")
     with o2:
         st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
         if st.button("Salvar Ficha", type="primary", use_container_width=True, key=f"save_{real_idx}") and total_registros > 0:

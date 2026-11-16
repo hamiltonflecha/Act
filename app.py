@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V71"
+VERSAO_APP = "Act!   V72"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -197,7 +197,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V71)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V72)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -377,7 +377,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V71)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V72)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -431,13 +431,13 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! V71 (RÓTULOS VISÍVEIS + CAIXA SEXO M/F 20PX EXATOS)
+# 4. CSS CLÁSSICO ACT! V72
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v71 = f"""
+css_act_v72 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
     header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
@@ -473,7 +473,6 @@ css_act_v71 = f"""
         align-items: flex-end !important;
     }}
 
-    /* Garantia total de visibilidade dos rótulos (etiquetas) acima dos campos */
     [data-testid="stMarkdownContainer"] {{
         margin: 0 !important;
         padding: 0 !important;
@@ -627,7 +626,7 @@ css_act_v71 = f"""
         font-weight: bold !important;
     }}
 
-    /* Caixa de Sexo (M / F) exatamente com 20px de altura igual às vizinhas */
+    /* Caixa de Sexo (M / F) compacta (20px de altura, sem gap) */
     [data-testid="stRadio"] {{
         margin: 0 !important;
         padding: 0 !important;
@@ -642,15 +641,15 @@ css_act_v71 = f"""
     [data-testid="stRadio"] [role="radiogroup"] {{
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
-        gap: 4px !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
         align-items: center !important;
         height: 20px !important;
         min-height: 20px !important;
         max-height: 20px !important;
         background-color: #D4D0C8 !important;
         border: 1px solid #6E6659 !important;
-        padding: 0 4px !important;
+        padding: 0 6px !important;
         margin: 0 !important;
         box-sizing: border-box !important;
     }}
@@ -659,7 +658,7 @@ css_act_v71 = f"""
         align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
-        gap: 3px !important;
+        gap: 4px !important;
         height: 18px !important;
         min-height: 18px !important;
         max-height: 18px !important;
@@ -737,7 +736,7 @@ css_act_v71 = f"""
     }}
     </style>
 """
-st.markdown(css_act_v71, unsafe_allow_html=True)
+st.markdown(css_act_v72, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 5. BARRA ÚNICA SUPERIOR (990px, WIDGETS NATIVOS ALINHADOS AO PIXEL)
@@ -949,7 +948,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V71
+# 7. VISÃO PRINCIPAL: FICHA ACT! V72
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:
@@ -1041,8 +1040,8 @@ elif st.session_state["visao_ativa"] == "ficha":
         zap1_val = zap2_val = zap3_val = False
         obs_val = ""
 
-    # --- LINHA 1 ---
-    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.95, 1.35, 1.45, 1.10])
+    # --- LINHA 1 (SEM GAP NO MEIO) ---
+    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.72, 1.45, 1.55, 1.13])
     with r1_1:
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
         ed_nome = st.text_input("f_nome", value=nome_val, key=f"nome_{real_idx}", label_visibility="collapsed")
@@ -1082,13 +1081,13 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
-    # --- LINHA 3: 3 Órgãos, Espécies e Benefícios/Matrículas ---
-    b1_org, b1_esp, b1_mat, b1_cp, b2_org, b2_esp, b2_mat, b3_org, b3_esp, b3_mat = st.columns([0.85, 0.55, 1.35, 0.50, 0.85, 0.55, 1.35, 0.85, 0.55, 1.35])
+    # --- LINHAS 3A, 3B e 3C: ÓRGÃO, ESPÉCIE E MATRÍCULA/BENEFÍCIO UM ABAIXO DO OUTRO ---
+    b1_org, b1_esp, b1_mat, b1_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b1_org:
         st.markdown('<div class="act-lbl">Órgão 1</div>', unsafe_allow_html=True)
         ed_org1 = st.text_input("f_org1", value=orgao1_val, key=f"org1_{real_idx}", label_visibility="collapsed")
     with b1_esp:
-        st.markdown('<div class="act-lbl">Esp. 1</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Espécie 1</div>', unsafe_allow_html=True)
         ed_esp1 = st.text_input("f_esp1", value=esp1_val, key=f"esp1_{real_idx}", label_visibility="collapsed")
     with b1_mat:
         st.markdown('<div class="act-lbl">Benefício / Matrícula 1</div>', unsafe_allow_html=True)
@@ -1098,25 +1097,37 @@ elif st.session_state["visao_ativa"] == "ficha":
         if st.button("Copiar", key=f"cp_ben1_{real_idx}", use_container_width=True):
             copiar_texto_js(ed_ben1)
 
+    b2_org, b2_esp, b2_mat, b2_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b2_org:
         st.markdown('<div class="act-lbl">Órgão 2</div>', unsafe_allow_html=True)
         ed_org2 = st.text_input("f_org2", value=orgao2_val, key=f"org2_{real_idx}", label_visibility="collapsed")
     with b2_esp:
-        st.markdown('<div class="act-lbl">Esp. 2</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Espécie 2</div>', unsafe_allow_html=True)
         ed_esp2 = st.text_input("f_esp2", value=esp2_val, key=f"esp2_{real_idx}", label_visibility="collapsed")
     with b2_mat:
         st.markdown('<div class="act-lbl">Benefício / Matrícula 2</div>', unsafe_allow_html=True)
         ed_ben2 = st.text_input("f_ben2", value=ben2_val, key=f"ben2_{real_idx}", label_visibility="collapsed")
+    with b2_cp:
+        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        if st.button("Copiar", key=f"cp_ben2_{real_idx}", use_container_width=True):
+            copiar_texto_js(ed_ben2)
 
+    b3_org, b3_esp, b3_mat, b3_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
     with b3_org:
         st.markdown('<div class="act-lbl">Órgão 3</div>', unsafe_allow_html=True)
         ed_org3 = st.text_input("f_org3", value=orgao3_val, key=f"org3_{real_idx}", label_visibility="collapsed")
     with b3_esp:
-        st.markdown('<div class="act-lbl">Esp. 3</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl">Espécie 3</div>', unsafe_allow_html=True)
         ed_esp3 = st.text_input("f_esp3", value=esp3_val, key=f"esp3_{real_idx}", label_visibility="collapsed")
     with b3_mat:
         st.markdown('<div class="act-lbl">Benefício / Matrícula 3</div>', unsafe_allow_html=True)
         ed_ben3 = st.text_input("f_ben3", value=ben3_val, key=f"ben3_{real_idx}", label_visibility="collapsed")
+    with b3_cp:
+        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        if st.button("Copiar", key=f"cp_ben3_{real_idx}", use_container_width=True):
+            copiar_texto_js(ed_ben3)
+
+    st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
     # --- LINHA 4 ---
     r4_1, r4_2, r4_3, r4_4, r4_5, r4_6, r4_7 = st.columns([1.45, 0.52, 1.55, 0.52, 1.15, 1.15, 1.45])

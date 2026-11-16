@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V66"
+VERSAO_APP = "Act!   V67"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -61,7 +61,6 @@ def analisar_idade(data_nasc_str):
             anos = hoje.year - dt.year - ((hoje.month, hoje.day) < (dt.month, dt.day))
             if anos < 0 or anos > 125:
                 continue
-            # Atingiu 80 anos ou ultrapassou 79 anos, 11 meses e 30 dias (ou seja, anos >= 80)
             alerta = anos >= 80
             return str(anos), alerta
         except Exception:
@@ -200,7 +199,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V66)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V67)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -380,7 +379,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V66)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V67)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -403,9 +402,8 @@ if "confirmar_nova_fusao" not in st.session_state:
 if "confirmar_exclusao" not in st.session_state:
     st.session_state["confirmar_exclusao"] = False
 
-# Estado do Lookup clássico do Act!
 if "lookup_indices" not in st.session_state:
-    st.session_state["lookup_indices"] = None  # None = Todos os contatos; Lista = índices filtrados
+    st.session_state["lookup_indices"] = None
 if "lookup_termo" not in st.session_state:
     st.session_state["lookup_termo"] = ""
 if "lookup_modal_aberto" not in st.session_state:
@@ -416,7 +414,6 @@ if "lookup_candidatos" not in st.session_state:
 df_unificada = st.session_state["df_unificada"]
 df_quarentena = st.session_state["df_quarentena"]
 
-# Define o conjunto ativo (Todos ou Lookup ativo)
 if st.session_state["lookup_indices"] is not None and not df_unificada.empty:
     validos = [i for i in st.session_state["lookup_indices"] if i in df_unificada.index]
     df_ativo = df_unificada.loc[validos]
@@ -429,7 +426,6 @@ if total_registros > 0 and st.session_state["idx_cliente"] >= total_registros:
 elif total_registros == 0:
     st.session_state["idx_cliente"] = 0
 
-# Verifica se o cliente atual tem idade >= 80 anos (ultrapassou 79a 11m 30d) para alerta visual
 alerta_idade_80 = False
 if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     cli_temp = df_ativo.iloc[st.session_state["idx_cliente"]]
@@ -437,16 +433,17 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! (990px LARGURA MÁXIMA, SEM ROLAGEM, SEM ÍCONES NO MENU)
+# 4. CSS CLÁSSICO ACT! V67 (ALINHAMENTO VERTICAL AO PIXEL NA BARRA ÚNICA)
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v66 = f"""
+css_act_v67 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
-    header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {{
+    header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
+    [data-testid="InputInstructions"] {{
         display: none !important;
     }}
 
@@ -457,11 +454,10 @@ css_act_v66 = f"""
         overflow-x: hidden !important;
     }}
 
-    /* Largura máxima travada em 990px para caber sem rolagem em 1024x768 e 1366x768 */
     .main .block-container {{
         max-width: 990px !important;
         width: 990px !important;
-        padding: 3px 6px 4px 6px !important;
+        padding: 4px 6px 4px 6px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }}
@@ -470,11 +466,47 @@ css_act_v66 = f"""
         gap: 2px !important;
     }}
     [data-testid="stElementContainer"] {{
-        margin-bottom: 0px !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
+    }}
+
+    /* Alinhamento horizontal exato (ao pixel) para todos os itens da primeira linha (barra única) */
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        align-items: center !important;
+        min-height: 22px !important;
+        height: 22px !important;
+    }}
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"],
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stColumn"] {{
+        display: flex !important;
+        align-items: center !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        padding: 0 !important;
+    }}
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stVerticalBlock"],
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stElementContainer"],
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stMarkdownContainer"],
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"],
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stTextInput"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+    }}
+    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stMarkdownContainer"] p {{
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 20px !important;
+        width: 100% !important;
     }}
 
     /* Rótulos compactos de 11px */
@@ -509,7 +541,9 @@ css_act_v66 = f"""
         border-radius: 0px !important;
         box-shadow: none !important;
         padding: 0 !important;
-        min-height: 0 !important;
+        margin: 0 !important;
+        min-height: 20px !important;
+        height: 20px !important;
     }}
     [data-testid="stTextInput"] input {{
         background-color: #FFFFFF !important;
@@ -521,17 +555,19 @@ css_act_v66 = f"""
         min-height: 20px !important;
         max-height: 20px !important;
         padding: 0px 4px !important;
+        margin: 0 !important;
         font-size: 11px !important;
         font-family: 'Tahoma', Arial, sans-serif !important;
         line-height: 18px !important;
         opacity: 1 !important;
+        box-sizing: border-box !important;
     }}
     [data-testid="stTextInput"] input:focus {{
         border: 1px solid #0A246A !important;
         background-color: #FFFFEE !important;
     }}
 
-    /* Destaque de cor dinâmico para o campo Idade (aria-label="f_idade") quando >= 80 anos */
+    /* Destaque de cor dinâmico para o campo Idade quando >= 80 anos */
     [data-testid="stTextInput"] input[aria-label="f_idade"] {{
         background-color: {cor_idade_bg} !important;
         color: {cor_idade_fg} !important;
@@ -558,7 +594,7 @@ css_act_v66 = f"""
         opacity: 1 !important;
     }}
 
-    /* Botões clássicos cinza Windows 2000 (20px altura, sem ícones, texto nítido) */
+    /* Botões clássicos cinza Windows 2000 (20px altura exata) */
     [data-testid="stButton"] button {{
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -575,6 +611,7 @@ css_act_v66 = f"""
         font-family: 'Tahoma', Arial, sans-serif !important;
         line-height: 18px !important;
         margin: 0 !important;
+        box-sizing: border-box !important;
     }}
     [data-testid="stButton"] button:hover {{
         background-color: #E4E0D8 !important;
@@ -605,6 +642,7 @@ css_act_v66 = f"""
         background-color: #D4D0C8 !important;
         border: 1px solid #6E6659 !important;
         padding: 0 5px !important;
+        box-sizing: border-box !important;
     }}
     [data-testid="stRadio"] [role="radiogroup"] label {{
         margin: 0 !important;
@@ -639,7 +677,7 @@ css_act_v66 = f"""
         margin: 0 !important;
     }}
 
-    /* Contador na barra única */
+    /* Contador na barra única (20px exatos, igual aos botões e caixa de busca) */
     .act-counter-box {{
         background-color: #FFFFFF;
         border-top: 1px solid #808080;
@@ -653,6 +691,10 @@ css_act_v66 = f"""
         color: #000000;
         white-space: nowrap;
         padding: 0 3px;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+        display: block;
     }}
 
     /* Janela clássica de Lookup Act! */
@@ -678,7 +720,7 @@ css_act_v66 = f"""
         border: none;
         border-top: 1px solid #6E6659;
         border-bottom: 1px solid #B5AC9D;
-        margin: 2px 0;
+        margin: 3px 0;
         height: 2px;
     }}
 
@@ -694,10 +736,10 @@ css_act_v66 = f"""
     }}
     </style>
 """
-st.markdown(css_act_v66, unsafe_allow_html=True)
+st.markdown(css_act_v67, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. BARRA ÚNICA SUPERIOR (990px, SEM ÍCONES, NAVEGAÇÃO + LOOKUP + VISÕES)
+# 5. BARRA ÚNICA SUPERIOR (990px, SEM ÍCONES, ALINHADA AO PIXEL)
 # -----------------------------------------------------------------------------
 pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 1)
 
@@ -707,7 +749,7 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
     b_novo, b_excluir,
     b_v_ficha, b_v_tab, b_v_quar, b_v_camp,
     b_unif, b_sair
-) = st.columns([0.36, 0.36, 1.05, 0.36, 0.36, 1.45, 0.62, 0.58, 0.58, 0.65, 0.58, 0.62, 0.95, 0.65, 1.05, 0.48])
+) = st.columns([0.36, 0.36, 1.05, 0.36, 0.36, 1.45, 0.62, 0.58, 0.58, 0.65, 0.58, 0.62, 0.95, 0.65, 1.05, 0.48], vertical_alignment="center")
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):
@@ -835,9 +877,8 @@ with b_sair:
         st.session_state["autenticado"] = False
         st.rerun()
 
-# Confirmação compacta de exclusão se acionada
 if st.session_state["confirmar_exclusao"] and total_registros > 0:
-    ex_msg, ex_sim, ex_nao = st.columns([6, 1, 1])
+    ex_msg, ex_sim, ex_nao = st.columns([6, 1, 1], vertical_alignment="center")
     with ex_msg:
         st.markdown(f'<div style="background:#FFF3CD; border:1px solid #806600; padding:2px 6px; font-size:11px;">Confirma a exclusão definitiva de <b>{df_ativo.iloc[st.session_state["idx_cliente"]].get("NAME", "")}</b>?</div>', unsafe_allow_html=True)
     with ex_sim:
@@ -858,7 +899,7 @@ if st.session_state["confirmar_exclusao"] and total_registros > 0:
 st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 6. JANELA DE RESULTADOS DO LOOKUP ACT! (CLIQUE PARA ABRIR E CRIAR GRUPO)
+# 6. JANELA DE RESULTADOS DO LOOKUP ACT!
 # -----------------------------------------------------------------------------
 if st.session_state["lookup_modal_aberto"]:
     cand_indices = [i for i in st.session_state["lookup_candidatos"] if i in df_unificada.index]
@@ -868,9 +909,9 @@ if st.session_state["lookup_modal_aberto"]:
         </div>
     """, unsafe_allow_html=True)
 
-    lk_top1, lk_top2, lk_top3 = st.columns([5, 1.5, 1.5])
+    lk_top1, lk_top2, lk_top3 = st.columns([5, 1.5, 1.5], vertical_alignment="center")
     with lk_top1:
-        st.markdown('<div style="font-size:11px; padding-top:2px;">Colunas exibidas: <b>Nome | CPF | Nº Benefício | Órgão | Telefone 1</b></div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size:11px;">Colunas exibidas: <b>Nome | CPF | Nº Benefício | Órgão | Telefone 1</b></div>', unsafe_allow_html=True)
     with lk_top2:
         if st.button("Limpar Lookup (Ver Todos)", use_container_width=True):
             st.session_state["lookup_indices"] = None
@@ -886,7 +927,6 @@ if st.session_state["lookup_modal_aberto"]:
     if len(cand_indices) == 0:
         st.warning(f"Nenhum registro encontrado contendo '{st.session_state['lookup_termo']}'.")
     else:
-        # Cabeçalho da grade de Lookup
         h1, h2, h3, h4, h5, h6 = st.columns([3.0, 1.2, 1.3, 1.0, 1.4, 0.8])
         h1.markdown('<div class="act-lbl"><b>Nome</b></div>', unsafe_allow_html=True)
         h2.markdown('<div class="act-lbl"><b>CPF</b></div>', unsafe_allow_html=True)
@@ -895,10 +935,9 @@ if st.session_state["lookup_modal_aberto"]:
         h5.markdown('<div class="act-lbl"><b>Telefone 1</b></div>', unsafe_allow_html=True)
         h6.markdown('<div class="act-lbl"><b>Ação</b></div>', unsafe_allow_html=True)
 
-        # Lista clicável (até 15 linhas visíveis por vez com paginação se maior)
         for pos_lk, idx_real_lk in enumerate(cand_indices[:30]):
             r_lk = df_unificada.loc[idx_real_lk]
-            c1, c2, c3, c4, c5, c6 = st.columns([3.0, 1.2, 1.3, 1.0, 1.4, 0.8])
+            c1, c2, c3, c4, c5, c6 = st.columns([3.0, 1.2, 1.3, 1.0, 1.4, 0.8], vertical_alignment="center")
             c1.markdown(f'<div style="background:#FFF; border:1px solid #808080; padding:1px 4px; font-size:11px; height:20px; overflow:hidden;">{get_campo(r_lk, ["NAME"])}</div>', unsafe_allow_html=True)
             c2.markdown(f'<div style="background:#FFF; border:1px solid #808080; padding:1px 4px; font-size:11px; height:20px;">{limpar_cpf(get_campo(r_lk, ["USR1000", "CPF"]))}</div>', unsafe_allow_html=True)
             c3.markdown(f'<div style="background:#FFF; border:1px solid #808080; padding:1px 4px; font-size:11px; height:20px;">{get_campo(r_lk, ["ID_STAT", "BENEFICIO"])}</div>', unsafe_allow_html=True)
@@ -913,7 +952,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V66 (SEXO INLINE, 3 BENEFÍCIOS, 3 TELS + ZAP + DDD+TEL, ALERTA 80 ANOS)
+# 7. VISÃO PRINCIPAL: FICHA ACT! V67
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:
@@ -938,7 +977,6 @@ elif st.session_state["visao_ativa"] == "ficha":
         if not idade_val:
             idade_val = get_campo(cliente, ['USER4', 'IDADE'])
 
-        # 3 Órgãos, Espécies e Matrículas/Benefícios
         orgao1_val = get_campo(cliente, ['COMPANY', 'ORGAO', 'USER3']) or "INSS"
         esp1_val = get_campo(cliente, ['USER8', 'ESPECIE', 'TITLE'])
         ben1_val = get_campo(cliente, ['ID_STAT', 'BENEFICIO', 'USER7', 'MATRICULA'])
@@ -966,7 +1004,6 @@ elif st.session_state["visao_ativa"] == "ficha":
         cep1_val = get_campo(cliente, ['ZIP', 'CEP'])
         edificio_val = get_campo(cliente, ['ADDR2', 'EDIFICIO'])
 
-        # Telefones 1, 2 e 3 + Zap + DDD + União DDD+Tel
         ddd1_val, tel1_val = extrair_ddd_tel(get_campo(cliente, ['PHONE', 'TELEFONE']))
         if get_campo(cliente, ['DDD_1']):
             ddd1_val = get_campo(cliente, ['DDD_1'])
@@ -1008,7 +1045,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         zap1_val = zap2_val = zap3_val = False
         obs_val = ""
 
-    # --- LINHA 1: Nome | Copiar | Sexo (Masculino / Feminino inline) | 1º Nome | Chamado por | Data visita ---
+    # --- LINHA 1 ---
     r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([2.9, 0.52, 1.55, 1.15, 1.35, 1.05])
     with r1_1:
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
@@ -1030,7 +1067,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Data da visita</div>', unsafe_allow_html=True)
         ed_visita = st.text_input("f_visita", value=data_visita_val, key=f"visita_{real_idx}", label_visibility="collapsed")
 
-    # --- LINHA 2: Nome (Sem Acentos) | Copiar | Resumo (Órgão Nome CPF Idade) | Copiar ---
+    # --- LINHA 2 ---
     r2_1, r2_2, r2_3, r2_4 = st.columns([2.9, 0.52, 4.58, 0.52])
     with r2_1:
         st.markdown('<div class="act-lbl">Nome (Sem Acentos)</div>', unsafe_allow_html=True)
@@ -1049,7 +1086,7 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
-    # --- LINHA 3: 3 Órgãos, Espécies e Benefícios/Matrículas lado a lado ---
+    # --- LINHA 3: 3 Órgãos, Espécies e Benefícios/Matrículas ---
     b1_org, b1_esp, b1_mat, b1_cp, b2_org, b2_esp, b2_mat, b3_org, b3_esp, b3_mat = st.columns([0.85, 0.55, 1.35, 0.50, 0.85, 0.55, 1.35, 0.85, 0.55, 1.35])
     with b1_org:
         st.markdown('<div class="act-lbl">Órgão 1</div>', unsafe_allow_html=True)
@@ -1085,7 +1122,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Benefício / Matrícula 3</div>', unsafe_allow_html=True)
         ed_ben3 = st.text_input("f_ben3", value=ben3_val, key=f"ben3_{real_idx}", label_visibility="collapsed")
 
-    # --- LINHA 4: CPF Limpo | Copiar | CPF Formatado | Copiar | Data Nasc | Idade (Alerta >=80) | Identidade ---
+    # --- LINHA 4 ---
     r4_1, r4_2, r4_3, r4_4, r4_5, r4_6, r4_7 = st.columns([1.45, 0.52, 1.55, 0.52, 1.15, 1.15, 1.45])
     with r4_1:
         st.markdown('<div class="act-lbl">CGC/CPF (Apenas Números)</div>', unsafe_allow_html=True)
@@ -1112,7 +1149,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Identidade</div>', unsafe_allow_html=True)
         ed_ident = st.text_input("f_ident", value=identidade_val, key=f"ident_{real_idx}", label_visibility="collapsed")
 
-    # --- LINHA 5: Senha Meu INSS | Senha Paraná | Loja | Atendido por ---
+    # --- LINHA 5 ---
     r5_1, r5_2, r5_3, r5_4 = st.columns([2.0, 2.0, 1.8, 2.2])
     with r5_1:
         st.markdown('<div class="act-lbl">Senha Meu INSS</div>', unsafe_allow_html=True)
@@ -1129,8 +1166,7 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
-    # --- LINHA 6, 7 e 8: TELEFONES 1, 2 e 3 (DDD + Tel + Zap + DDD+Tel Unido + Copiar + Ref) ---
-    # Telefone 1
+    # --- LINHAS 6, 7 e 8: TELEFONES 1, 2 e 3 ---
     t1_1, t1_2, t1_3, t1_4, t1_5, t1_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
     with t1_1:
         st.markdown('<div class="act-lbl">DDD 1</div>', unsafe_allow_html=True)
@@ -1153,7 +1189,6 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Ref_1 / Observação Tel 1</div>', unsafe_allow_html=True)
         ed_ref1 = st.text_input("f_ref1", value=ref1_val, key=f"ref1_{real_idx}", label_visibility="collapsed")
 
-    # Telefone 2
     t2_1, t2_2, t2_3, t2_4, t2_5, t2_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
     with t2_1:
         st.markdown('<div class="act-lbl">DDD 2</div>', unsafe_allow_html=True)
@@ -1176,7 +1211,6 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Ref_2 / Observação Tel 2</div>', unsafe_allow_html=True)
         ed_ref2 = st.text_input("f_ref2", value=ref2_val, key=f"ref2_{real_idx}", label_visibility="collapsed")
 
-    # Telefone 3
     t3_1, t3_2, t3_3, t3_4, t3_5, t3_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
     with t3_1:
         st.markdown('<div class="act-lbl">DDD 3</div>', unsafe_allow_html=True)
@@ -1201,7 +1235,7 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
-    # --- LINHA 9: Endereço 1 | Bairro 1 | Cidade 1 | Estado 1 | Cep 1 | Edifício ---
+    # --- LINHA 9 ---
     e1, e2, e3, e4, e5, e6 = st.columns([2.5, 1.4, 1.5, 0.55, 0.95, 1.1])
     with e1:
         st.markdown('<div class="act-lbl">Endereço 1</div>', unsafe_allow_html=True)
@@ -1222,7 +1256,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Edifício</div>', unsafe_allow_html=True)
         ed_edif = st.text_input("f_edif", value=edificio_val, key=f"edif_{real_idx}", label_visibility="collapsed")
 
-    # --- LINHA 10: Histórico / Observações (USER9) + Salvar Ficha ---
+    # --- LINHA 10 ---
     o1, o2 = st.columns([6.8, 1.2])
     with o1:
         st.markdown('<div class="act-lbl">Histórico / Observações (USER9)</div>', unsafe_allow_html=True)
@@ -1284,7 +1318,7 @@ elif st.session_state["visao_ativa"] == "ficha":
             st.rerun()
 
 # -----------------------------------------------------------------------------
-# 8. VISÕES AUXILIARES (TABELA, QUARENTENA E TODOS OS CAMPOS)
+# 8. VISÕES AUXILIARES
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "tabela":
     st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Tabela Unificada (Base Master)</div>', unsafe_allow_html=True)
@@ -1306,7 +1340,6 @@ elif st.session_state["visao_ativa"] == "todos_campos":
         df_campos = pd.DataFrame(list(cli_atual.items()), columns=["Campo", "Valor"])
         st.dataframe(df_campos, use_container_width=True, height=450)
 
-# Barra de status inferior
 status_lk = f" | Lookup ativo: '{st.session_state['lookup_termo']}' ({total_registros})" if st.session_state["lookup_indices"] is not None else ""
 st.markdown(f"""
     <div class="act-statusbar">

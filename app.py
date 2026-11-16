@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V67"
+VERSAO_APP = "Act!   V68"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -199,7 +199,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V67)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V68)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -379,7 +379,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V67)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V68)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -433,13 +433,13 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! V67 (ALINHAMENTO VERTICAL AO PIXEL NA BARRA ÚNICA)
+# 4. CSS CLÁSSICO ACT! V68 (CONTADOR NATIVO + BARRA 100% RETA AO PIXEL)
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v67 = f"""
+css_act_v68 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
     header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
@@ -472,41 +472,6 @@ css_act_v67 = f"""
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
-    }}
-
-    /* Alinhamento horizontal exato (ao pixel) para todos os itens da primeira linha (barra única) */
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
-        align-items: center !important;
-        min-height: 22px !important;
-        height: 22px !important;
-    }}
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"],
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stColumn"] {{
-        display: flex !important;
-        align-items: center !important;
-        height: 22px !important;
-        min-height: 22px !important;
-        padding: 0 !important;
-    }}
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stVerticalBlock"],
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stElementContainer"],
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stMarkdownContainer"],
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"],
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stTextInput"] {{
-        margin: 0 !important;
-        padding: 0 !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
-        display: flex !important;
-        align-items: center !important;
-        width: 100% !important;
-    }}
-    .main .block-container > div > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stMarkdownContainer"] p {{
-        margin: 0 !important;
-        padding: 0 !important;
-        line-height: 20px !important;
-        width: 100% !important;
     }}
 
     /* Rótulos compactos de 11px */
@@ -567,6 +532,21 @@ css_act_v67 = f"""
         background-color: #FFFFEE !important;
     }}
 
+    /* Contador na barra superior (widget nativo st.text_input com aria-label="cnt_box") */
+    [data-testid="stTextInput"] input[aria-label="cnt_box"] {{
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        text-align: center !important;
+        font-weight: normal !important;
+        border-top: 1px solid #808080 !important;
+        border-left: 1px solid #808080 !important;
+        border-right: 1px solid #FFFFFF !important;
+        border-bottom: 1px solid #FFFFFF !important;
+        cursor: default !important;
+        padding: 0 2px !important;
+    }}
+
     /* Destaque de cor dinâmico para o campo Idade quando >= 80 anos */
     [data-testid="stTextInput"] input[aria-label="f_idade"] {{
         background-color: {cor_idade_bg} !important;
@@ -594,7 +574,7 @@ css_act_v67 = f"""
         opacity: 1 !important;
     }}
 
-    /* Botões clássicos cinza Windows 2000 (20px altura exata) */
+    /* Botões clássicos cinza Windows 2000 (20px altura exata, texto puro sem ícones) */
     [data-testid="stButton"] button {{
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -677,26 +657,6 @@ css_act_v67 = f"""
         margin: 0 !important;
     }}
 
-    /* Contador na barra única (20px exatos, igual aos botões e caixa de busca) */
-    .act-counter-box {{
-        background-color: #FFFFFF;
-        border-top: 1px solid #808080;
-        border-left: 1px solid #808080;
-        border-right: 1px solid #FFFFFF;
-        border-bottom: 1px solid #FFFFFF;
-        height: 20px;
-        line-height: 18px;
-        font-size: 11px;
-        text-align: center;
-        color: #000000;
-        white-space: nowrap;
-        padding: 0 3px;
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-        display: block;
-    }}
-
     /* Janela clássica de Lookup Act! */
     .act-lookup-box {{
         background-color: #D4D0C8;
@@ -736,10 +696,10 @@ css_act_v67 = f"""
     }}
     </style>
 """
-st.markdown(css_act_v67, unsafe_allow_html=True)
+st.markdown(css_act_v68, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. BARRA ÚNICA SUPERIOR (990px, SEM ÍCONES, ALINHADA AO PIXEL)
+# 5. BARRA ÚNICA SUPERIOR (990px, WIDGETS NATIVOS ALINHADOS AO PIXEL)
 # -----------------------------------------------------------------------------
 pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 1)
 
@@ -765,7 +725,7 @@ with b_prev:
             st.rerun()
 
 with b_cnt:
-    st.markdown(f'<div class="act-counter-box">{pos_display} de {total_registros}</div>', unsafe_allow_html=True)
+    st.text_input("cnt_box", value=f"{pos_display} de {total_registros}", disabled=True, label_visibility="collapsed", key=f"cnt_top_{pos_display}_{total_registros}")
 
 with b_next:
     if st.button(">", use_container_width=True, help="Próximo registro"):
@@ -952,7 +912,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V67
+# 7. VISÃO PRINCIPAL: FICHA ACT! V68
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:

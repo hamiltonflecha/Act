@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V75"
+VERSAO_APP = "Act!   V76"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -575,10 +575,50 @@ css_act_v74 = f"""
     .act-lookup-box {{ background-color: #D4D0C8; border-top: 2px solid #FFFFFF; border-left: 2px solid #FFFFFF; border-right: 2px solid #404040; border-bottom: 2px solid #404040; padding: 3px 6px 4px 6px; margin: 2px 0; }}
     .act-lookup-title {{ background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%); color: #FFFFFF; font-size: 11px; font-weight: bold; padding: 1px 6px; margin-bottom: 2px; }}
     .act-hr {{ border: none; border-top: 1px solid #6E6659; margin: 3px 0 1px 0; height: 1px; }}
+    .act-topbar-table {{
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 3px 0;
+        background-color: #D4D0C8;
+        border-top: 1px solid #FFFFFF;
+        border-left: 1px solid #FFFFFF;
+        border-right: 1px solid #404040;
+        border-bottom: 1px solid #404040;
+    }}
+    .act-topbar-table td {{
+        padding: 1px 6px;
+        font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+        color: #000000;
+        border: 1px solid #808080;
+        line-height: 15px;
+    }}
+    .act-topbar-table td.act-top-left {{
+        text-align: left;
+        background: linear-gradient(90deg, #0A246A 0%, #A6CAF0 100%);
+        color: #FFFFFF;
+    }}
+    .act-topbar-table td.act-top-right {{
+        text-align: right;
+        width: 165px;
+        white-space: nowrap;
+        background-color: #D4D0C8;
+        color: #0A246A;
+    }}
     .act-statusbar {{ background-color: #D4D0C8; border-top: 1px solid #808080; padding: 1px 6px; font-size: 10px; color: #000000; display: flex; justify-content: space-between; margin-top: 4px; }}
     </style>
 """
 st.markdown(css_act_v74, unsafe_allow_html=True)
+
+st.markdown(f"""
+    <table class="act-topbar-table">
+        <tr>
+            <td class="act-top-left">Hamilton e Jaedna</td>
+            <td class="act-top-right">Act! Versão V76</td>
+        </tr>
+    </table>
+""", unsafe_allow_html=True)
 
 pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 1)
 

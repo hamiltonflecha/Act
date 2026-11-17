@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V73"
+VERSAO_APP = "Act!   V74"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -197,7 +197,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 # -----------------------------------------------------------------------------
-# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V73)
+# 2. SEGURANÇA E TELA DE LOGIN CLÁSSICA ACT! (V74)
 # -----------------------------------------------------------------------------
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
@@ -377,7 +377,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V73)
+# 3. ESTADO E CONTROLE DE LOOKUP ACT! (V74)
 # -----------------------------------------------------------------------------
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
@@ -431,13 +431,13 @@ if total_registros > 0 and st.session_state["visao_ativa"] == "ficha":
     _, alerta_idade_80 = analisar_idade(nasc_temp)
 
 # -----------------------------------------------------------------------------
-# 4. CSS CLÁSSICO ACT! V73 (ALTA DENSIDADE VERTICAL — CABE SEM ROLAGEM)
+# 4. CSS CLÁSSICO ACT! V74 (TOPO 50% MENOR + ESPAÇO ENTRE LINHAS 50% MENOR + NIVELADO)
 # -----------------------------------------------------------------------------
 cor_idade_bg = "#CC0000" if alerta_idade_80 else "#FFFFFF"
 cor_idade_fg = "#FFFFFF" if alerta_idade_80 else "#000000"
 cor_idade_bd = "#800000" if alerta_idade_80 else "#7A7265"
 
-css_act_v73 = f"""
+css_act_v74 = f"""
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"],
     header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
@@ -457,13 +457,15 @@ css_act_v73 = f"""
     .main .block-container {{
         max-width: 990px !important;
         width: 990px !important;
-        padding: 2px 6px 2px 6px !important;
+        padding: 1px 6px 1px 6px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }}
 
     [data-testid="stVerticalBlock"] {{
         gap: 0px !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     [data-testid="stElementContainer"] {{
         margin: 0 !important;
@@ -473,8 +475,12 @@ css_act_v73 = f"""
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
-        margin: 0 !important;
+        margin: 0 0 -3px 0 !important;
         padding: 0 !important;
+    }}
+    [data-testid="column"] {{
+        padding: 0 !important;
+        margin: 0 !important;
     }}
 
     [data-testid="stMarkdownContainer"] {{
@@ -492,7 +498,7 @@ css_act_v73 = f"""
         line-height: 11px !important;
         min-height: 11px !important;
         height: 11px !important;
-        margin: 1px 0 0 0 !important;
+        margin: 0 !important;
         padding: 0 !important;
         white-space: nowrap !important;
         overflow: visible !important;
@@ -507,11 +513,18 @@ css_act_v73 = f"""
         line-height: 11px !important;
         min-height: 11px !important;
         height: 11px !important;
-        margin: 1px 0 0 0 !important;
+        margin: 0 !important;
         padding: 0 !important;
         text-align: center !important;
     }}
 
+    [data-testid="stTextInput"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+    }}
     [data-testid="stTextInput"] label {{
         display: none !important;
     }}
@@ -525,6 +538,7 @@ css_act_v73 = f"""
         margin: 0 !important;
         min-height: 18px !important;
         height: 18px !important;
+        max-height: 18px !important;
     }}
     [data-testid="stTextInput"] input {{
         background-color: #FFFFFF !important;
@@ -580,6 +594,10 @@ css_act_v73 = f"""
         text-align: center !important;
     }}
 
+    [data-testid="stTextArea"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
     [data-testid="stTextArea"] label {{
         display: none !important;
     }}
@@ -596,6 +614,13 @@ css_act_v73 = f"""
         opacity: 1 !important;
     }}
 
+    [data-testid="stButton"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+    }}
     [data-testid="stButton"] button {{
         background-color: #D4D0C8 !important;
         color: #000000 !important;
@@ -630,7 +655,7 @@ css_act_v73 = f"""
         font-weight: bold !important;
     }}
 
-    /* Caixa de Sexo (M / F) compacta (18px de altura) */
+    /* Caixa de Sexo (M / F) exatamente nivelada em 18px */
     [data-testid="stRadio"] {{
         margin: 0 !important;
         padding: 0 !important;
@@ -638,6 +663,7 @@ css_act_v73 = f"""
         min-height: 18px !important;
         max-height: 18px !important;
         overflow: hidden !important;
+        display: block !important;
     }}
     [data-testid="stRadio"] > label {{
         display: none !important;
@@ -683,6 +709,7 @@ css_act_v73 = f"""
         line-height: 15px !important;
     }}
 
+    /* Checkbox Zap nivelado na base em 18px */
     [data-testid="stCheckbox"] {{
         margin: 0 !important;
         padding: 0 !important;
@@ -690,16 +717,24 @@ css_act_v73 = f"""
         justify-content: center !important;
         align-items: center !important;
         height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
     }}
     [data-testid="stCheckbox"] label {{
+        display: flex !important;
+        align-items: center !important;
         gap: 3px !important;
-        min-height: 0 !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
         margin: 0 !important;
+        padding: 0 !important;
     }}
     [data-testid="stCheckbox"] label p {{
         font-size: 10px !important;
         color: #000000 !important;
         margin: 0 !important;
+        line-height: 16px !important;
     }}
 
     .act-lookup-box {{
@@ -723,9 +758,8 @@ css_act_v73 = f"""
     .act-hr {{
         border: none;
         border-top: 1px solid #6E6659;
-        border-bottom: 1px solid #B5AC9D;
-        margin: 2px 0 1px 0;
-        height: 2px;
+        margin: 3px 0 1px 0;
+        height: 1px;
     }}
 
     .act-statusbar {{
@@ -736,11 +770,11 @@ css_act_v73 = f"""
         color: #000000;
         display: flex;
         justify-content: space-between;
-        margin-top: 2px;
+        margin-top: 4px;
     }}
     </style>
 """
-st.markdown(css_act_v73, unsafe_allow_html=True)
+st.markdown(css_act_v74, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 5. BARRA ÚNICA SUPERIOR (990px, WIDGETS NATIVOS ALINHADOS AO PIXEL)
@@ -952,7 +986,7 @@ if st.session_state["lookup_modal_aberto"]:
                     st.rerun()
 
 # -----------------------------------------------------------------------------
-# 7. VISÃO PRINCIPAL: FICHA ACT! V73
+# 7. VISÃO PRINCIPAL: FICHA ACT! V74
 # -----------------------------------------------------------------------------
 elif st.session_state["visao_ativa"] == "ficha":
     if total_registros > 0:
@@ -1044,8 +1078,8 @@ elif st.session_state["visao_ativa"] == "ficha":
         zap1_val = zap2_val = zap3_val = False
         obs_val = ""
 
-    # --- LINHA 1 ---
-    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.72, 1.45, 1.55, 1.13])
+    # --- LINHA 1 (TODOS OS CAMPOS NIVELADOS NA BASE) ---
+    r1_1, r1_2, r1_3, r1_4, r1_5, r1_6 = st.columns([3.15, 0.52, 0.72, 1.45, 1.55, 1.13], vertical_alignment="bottom")
     with r1_1:
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
         ed_nome = st.text_input("f_nome", value=nome_val, key=f"nome_{real_idx}", label_visibility="collapsed")
@@ -1067,7 +1101,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         ed_visita = st.text_input("f_visita", value=data_visita_val, key=f"visita_{real_idx}", label_visibility="collapsed")
 
     # --- LINHA 2 ---
-    r2_1, r2_2, r2_3, r2_4 = st.columns([3.15, 0.52, 4.33, 0.52])
+    r2_1, r2_2, r2_3, r2_4 = st.columns([3.15, 0.52, 4.33, 0.52], vertical_alignment="bottom")
     with r2_1:
         st.markdown('<div class="act-lbl">Nome (Sem Acentos)</div>', unsafe_allow_html=True)
         st.text_input("f_nsem", value=nome_sem_acento, key=f"nsem_{real_idx}", label_visibility="collapsed")
@@ -1085,8 +1119,8 @@ elif st.session_state["visao_ativa"] == "ficha":
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
-    # --- LINHAS 3A, 3B e 3C: ÓRGÃO, ESPÉCIE E MATRÍCULA/BENEFÍCIO UM ABAIXO DO OUTRO ---
-    b1_org, b1_esp, b1_mat, b1_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
+    # --- LINHAS 3A, 3B e 3C: ÓRGÃO, ESPÉCIE E MATRÍCULA/BENEFÍCIO EMPILHADOS ---
+    b1_org, b1_esp, b1_mat, b1_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62], vertical_alignment="bottom")
     with b1_org:
         st.markdown('<div class="act-lbl">Órgão (1 / 2 / 3)</div>', unsafe_allow_html=True)
         ed_org1 = st.text_input("f_org1", value=orgao1_val, key=f"org1_{real_idx}", label_visibility="collapsed")
@@ -1101,7 +1135,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         if st.button("Copiar", key=f"cp_ben1_{real_idx}", use_container_width=True):
             copiar_texto_js(ed_ben1)
 
-    b2_org, b2_esp, b2_mat, b2_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
+    b2_org, b2_esp, b2_mat, b2_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62], vertical_alignment="bottom")
     with b2_org:
         ed_org2 = st.text_input("f_org2", value=orgao2_val, key=f"org2_{real_idx}", label_visibility="collapsed")
     with b2_esp:
@@ -1112,7 +1146,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         if st.button("Copiar", key=f"cp_ben2_{real_idx}", use_container_width=True):
             copiar_texto_js(ed_ben2)
 
-    b3_org, b3_esp, b3_mat, b3_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62])
+    b3_org, b3_esp, b3_mat, b3_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62], vertical_alignment="bottom")
     with b3_org:
         ed_org3 = st.text_input("f_org3", value=orgao3_val, key=f"org3_{real_idx}", label_visibility="collapsed")
     with b3_esp:
@@ -1126,7 +1160,7 @@ elif st.session_state["visao_ativa"] == "ficha":
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
     # --- LINHA 4 ---
-    r4_1, r4_2, r4_3, r4_4, r4_5, r4_6, r4_7 = st.columns([1.45, 0.52, 1.55, 0.52, 1.15, 1.15, 1.45])
+    r4_1, r4_2, r4_3, r4_4, r4_5, r4_6, r4_7 = st.columns([1.45, 0.52, 1.55, 0.52, 1.15, 1.15, 1.45], vertical_alignment="bottom")
     with r4_1:
         st.markdown('<div class="act-lbl">CGC/CPF (Apenas Números)</div>', unsafe_allow_html=True)
         ed_cpfn = st.text_input("f_cpfn", value=cpf_limpo, key=f"cpfn_{real_idx}", label_visibility="collapsed")
@@ -1153,7 +1187,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         ed_ident = st.text_input("f_ident", value=identidade_val, key=f"ident_{real_idx}", label_visibility="collapsed")
 
     # --- LINHA 5 ---
-    r5_1, r5_2, r5_3, r5_4 = st.columns([2.0, 2.0, 1.8, 2.2])
+    r5_1, r5_2, r5_3, r5_4 = st.columns([2.0, 2.0, 1.8, 2.2], vertical_alignment="bottom")
     with r5_1:
         st.markdown('<div class="act-lbl">Senha Meu INSS</div>', unsafe_allow_html=True)
         ed_sinss = st.text_input("f_sinss", value=senha_inss_val, key=f"sinss_{real_idx}", label_visibility="collapsed")
@@ -1170,7 +1204,7 @@ elif st.session_state["visao_ativa"] == "ficha":
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
     # --- LINHAS 6, 7 e 8: TELEFONES 1, 2 e 3 ---
-    t1_1, t1_2, t1_3, t1_4, t1_5, t1_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
+    t1_1, t1_2, t1_3, t1_4, t1_5, t1_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55], vertical_alignment="bottom")
     with t1_1:
         st.markdown('<div class="act-lbl">DDD 1</div>', unsafe_allow_html=True)
         ed_ddd1 = st.text_input("f_ddd1", value=ddd1_val, key=f"ddd1_{real_idx}", label_visibility="collapsed")
@@ -1192,7 +1226,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Ref_1 / Observação Tel 1</div>', unsafe_allow_html=True)
         ed_ref1 = st.text_input("f_ref1", value=ref1_val, key=f"ref1_{real_idx}", label_visibility="collapsed")
 
-    t2_1, t2_2, t2_3, t2_4, t2_5, t2_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
+    t2_1, t2_2, t2_3, t2_4, t2_5, t2_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55], vertical_alignment="bottom")
     with t2_1:
         st.markdown('<div class="act-lbl">DDD 2</div>', unsafe_allow_html=True)
         ed_ddd2 = st.text_input("f_ddd2", value=ddd2_val, key=f"ddd2_{real_idx}", label_visibility="collapsed")
@@ -1214,7 +1248,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Ref_2 / Observação Tel 2</div>', unsafe_allow_html=True)
         ed_ref2 = st.text_input("f_ref2", value=ref2_val, key=f"ref2_{real_idx}", label_visibility="collapsed")
 
-    t3_1, t3_2, t3_3, t3_4, t3_5, t3_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55])
+    t3_1, t3_2, t3_3, t3_4, t3_5, t3_6 = st.columns([0.55, 1.45, 0.65, 1.65, 0.55, 2.55], vertical_alignment="bottom")
     with t3_1:
         st.markdown('<div class="act-lbl">DDD 3</div>', unsafe_allow_html=True)
         ed_ddd3 = st.text_input("f_ddd3", value=ddd3_val, key=f"ddd3_{real_idx}", label_visibility="collapsed")
@@ -1239,114 +1273,7 @@ elif st.session_state["visao_ativa"] == "ficha":
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 
     # --- LINHA 9 ---
-    e1, e2, e3, e4, e5, e6 = st.columns([2.5, 1.4, 1.5, 0.55, 0.95, 1.1])
+    e1, e2, e3, e4, e5, e6 = st.columns([2.5, 1.4, 1.5, 0.55, 0.95, 1.1], vertical_alignment="bottom")
     with e1:
         st.markdown('<div class="act-lbl">Endereço 1</div>', unsafe_allow_html=True)
-        ed_end1 = st.text_input("f_end1", value=end1_val, key=f"end1_{real_idx}", label_visibility="collapsed")
-    with e2:
-        st.markdown('<div class="act-lbl">Bairro 1</div>', unsafe_allow_html=True)
-        ed_bai1 = st.text_input("f_bai1", value=bairro1_val, key=f"bai1_{real_idx}", label_visibility="collapsed")
-    with e3:
-        st.markdown('<div class="act-lbl">Cidade 1</div>', unsafe_allow_html=True)
-        ed_cid1 = st.text_input("f_cid1", value=cidade1_val, key=f"cid1_{real_idx}", label_visibility="collapsed")
-    with e4:
-        st.markdown('<div class="act-lbl">UF</div>', unsafe_allow_html=True)
-        ed_uf1 = st.text_input("f_uf1", value=estado1_val, key=f"uf1_{real_idx}", label_visibility="collapsed")
-    with e5:
-        st.markdown('<div class="act-lbl">Cep 1</div>', unsafe_allow_html=True)
-        ed_cep1 = st.text_input("f_cep1", value=cep1_val, key=f"cep1_{real_idx}", label_visibility="collapsed")
-    with e6:
-        st.markdown('<div class="act-lbl">Edifício</div>', unsafe_allow_html=True)
-        ed_edif = st.text_input("f_edif", value=edificio_val, key=f"edif_{real_idx}", label_visibility="collapsed")
-
-    # --- LINHA 10 ---
-    o1, o2 = st.columns([6.8, 1.2])
-    with o1:
-        st.markdown('<div class="act-lbl">Histórico / Observações (USER9)</div>', unsafe_allow_html=True)
-        ed_obs = st.text_area("f_obs", value=obs_val, height=38, key=f"obs_{real_idx}", label_visibility="collapsed")
-    with o2:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
-        if st.button("Salvar Ficha", type="primary", use_container_width=True, key=f"save_{real_idx}") and total_registros > 0:
-            campos_salvar = {
-                'NAME': ed_nome.strip(),
-                'SEXO': ed_sexo,
-                'FIRST_NAME': ed_apelido.strip(),
-                'USER5': ed_visita.strip(),
-                'COMPANY': ed_org1.strip(),
-                'USER8': ed_esp1.strip(),
-                'ID_STAT': ed_ben1.strip(),
-                'ORGAO_2': ed_org2.strip(),
-                'ESPECIE_2': ed_esp2.strip(),
-                'BENEFICIO_2': ed_ben2.strip(),
-                'ORGAO_3': ed_org3.strip(),
-                'ESPECIE_3': ed_esp3.strip(),
-                'BENEFICIO_3': ed_ben3.strip(),
-                'USR1000': limpar_cpf(ed_cpfn),
-                'USER1': ed_nasc.strip(),
-                'USER12': ed_ident.strip(),
-                'USER10': ed_sinss.strip(),
-                'USER11': ed_spar.strip(),
-                'USER2': ed_loja.strip(),
-                'USER6': ed_atend.strip(),
-                'DDD_1': ed_ddd1.strip(),
-                'TEL_1': ed_tel1.strip(),
-                'PHONE': f"({ed_ddd1.strip()}) {ed_tel1.strip()}" if ed_ddd1.strip() else ed_tel1.strip(),
-                'ZAP_1': "Sim" if ed_zap1 else "Não",
-                'REF_1': ed_ref1.strip(),
-                'DDD_2': ed_ddd2.strip(),
-                'TEL_2': ed_tel2.strip(),
-                'HOME_PHONE': f"({ed_ddd2.strip()}) {ed_tel2.strip()}" if ed_ddd2.strip() else ed_tel2.strip(),
-                'ZAP_2': "Sim" if ed_zap2 else "Não",
-                'REF_2': ed_ref2.strip(),
-                'DDD_3': ed_ddd3.strip(),
-                'TEL_3': ed_tel3.strip(),
-                'MOBILE_PHONE': f"({ed_ddd3.strip()}) {ed_tel3.strip()}" if ed_ddd3.strip() else ed_tel3.strip(),
-                'ZAP_3': "Sim" if ed_zap3 else "Não",
-                'REF_3': ed_ref3.strip(),
-                'ADDR1': ed_end1.strip(),
-                'ADDR3': ed_bai1.strip(),
-                'CITY': ed_cid1.strip(),
-                'STATE': ed_uf1.strip(),
-                'ZIP': ed_cep1.strip(),
-                'ADDR2': ed_edif.strip(),
-                'USER9': ed_obs.strip()
-            }
-            for k_col, v_col in campos_salvar.items():
-                garantir_coluna(df_unificada, k_col)
-                df_unificada.at[real_idx, k_col] = v_col
-
-            st.session_state["df_unificada"] = df_unificada
-            salvar_bases_master(df_unificada, df_quarentena)
-            st.toast("Ficha salva na Base Master!")
-            st.rerun()
-
-# -----------------------------------------------------------------------------
-# 8. VISÕES AUXILIARES
-# -----------------------------------------------------------------------------
-elif st.session_state["visao_ativa"] == "tabela":
-    st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Tabela Unificada (Base Master)</div>', unsafe_allow_html=True)
-    if not df_ativo.empty:
-        st.dataframe(df_ativo.head(300), use_container_width=True, height=450)
-
-elif st.session_state["visao_ativa"] == "quarentena":
-    st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Quarentena / Revisão (PC 1 Hamilton vs PC 2 Jaedna)</div>', unsafe_allow_html=True)
-    if not df_quarentena.empty:
-        cols_q = [c for c in ['NAME', 'ORIGEM', 'USER9', 'PHONE'] if c in df_quarentena.columns]
-        st.dataframe(df_quarentena[cols_q], use_container_width=True, height=450)
-    else:
-        st.success("Nenhum contato em quarentena!")
-
-elif st.session_state["visao_ativa"] == "todos_campos":
-    st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Todos os Campos da Ficha Atual</div>', unsafe_allow_html=True)
-    if not df_ativo.empty:
-        cli_atual = df_ativo.iloc[st.session_state["idx_cliente"]]
-        df_campos = pd.DataFrame(list(cli_atual.items()), columns=["Campo", "Valor"])
-        st.dataframe(df_campos, use_container_width=True, height=450)
-
-status_lk = f" | Lookup ativo: '{st.session_state['lookup_termo']}' ({total_registros})" if st.session_state["lookup_indices"] is not None else ""
-st.markdown(f"""
-    <div class="act-statusbar">
-        <span>{VERSAO_APP} | {'Base Master Travada' if ja_unificado else 'Aguardando Unificação'}{status_lk}</span>
-        <span>Origem: {df_ativo.iloc[st.session_state['idx_cliente']].get('ORIGEM', 'Master') if not df_ativo.empty else '-'}</span>
-    </div>
-""", unsafe_allow_html=True)
+        ed_end1 = st.text_input("f_end1", value=end1_val, key=f"end1_{real_idx}", label_visibility

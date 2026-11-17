@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V78"
+VERSAO_APP = "Act!   V79"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -447,16 +447,52 @@ css_act_v74 = f"""
         margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
-    /* A primeira linha (barra de ferramentas superior) compactada à esquerda como no ACT! original */
+    /* Barra de ferramentas contínua estilo ACT! / Windows 2000 (faixa cinza única + divisórias verticais) */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        background-color: #D4D0C8 !important;
+        border-top: 1px solid #FFFFFF !important;
+        border-left: 1px solid #FFFFFF !important;
+        border-right: 1px solid #404040 !important;
+        border-bottom: 1px solid #808080 !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 2px !important;
+        gap: 0px !important;
+        margin: 0 0 2px 0 !important;
+        padding: 1px 3px !important;
+        min-height: 24px !important;
+        height: 24px !important;
+        box-sizing: border-box !important;
+    }}
+    /* Alça dupla vertical no início da barra de ferramentas (igual ao ACT! original) */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type::before,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type::before {{
+        content: "";
+        display: inline-block;
+        width: 3px;
+        height: 16px;
+        margin-right: 4px;
+        border-left: 1px solid #FFFFFF;
+        border-right: 1px solid #808080;
+        flex-shrink: 0;
+    }}
+    /* Botões flat/harmoniosos dentro da barra cinza */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button {{
+        border-radius: 0px !important;
         margin: 0 !important;
-        padding: 0 !important;
-        min-height: 20px !important;
-        height: 20px !important;
+        padding: 0 5px !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
+    }}
+    .act-tb-sep {{
+        display: block;
+        width: 2px;
+        height: 17px;
+        margin: 0 auto;
+        border-left: 1px solid #808080;
+        border-right: 1px solid #FFFFFF;
     }}
     [data-testid="column"], [data-testid="stColumn"] {{
         padding: 0 !important;
@@ -617,7 +653,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V78</td>
+            <td class="act-top-right">Act! Versão V79</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -626,11 +662,31 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
 
 (
     b_first, b_prev, b_cnt, b_next, b_last,
+    s_1,
     b_loc_in, b_loc_go, b_all,
+    s_2,
     b_novo, b_excluir,
+    s_3,
     b_v_tab, b_v_quar, b_v_camp,
-    b_unif, b_sair, _b_spacer
-) = st.columns([0.32, 0.32, 0.92, 0.32, 0.32, 1.45, 0.62, 0.68, 0.54, 0.64, 0.62, 0.98, 0.64, 0.85, 0.48, 3.30], vertical_alignment="center")
+    s_4,
+    b_unif, b_sair,
+    _b_spacer
+) = st.columns([
+    0.30, 0.30, 0.90, 0.30, 0.30,
+    0.12,
+    1.45, 0.60, 0.66,
+    0.12,
+    0.52, 0.62,
+    0.12,
+    0.60, 0.96, 0.62,
+    0.12,
+    0.84, 0.48,
+    2.97
+], vertical_alignment="center")
+
+for _sep in (s_1, s_2, s_3, s_4):
+    with _sep:
+        st.markdown('<div class="act-tb-sep"></div>', unsafe_allow_html=True)
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):

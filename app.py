@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V74"
+VERSAO_APP = "Act!   V75"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -425,10 +425,17 @@ css_act_v74 = f"""
         margin: 0 !important;
         padding: 0 !important;
     }}
-    .main .block-container {{
+    [data-testid="stMainBlockContainer"],
+    [data-testid="stAppViewBlockContainer"],
+    .main .block-container,
+    section.main > div.block-container,
+    div.block-container {{
         max-width: 990px !important;
         width: 990px !important;
-        padding: 1px 6px 1px 6px !important;
+        padding-top: 4px !important;
+        padding-bottom: 2px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }}
@@ -437,10 +444,35 @@ css_act_v74 = f"""
     [data-testid="stHorizontalBlock"] {{
         gap: 4px !important;
         align-items: flex-end !important;
-        margin: 0 0 -3px 0 !important;
+        margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
-    [data-testid="column"] {{ padding: 0 !important; margin: 0 !important; }}
+    /* A primeira linha (barra de ferramentas superior) deve ter todas as células alinhadas pelo centro/base em uma linha única */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 20px !important;
+        height: 20px !important;
+    }}
+    [data-testid="column"], [data-testid="stColumn"] {{
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"] {{
+        justify-content: center !important;
+        align-items: stretch !important;
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+    }}
     [data-testid="stMarkdownContainer"] {{ margin: 0 !important; padding: 0 !important; overflow: visible !important; }}
     .act-lbl {{
         display: block !important;
@@ -508,12 +540,18 @@ css_act_v74 = f"""
         border-radius: 1px !important; border: 1px solid #6E6659 !important; font-size: 11px !important;
         font-family: 'Tahoma', Arial, sans-serif !important; padding: 1px 4px !important; line-height: 12px !important;
     }}
-    [data-testid="stButton"] {{ margin: 0 !important; padding: 0 !important; height: 18px !important; min-height: 18px !important; max-height: 18px !important; }}
+    [data-testid="stButton"] {{
+        margin: 0 !important; padding: 0 !important;
+        height: 18px !important; min-height: 18px !important; max-height: 18px !important;
+        display: flex !important; align-items: center !important;
+    }}
     [data-testid="stButton"] button {{
         background-color: #D4D0C8 !important; color: #000000 !important; border-radius: 1px !important;
         border-top: 1px solid #FFFFFF !important; border-left: 1px solid #FFFFFF !important; border-right: 1px solid #404040 !important; border-bottom: 1px solid #404040 !important;
         height: 18px !important; min-height: 18px !important; max-height: 18px !important; padding: 0 4px !important;
-        font-size: 10.5px !important; font-family: 'Tahoma', Arial, sans-serif !important; line-height: 16px !important; margin: 0 !important; box-sizing: border-box !important;
+        font-size: 10.5px !important; font-family: 'Tahoma', Arial, sans-serif !important; line-height: 16px !important;
+        margin: 0 !important; box-sizing: border-box !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
     }}
     [data-testid="stButton"] button:hover {{ background-color: #E4E0D8 !important; }}
     [data-testid="stButton"] button p {{ font-size: 10.5px !important; color: #000000 !important; margin: 0 !important; line-height: 16px !important; white-space: nowrap !important; }}
@@ -530,7 +568,7 @@ css_act_v74 = f"""
     [data-testid="stRadio"] [role="radiogroup"] label p {{ font-size: 10.5px !important; color: #000000 !important; margin: 0 !important; line-height: 15px !important; }}
     [data-testid="stCheckbox"] {{
         margin: 0 !important; padding: 0 !important; display: flex !important; justify-content: center !important; align-items: center !important;
-        height: 18px !important; min-height: 18px !important; max-height: 18px !important;
+        height: 18px !important; min-height: 18px !important; max-height: 18px !important; width: 100% !important;
     }}
     [data-testid="stCheckbox"] label {{ display: flex !important; align-items: center !important; gap: 3px !important; height: 18px !important; margin: 0 !important; padding: 0 !important; }}
     [data-testid="stCheckbox"] label p {{ font-size: 10px !important; color: #000000 !important; margin: 0 !important; line-height: 16px !important; }}
@@ -550,7 +588,7 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
     b_novo, b_excluir,
     b_v_ficha, b_v_tab, b_v_quar, b_v_camp,
     b_unif, b_sair
-) = st.columns([0.36, 0.36, 1.05, 0.36, 0.36, 1.45, 0.62, 0.58, 0.58, 0.65, 0.58, 0.62, 0.95, 0.65, 1.05, 0.48], vertical_alignment="center")
+) = st.columns([0.38, 0.38, 0.95, 0.38, 0.38, 1.45, 0.65, 0.72, 0.58, 0.68, 0.58, 0.65, 1.02, 0.68, 0.92, 0.50], vertical_alignment="center")
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):
@@ -814,7 +852,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Nome</div>', unsafe_allow_html=True)
         ed_nome = st.text_input("f_nome", value=nome_val, key=f"nome_{real_idx}", label_visibility="collapsed")
     with r1_2:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_nome_{real_idx}", use_container_width=True): copiar_texto_js(ed_nome)
     with r1_3:
         st.markdown('<div class="act-lbl">Sexo</div>', unsafe_allow_html=True)
@@ -834,13 +872,13 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Nome (Sem Acentos)</div>', unsafe_allow_html=True)
         st.text_input("f_nsem", value=nome_sem_acento, key=f"nsem_{real_idx}", label_visibility="collapsed")
     with r2_2:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_nsem_{real_idx}", use_container_width=True): copiar_texto_js(nome_sem_acento)
     with r2_3:
         st.markdown('<div class="act-lbl">Resumo (Órgão Nome CPF Idade)</div>', unsafe_allow_html=True)
         st.text_input("f_resumo", value=resumo_val, key=f"resumo_{real_idx}", label_visibility="collapsed")
     with r2_4:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_res_{real_idx}", use_container_width=True): copiar_texto_js(resumo_val)
 
     st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
@@ -856,7 +894,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">Benefício / Matrícula</div>', unsafe_allow_html=True)
         ed_ben1 = st.text_input("f_ben1", value=ben1_val, key=f"ben1_{real_idx}", label_visibility="collapsed")
     with b1_cp:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_ben1_{real_idx}", use_container_width=True): copiar_texto_js(ed_ben1)
 
     b2_org, b2_esp, b2_mat, b2_cp, _ = st.columns([1.30, 0.85, 2.20, 0.55, 3.62], vertical_alignment="bottom")
@@ -880,13 +918,13 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">CGC/CPF (Apenas Números)</div>', unsafe_allow_html=True)
         ed_cpfn = st.text_input("f_cpfn", value=cpf_limpo, key=f"cpfn_{real_idx}", label_visibility="collapsed")
     with r4_2:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_cpfn_{real_idx}", use_container_width=True): copiar_texto_js(ed_cpfn)
     with r4_3:
         st.markdown('<div class="act-lbl">CGC/CPF (Formatado)</div>', unsafe_allow_html=True)
         st.text_input("f_cpff", value=cpf_fmt, key=f"cpff_{real_idx}", label_visibility="collapsed")
     with r4_4:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_cpff_{real_idx}", use_container_width=True): copiar_texto_js(cpf_fmt)
     with r4_5:
         st.markdown('<div class="act-lbl">Data Nascimento</div>', unsafe_allow_html=True)
@@ -930,7 +968,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">DDD + Tel 1 (Unido)</div>', unsafe_allow_html=True)
         st.text_input("f_uni1", value=unido1, key=f"uni1_{real_idx}", label_visibility="collapsed")
     with t1_5:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_uni1_{real_idx}", use_container_width=True): copiar_texto_js(unido1)
     with t1_6:
         st.markdown('<div class="act-lbl">Ref_1 / Observação Tel 1</div>', unsafe_allow_html=True)
@@ -951,7 +989,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">DDD + Tel 2 (Unido)</div>', unsafe_allow_html=True)
         st.text_input("f_uni2", value=unido2, key=f"uni2_{real_idx}", label_visibility="collapsed")
     with t2_5:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_uni2_{real_idx}", use_container_width=True): copiar_texto_js(unido2)
     with t2_6:
         st.markdown('<div class="act-lbl">Ref_2 / Observação Tel 2</div>', unsafe_allow_html=True)
@@ -972,7 +1010,7 @@ elif st.session_state["visao_ativa"] == "ficha":
         st.markdown('<div class="act-lbl">DDD + Tel 3 (Unido)</div>', unsafe_allow_html=True)
         st.text_input("f_uni3", value=unido3, key=f"uni3_{real_idx}", label_visibility="collapsed")
     with t3_5:
-        st.markdown('<div class="act-lbl">&nbsp;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
         if st.button("Copiar", key=f"cp_uni3_{real_idx}", use_container_width=True): copiar_texto_js(unido3)
     with t3_6:
         st.markdown('<div class="act-lbl">Ref_3 / Observação Tel 3</div>', unsafe_allow_html=True)

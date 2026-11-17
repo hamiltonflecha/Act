@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V80"
+VERSAO_APP = "Act!   V81"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -447,34 +447,16 @@ css_act_v74 = f"""
         margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
-    /* Barra de ferramentas contínua estilo ACT! / Windows 2000 (faixa cinza única + divisórias verticais) */
+    /* Barra de ferramentas alinhada à esquerda sem faixa de fundo contínua */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
-        background-color: #D4D0C8 !important;
-        border-top: 1px solid #FFFFFF !important;
-        border-left: 1px solid #FFFFFF !important;
-        border-right: 1px solid #404040 !important;
-        border-bottom: 1px solid #808080 !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 0px !important;
+        gap: 2px !important;
         margin: 0 0 2px 0 !important;
-        padding: 1px 3px !important;
-        min-height: 24px !important;
-        height: 24px !important;
-        box-sizing: border-box !important;
-    }}
-    /* Alça dupla vertical no início da barra de ferramentas (igual ao ACT! original) */
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type::before,
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type::before {{
-        content: "";
-        display: inline-block;
-        width: 3px;
-        height: 16px;
-        margin-right: 4px;
-        border-left: 1px solid #FFFFFF;
-        border-right: 1px solid #808080;
-        flex-shrink: 0;
+        padding: 0 !important;
+        min-height: 20px !important;
+        height: 20px !important;
     }}
     /* Botões flat/harmoniosos dentro da barra cinza */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
@@ -653,7 +635,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V80</td>
+            <td class="act-top-right">Act! Versão V81</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)

@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V76"
+VERSAO_APP = "Act!   V77"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -615,7 +615,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V76</td>
+            <td class="act-top-right">Act! Versão V77</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -626,9 +626,9 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
     b_first, b_prev, b_cnt, b_next, b_last,
     b_loc_in, b_loc_go, b_all,
     b_novo, b_excluir,
-    b_v_ficha, b_v_tab, b_v_quar, b_v_camp,
+    b_v_tab, b_v_quar, b_v_camp,
     b_unif, b_sair
-) = st.columns([0.38, 0.38, 0.95, 0.38, 0.38, 1.45, 0.65, 0.72, 0.58, 0.68, 0.58, 0.65, 1.02, 0.68, 0.92, 0.50], vertical_alignment="center")
+) = st.columns([0.38, 0.38, 0.95, 0.38, 0.38, 2.03, 0.65, 0.72, 0.58, 0.68, 0.65, 1.02, 0.68, 0.92, 0.50], vertical_alignment="center")
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):
@@ -709,24 +709,19 @@ with b_excluir:
         st.session_state["confirmar_exclusao"] = True
         st.rerun()
 
-with b_v_ficha:
-    if st.button("Ficha", use_container_width=True, type="primary" if st.session_state["visao_ativa"] == "ficha" else "secondary"):
-        st.session_state["visao_ativa"] = "ficha"
-        st.rerun()
-
 with b_v_tab:
     if st.button("Tabela", use_container_width=True, type="primary" if st.session_state["visao_ativa"] == "tabela" else "secondary"):
-        st.session_state["visao_ativa"] = "tabela"
+        st.session_state["visao_ativa"] = "ficha" if st.session_state["visao_ativa"] == "tabela" else "tabela"
         st.rerun()
 
 with b_v_quar:
     if st.button(f"Quarent({len(df_quarentena)})", use_container_width=True, type="primary" if st.session_state["visao_ativa"] == "quarentena" else "secondary"):
-        st.session_state["visao_ativa"] = "quarentena"
+        st.session_state["visao_ativa"] = "ficha" if st.session_state["visao_ativa"] == "quarentena" else "quarentena"
         st.rerun()
 
 with b_v_camp:
     if st.button("Campos", use_container_width=True, type="primary" if st.session_state["visao_ativa"] == "todos_campos" else "secondary"):
-        st.session_state["visao_ativa"] = "todos_campos"
+        st.session_state["visao_ativa"] = "ficha" if st.session_state["visao_ativa"] == "todos_campos" else "todos_campos"
         st.rerun()
 
 with b_unif:

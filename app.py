@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V79"
+VERSAO_APP = "Act!   V80"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -653,7 +653,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V79</td>
+            <td class="act-top-right">Act! Versão V80</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -662,31 +662,19 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
 
 (
     b_first, b_prev, b_cnt, b_next, b_last,
-    s_1,
     b_loc_in, b_loc_go, b_all,
-    s_2,
     b_novo, b_excluir,
-    s_3,
     b_v_tab, b_v_quar, b_v_camp,
-    s_4,
     b_unif, b_sair,
     _b_spacer
 ) = st.columns([
     0.30, 0.30, 0.90, 0.30, 0.30,
-    0.12,
-    1.45, 0.60, 0.66,
-    0.12,
-    0.52, 0.62,
-    0.12,
-    0.60, 0.96, 0.62,
-    0.12,
-    0.84, 0.48,
-    2.97
+    1.45, 0.60, 0.68,
+    0.54, 0.64,
+    0.62, 0.98, 0.64,
+    0.85, 0.48,
+    3.40
 ], vertical_alignment="center")
-
-for _sep in (s_1, s_2, s_3, s_4):
-    with _sep:
-        st.markdown('<div class="act-tb-sep"></div>', unsafe_allow_html=True)
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):

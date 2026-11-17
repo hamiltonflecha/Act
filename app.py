@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V77"
+VERSAO_APP = "Act!   V78"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -447,10 +447,12 @@ css_act_v74 = f"""
         margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
-    /* A primeira linha (barra de ferramentas superior) deve ter todas as células alinhadas pelo centro/base em uma linha única */
+    /* A primeira linha (barra de ferramentas superior) compactada à esquerda como no ACT! original */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
         align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 2px !important;
         margin: 0 !important;
         padding: 0 !important;
         min-height: 20px !important;
@@ -615,7 +617,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V77</td>
+            <td class="act-top-right">Act! Versão V78</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -627,8 +629,8 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
     b_loc_in, b_loc_go, b_all,
     b_novo, b_excluir,
     b_v_tab, b_v_quar, b_v_camp,
-    b_unif, b_sair
-) = st.columns([0.38, 0.38, 0.95, 0.38, 0.38, 2.03, 0.65, 0.72, 0.58, 0.68, 0.65, 1.02, 0.68, 0.92, 0.50], vertical_alignment="center")
+    b_unif, b_sair, _b_spacer
+) = st.columns([0.32, 0.32, 0.92, 0.32, 0.32, 1.45, 0.62, 0.68, 0.54, 0.64, 0.62, 0.98, 0.64, 0.85, 0.48, 3.30], vertical_alignment="center")
 
 with b_first:
     if st.button("|<", use_container_width=True, help="Primeiro registro"):

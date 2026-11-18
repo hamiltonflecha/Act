@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V81"
+VERSAO_APP = "Act!   V83"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -447,6 +447,19 @@ css_act_v74 = f"""
         margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
+    /* Forçar gap zero absoluto e remoção de margens nas colunas da barra de ferramentas superior */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        gap: 0px !important;
+        column-gap: 0px !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
     /* Barra de ferramentas alinhada à esquerda sem faixa de fundo contínua */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
@@ -635,7 +648,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V81</td>
+            <td class="act-top-right">Act! Versão V83</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)

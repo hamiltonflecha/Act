@@ -1,45 +1,15 @@
-# Vamos ler o código atual do app.py e remover a barra antiga (que gerava o teste em HTML puro)
-# e garantir que a barra oficial do Streamlit seja limpa, perfeitamente posicionada e 100% interativa e clicável.
+# Vamos verificar o conteúdo do arquivo app.py e criar um instalador/lançador em batch (.bat) chamado 'iniciar_act.bat'
+# Esse arquivo .bat vai localizar automaticamente o Python no computador do Hamilton (inclusive caminhos comuns do Windows 7 ou AppData)
+# e iniciar o aplicativo Streamlit perfeitamente, sem precisar digitar comandos no CMD.
+
 with open("app.py", "r", encoding="utf-8") as f:
     code = f.read()
 
-# Vamos remover a linha e o componente HTML de teste que aparece na imagem
-trecho_remover = '''st.markdown('<div style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; color:#000000;">Visualização em Linha Única (HTML Puro):</div>', unsafe_allow_html=True)
-components.html("""
-<table style="width: 100%; border-collapse: collapse; background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; font-family: 'Tahoma', 'MS Sans Serif', sans-serif; font-size: 11px;">
-  <tr>
-    <td style="padding: 2px; white-space: nowrap;">
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&lt;|</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&lt;</button>
-      <input type="text" value="0 de 0" disabled style="width: 55px; height: 20px; text-align: center; background-color: #FFFFFF; border-top: 1px solid #808080; border-left: 1px solid #808080; border-right: 1px solid #FFFFFF; border-bottom: 1px solid #FFFFFF; font-size: 11px; vertical-align: middle;" />
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&gt;</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&gt;|</button>
-      
-      <input type="text" placeholder="Localizar..." style="width: 95px; height: 20px; background-color: #FFFFFF; border: 1px solid #808080; padding: 0 4px; font-size: 11px; vertical-align: middle; margin-left: 4px;" />
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Buscar</button>
-      
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer; margin-left: 2px;">Todos</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Novo</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Excluir</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Tabela</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Quarent(0)</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Campos</button>
-      <button style="background-color: #C6D9F1; border: 1px solid #0A246A; height: 20px; padding: 0 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Unificar</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Sair</button>
-    </td>
-  </tr>
-</table>
-""", height=30)'''
-
-if trecho_remover in code:
-    code = code.replace(trecho_remover, "")
-    print("Trecho HTML puro removido com sucesso!")
-else:
-    print("Aviso: trecho exato não encontrado, buscando alternativa...")
-
-# Atualizar versão para V87
-code = code.replace('VERSAO_APP = "Act!   V86"', 'VERSAO_APP = "Act!   V87"')
-code = code.replace('Act! Versão V86', 'Act! Versão V87')
+# Vamos garantir que a VERSAO_APP seja V88 e esteja explícita no código
+code = code.replace('VERSAO_APP = "Act!   V87"', 'VERSAO_APP = "Act!   V88"')
+code = code.replace('Act! Versão V87', 'Act! Versão V88')
+if 'VERSAO_APP = "Act!' not in code:
+    code = 'VERSAO_APP = "Act!   V88"\n' + code
 
 with open("app.py", "w", encoding="utf-8") as f:
     f.write(code)
@@ -47,4 +17,50 @@ with open("app.py", "w", encoding="utf-8") as f:
 with open("app_final.py", "w", encoding="utf-8") as f:
     f.write(code)
 
-print("Versão V87 gerada e salva sem a barra estática duplicada.")
+# Criar o script .bat para facilitar a inicialização na pasta C:\Users\Banco\Documents\000000-act
+bat_content = """@echo off
+TITLE Act! - Solucoes 1986
+cd /d "%~dp0"
+echo Iniciando o Act! Versao V88...
+
+REM Tenta encontrar o Python nos caminhos mais comuns do Windows 7 / AppData
+if exist "%LocalAppData%\\Programs\\Python\\Python39\\python.exe" (
+    "%LocalAppData%\\Programs\\Python\\Python39\\python.exe" -m streamlit run app.py
+    goto end
+)
+if exist "%LocalAppData%\\Programs\\Python\\Python310\\python.exe" (
+    "%LocalAppData%\\Programs\\Python\\Python310\\python.exe" -m streamlit run app.py
+    goto end
+)
+if exist "C:\\Python39\\python.exe" (
+    C:\\Python39\\python.exe -m streamlit run app.py
+    goto end
+)
+if exist "C:\\Python310\\python.exe" (
+    C:\\Python310\\python.exe -m streamlit run app.py
+    goto end
+)
+if exist "C:\\Python311\\python.exe" (
+    C:\\Python311\\python.exe -m streamlit run app.py
+    goto end
+)
+
+REM Tenta comando direto python ou py
+python -m streamlit run app.py
+if %errorlevel% equ 0 goto end
+
+py -m streamlit run app.py
+if %errorlevel% equ 0 goto end
+
+echo.
+echo [ERRO] O Python nao foi encontrado automaticamente neste computador.
+echo Por favor, verifique onde o Python esta instalado.
+pause
+
+:end
+"""
+
+with open("iniciar_act.bat", "w", encoding="utf-8") as f:
+    f.write(bat_content)
+
+print("Arquivo app.py atualizado para V88 e script 'iniciar_act.bat' gerado com sucesso!")

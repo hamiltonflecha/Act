@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V85"
+VERSAO_APP = "Act!   V86"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -419,6 +419,7 @@ css_act_v74 = f"""
     }}
     html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], section.main {{
         background-color: #9E9382 !important;
+    pointer-events: auto !important;
         font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
         color: #000000 !important;
         overflow-x: hidden !important;
@@ -648,7 +649,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V85</td>
+            <td class="act-top-right">Act! Versão V86</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)

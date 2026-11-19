@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V89"
+VERSAO_APP = "Act!   V90"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -459,24 +459,59 @@ css_act_v74 = f"""
         margin: 0 !important;
         padding: 0 !important;
     }}
+    /* Barra superior contínua cinza clássica com textos linkáveis (sem células/bordas de botões) */
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        background-color: #D4D0C8 !important;
+        border-top: 1px solid #FFFFFF !important;
+        border-left: 1px solid #FFFFFF !important;
+        border-right: 1px solid #404040 !important;
+        border-bottom: 1px solid #404040 !important;
         align-items: center !important;
         justify-content: flex-start !important;
         gap: 2px !important;
         margin: 0 0 2px 0 !important;
-        padding: 0 !important;
-        min-height: 20px !important;
-        height: 20px !important;
+        padding: 1px 4px !important;
+        min-height: 22px !important;
+        height: 22px !important;
+        box-sizing: border-box !important;
     }}
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
     .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button {{
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
         border-radius: 0px !important;
         margin: 0 !important;
-        padding: 0 5px !important;
-        height: 19px !important;
-        min-height: 19px !important;
-        max-height: 19px !important;
+        padding: 0 4px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        cursor: pointer !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover {{
+        background: transparent !important;
+        background-color: transparent !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button p {{
+        color: #000080 !important;
+        text-decoration: underline !important;
+        font-size: 11px !important;
+        font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover p {{
+        color: #0A246A !important;
+        font-weight: bold !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"] p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"] p {{
+        color: #800000 !important;
+        font-weight: bold !important;
+        text-decoration: underline !important;
     }}
     .act-tb-sep {{
         display: block;
@@ -645,7 +680,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V89</td>
+            <td class="act-top-right">Act! Versão V90</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)

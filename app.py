@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V94"
+VERSAO_APP = "Act!   V95"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -35,7 +35,12 @@ def remover_acentos(texto):
 def limpar_cpf(val):
     if not val or pd.isna(val):
         return ""
-    digitos = ''.join(filter(str.isdigit, str(val)))
+    s = str(val).strip()
+    if s.lower() in ("nan", "none", "null", "0", "00000000000"):
+        return ""
+    digitos = ''.join(filter(str.isdigit, s))
+    if not digitos or set(digitos) == {"0"}:
+        return ""
     if len(digitos) >= 11:
         return digitos[-11:]
     elif len(digitos) > 0:
@@ -655,7 +660,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V94</td>
+            <td class="act-top-right">Act! Versão V95</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -850,11 +855,23 @@ if st.session_state["lookup_modal_aberto"]:
         h3.markdown('<div class="act-lbl"><b>Ação</b></div>', unsafe_allow_html=True)
         for pos_lk, idx_real_lk in enumerate(cand_indices[:30]):
             r_lk = df_unificada.loc[idx_real_lk]
+            nome_lk = get_campo(r_lk, ["NAME", "NOME"])
+            cpf_bruto_lk = get_campo(r_lk, ["USR1000", "CPF", "USER1000", "CGC_CPF", "CGC", "CNPJ_CPF"])
+            cpf_lk = limpar_cpf(cpf_bruto_lk)
+            # Se ainda não achou CPF nas colunas padrão, tenta localizar um número de 11 dígitos em outras colunas da linha
+            if not cpf_lk:
+                for col_name, val_cell in r_lk.items():
+                    if col_name in ["NAME", "NOME", "PHONE", "TELEFONE", "TEL_1", "TEL_2", "TEL_3", "ZIP", "CEP", "BENEFICIO", "ID_STAT"]:
+                        continue
+                    digs = ''.join(filter(str.isdigit, str(val_cell)))
+                    if len(digs) == 11:
+                        cpf_lk = digs
+                        break
             c1, c2, c3, _ = st.columns([1.5, 0.6, 0.4, 6.2], vertical_alignment="center")
             with c1:
-                st.text_input("lk_cell", value=get_campo(r_lk, ["NAME"]), disabled=True, label_visibility="collapsed", key=f"lk_c1_{idx_real_lk}")
+                st.text_input("lk_cell", value=nome_lk, disabled=True, label_visibility="collapsed", key=f"lk_c1_{idx_real_lk}")
             with c2:
-                st.text_input("lk_cell", value=limpar_cpf(get_campo(r_lk, ["USR1000", "CPF"])), disabled=True, label_visibility="collapsed", key=f"lk_c2_{idx_real_lk}")
+                st.text_input("lk_cell", value=cpf_lk, disabled=True, label_visibility="collapsed", key=f"lk_c2_{idx_real_lk}")
             with c3:
                 if st.button("Abrir", key=f"open_lk_{idx_real_lk}", use_container_width=True):
                     st.session_state["lookup_indices"] = cand_indices

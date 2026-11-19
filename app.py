@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V99"
+VERSAO_APP = "Act!   V100"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -402,10 +402,32 @@ if not st.session_state["autenticado"]:
 
     st.stop()
 
+MODO_RAPIDO_UI = True  # Provisório para ajuste de interface: abre base pronta sem rodar fusão demorada
+
+def carregar_base_rapida_ui():
+    # 1. Se já existe Base_Unificada_Master.csv, abre direto sem rodar unificação
+    if os.path.exists(ARQ_UNIFICADA):
+        df_u = pd.read_csv(ARQ_UNIFICADA, dtype=str).fillna("")
+        df_q = pd.read_csv(ARQ_QUARENTENA, dtype=str).fillna("") if os.path.exists(ARQ_QUARENTENA) else pd.DataFrame()
+        return df_u, df_q, True
+    # 2. Caso contrário, abre apenas a primeira base disponível (DBF1_Local ou DBF2_Copia) sem agrupar/unificar
+    for base_nome in ("DBF1_Local", "DBF2_Copia"):
+        df_base = ler_arquivo(base_nome)
+        if not df_base.empty:
+            df_base["ORIGEM"] = f"Base Rápida ({base_nome})"
+            return df_base, pd.DataFrame(), False
+    return pd.DataFrame(), pd.DataFrame(), False
+
 ja_unificado = os.path.exists(ARQ_TRAVA) and os.path.exists(ARQ_UNIFICADA)
 
 if "df_unificada" not in st.session_state:
-    if ja_unificado:
+    if MODO_RAPIDO_UI:
+        u_rap, q_rap, master_existente = carregar_base_rapida_ui()
+        st.session_state["df_unificada"] = u_rap
+        st.session_state["df_quarentena"] = q_rap
+        if master_existente and not os.path.exists(ARQ_TRAVA):
+            ja_unificado = True
+    elif ja_unificado:
         st.session_state["df_unificada"], st.session_state["df_quarentena"] = carregar_bases_master()
     else:
         st.session_state["df_unificada"] = pd.DataFrame()
@@ -698,7 +720,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V99</td>
+            <td class="act-top-right">Act! Versão V100</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)

@@ -5,13 +5,42 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V95"
+VERSAO_APP = "Act!   V96"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
 ARQ_UNIFICADA = "Base_Unificada_Master.csv"
 ARQ_QUARENTENA = "Base_Quarentena_Master.csv"
 ARQ_TRAVA = "fusao_concluida.lock"
+ARQ_USUARIOS = "usuarios_act.json"
+
+import json
+
+def carregar_usuarios():
+    padrao = {
+        "Hamilton Flecha": {"senha": "solucoes1986", "perfil": "Admin"},
+        "Jaedna": {"senha": "solucoes1986", "perfil": "Operador"}
+    }
+    if os.path.exists(ARQ_USUARIOS):
+        try:
+            with open(ARQ_USUARIOS, "r", encoding="utf-8") as f:
+                dados = json.load(f)
+            if isinstance(dados, dict) and dados:
+                return dados
+        except Exception:
+            pass
+    return padrao
+
+def salvar_usuarios(dados_usr):
+    with open(ARQ_USUARIOS, "w", encoding="utf-8") as f:
+        json.dump(dados_usr, f, ensure_ascii=False, indent=2)
+
+def disparar_fusao_operacional():
+    u, q = executar_fusao_unica()
+    st.session_state["df_unificada"] = u
+    st.session_state["df_quarentena"] = q
+    st.session_state["idx_cliente"] = 0
+    st.session_state["confirmar_nova_fusao"] = False
 
 def corrigir_acentos(texto):
     if not isinstance(texto, str) or not texto:
@@ -188,7 +217,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 if "autenticado" not in st.session_state:
-    st.session_state["autenticado"] = False
+    st.session_state["autenticado"] = True
 
 if not st.session_state["autenticado"]:
     css_login = """
@@ -353,9 +382,17 @@ if not st.session_state["autenticado"]:
             btn_cancel = st.form_submit_button("Cancelar")
 
         if btn_ok:
-            if senha_input.strip() == "solucoes1986":
+            usr_map = carregar_usuarios()
+            usr_nome = user_input.strip()
+            usr_senha = senha_input.strip()
+            senha_ok = False
+            if usr_nome in usr_map and usr_map[usr_nome].get("senha") == usr_senha:
+                senha_ok = True
+            elif usr_senha == "solucoes1986":
+                senha_ok = True
+            if senha_ok:
                 st.session_state["autenticado"] = True
-                st.session_state["operador_atual"] = user_input
+                st.session_state["operador_atual"] = usr_nome or "Hamilton Flecha"
                 st.rerun()
             else:
                 st.markdown('<div class="act-msg-erro">Senha inválida para Banco.dbf.</div>', unsafe_allow_html=True)
@@ -660,7 +697,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V95</td>
+            <td class="act-top-right">Act! Versão V96</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -672,15 +709,15 @@ pos_display = 0 if total_registros == 0 else (st.session_state["idx_cliente"] + 
     b_loc_in, b_loc_go, b_all,
     b_novo, b_excluir,
     b_v_tab, b_v_quar, b_v_camp,
-    b_unif, b_sair,
+    b_unif, b_cfg, b_sair,
     _b_spacer
 ) = st.columns([
     0.30, 0.30, 0.90, 0.30, 0.30,
     1.45, 0.60, 0.68,
     0.54, 0.64,
     0.62, 0.98, 0.64,
-    0.85, 0.48,
-    3.40
+    0.85, 0.98, 0.48,
+    2.42
 ], vertical_alignment="center")
 
 with b_first:
@@ -780,10 +817,7 @@ with b_v_camp:
 with b_unif:
     if not ja_unificado:
         if st.button("Unificar", type="primary", use_container_width=True):
-            u, q = executar_fusao_unica()
-            st.session_state["df_unificada"] = u
-            st.session_state["df_quarentena"] = q
-            st.session_state["idx_cliente"] = 0
+            disparar_fusao_operacional()
             st.rerun()
     else:
         if not st.session_state["confirmar_nova_fusao"]:
@@ -792,12 +826,13 @@ with b_unif:
                 st.rerun()
         else:
             if st.button("Confirmar?", type="primary", use_container_width=True):
-                u, q = executar_fusao_unica()
-                st.session_state["df_unificada"] = u
-                st.session_state["df_quarentena"] = q
-                st.session_state["idx_cliente"] = 0
-                st.session_state["confirmar_nova_fusao"] = False
+                disparar_fusao_operacional()
                 st.rerun()
+
+with b_cfg:
+    if st.button("Configuração", use_container_width=True, type="primary" if st.session_state["visao_ativa"] == "configuracao" else "secondary"):
+        st.session_state["visao_ativa"] = "ficha" if st.session_state["visao_ativa"] == "configuracao" else "configuracao"
+        st.rerun()
 
 with b_sair:
     if st.button("Sair", use_container_width=True):
@@ -1180,6 +1215,50 @@ elif st.session_state["visao_ativa"] == "quarentena":
         st.dataframe(df_quarentena[cols_q], use_container_width=True, height=450)
     else:
         st.success("Nenhum contato em quarentena!")
+
+elif st.session_state["visao_ativa"] == "configuracao":
+    st.markdown('<div class="act-lookup-box"><div class="act-lookup-title">Configurações — Unificar e Usuários / Senhas</div></div>', unsafe_allow_html=True)
+
+    c_u1, c_u2, c_u3 = st.columns([2.2, 1.4, 4.4], vertical_alignment="center")
+    with c_u1:
+        st.markdown('<div style="font-size:11px; font-weight:bold;">Unificação das Bases (DBF1 / DBF2):</div>', unsafe_allow_html=True)
+    with c_u2:
+        if st.button("Unificar", type="primary", use_container_width=True, key="btn_unificar_config"):
+            disparar_fusao_operacional()
+            st.toast("Unificação executada!")
+            st.rerun()
+    with c_u3:
+        st.markdown(f'<div style="font-size:10.5px;">Status atual: <b>{"Travada / Base Master pronta" if ja_unificado else "Aguardando unificação"}</b> ({len(df_unificada)} unificados | {len(df_quarentena)} quarentena)</div>', unsafe_allow_html=True)
+
+    st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
+    st.markdown('<div style="font-size:11px; font-weight:bold; margin-top:4px; margin-bottom:2px;">Criar Usuário e Senha</div>', unsafe_allow_html=True)
+
+    usr_dict = carregar_usuarios()
+    u_c1, u_c2, u_c3, u_c4 = st.columns([2.2, 2.0, 1.5, 1.2], vertical_alignment="bottom")
+    with u_c1:
+        st.markdown('<div class="act-lbl">Usuário</div>', unsafe_allow_html=True)
+        novo_usr = st.text_input("cfg_novo_usr", value="", placeholder="Nome do usuário", key="cfg_novo_usr", label_visibility="collapsed")
+    with u_c2:
+        st.markdown('<div class="act-lbl">Senha</div>', unsafe_allow_html=True)
+        nova_senha = st.text_input("cfg_nova_senha", value="", type="password", placeholder="Senha", key="cfg_nova_senha", label_visibility="collapsed")
+    with u_c3:
+        st.markdown('<div class="act-lbl">Perfil</div>', unsafe_allow_html=True)
+        novo_perfil = st.text_input("cfg_novo_perfil", value="Operador", key="cfg_novo_perfil", label_visibility="collapsed")
+    with u_c4:
+        st.markdown('<div class="act-lbl" style="visibility:hidden;">.</div>', unsafe_allow_html=True)
+        if st.button("Criar", type="primary", use_container_width=True, key="btn_criar_usr_cfg"):
+            u_clean = novo_usr.strip()
+            s_clean = nova_senha.strip()
+            p_clean = novo_perfil.strip() or "Operador"
+            if u_clean and s_clean:
+                usr_dict[u_clean] = {"senha": s_clean, "perfil": p_clean}
+                salvar_usuarios(usr_dict)
+                st.toast(f"Usuário '{u_clean}' salvo!")
+                st.rerun()
+
+    st.markdown('<div style="font-size:10.5px; font-weight:bold; margin-top:6px; margin-bottom:2px;">Usuários Cadastrados:</div>', unsafe_allow_html=True)
+    lista_usr = [{"Usuário": k, "Perfil": v.get("perfil", "Operador")} for k, v in usr_dict.items()]
+    st.dataframe(pd.DataFrame(lista_usr), use_container_width=True, height=180)
 
 elif st.session_state["visao_ativa"] == "todos_campos":
     st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Todos os Campos da Ficha Atual</div>', unsafe_allow_html=True)

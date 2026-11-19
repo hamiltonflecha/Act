@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V85"
+VERSAO_APP = "Act!   V91"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -447,64 +447,12 @@ css_act_v74 = f"""
         margin: 0 0 1px 0 !important;
         padding: 0 !important;
     }}
-    /* Forçar gap zero absoluto e remoção de margens nas colunas da barra de ferramentas superior */
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
-        gap: 0px !important;
-        column-gap: 0px !important;
-    }}
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"],
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"] {{
-        margin: 0 !important;
-        padding: 0 !important;
-    }}
-    /* Barra de ferramentas alinhada à esquerda sem faixa de fundo contínua */
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 2px !important;
-        margin: 0 0 2px 0 !important;
-        padding: 0 !important;
-        min-height: 20px !important;
-        height: 20px !important;
-    }}
-    /* Botões flat/harmoniosos dentro da barra cinza */
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button {{
-        border-radius: 0px !important;
-        margin: 0 !important;
-        padding: 0 5px !important;
-        height: 19px !important;
-        min-height: 19px !important;
-        max-height: 19px !important;
-    }}
-    .act-tb-sep {{
-        display: block;
-        width: 2px;
-        height: 17px;
-        margin: 0 auto;
-        border-left: 1px solid #808080;
-        border-right: 1px solid #FFFFFF;
-    }}
     [data-testid="column"], [data-testid="stColumn"] {{
         padding: 0 !important;
         margin: 0 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-end !important;
-    }}
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
-    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"],
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
-    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"] {{
-        justify-content: center !important;
-        align-items: stretch !important;
-        height: 20px !important;
-        min-height: 20px !important;
-        max-height: 20px !important;
     }}
     [data-testid="stMarkdownContainer"] {{ margin: 0 !important; padding: 0 !important; overflow: visible !important; }}
     .act-lbl {{
@@ -589,6 +537,86 @@ css_act_v74 = f"""
     [data-testid="stButton"] button:hover {{ background-color: #E4E0D8 !important; }}
     [data-testid="stButton"] button p {{ font-size: 10.5px !important; color: #000000 !important; margin: 0 !important; line-height: 16px !important; white-space: nowrap !important; }}
     [data-testid="stButton"] button[kind="primary"] {{ background-color: #C6D9F1 !important; border: 1px solid #0A246A !important; font-weight: bold !important; }}
+
+    /* Barra superior de navegação: textos linkáveis sem células/caixas/bordas de botão */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type {{
+        background-color: #D4D0C8 !important;
+        border-top: 1px solid #FFFFFF !important;
+        border-left: 1px solid #FFFFFF !important;
+        border-right: 1px solid #404040 !important;
+        border-bottom: 1px solid #404040 !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 2px !important;
+        margin: 0 0 2px 0 !important;
+        padding: 1px 6px !important;
+        min-height: 22px !important;
+        height: 22px !important;
+        box-sizing: border-box !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="column"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"] {{
+        margin: 0 !important;
+        padding: 0 2px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button,
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"],
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"] {{
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border-radius: 0px !important;
+        margin: 0 !important;
+        padding: 0 3px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        min-width: 0px !important;
+        cursor: pointer !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover {{
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button p {{
+        color: #000080 !important;
+        text-decoration: underline !important;
+        font-size: 11px !important;
+        font-weight: normal !important;
+        font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button:hover p {{
+        color: #0A246A !important;
+        font-weight: bold !important;
+        text-decoration: underline !important;
+    }}
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"] p,
+    .block-container > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stButton"] button[kind="primary"] p {{
+        color: #800000 !important;
+        font-weight: bold !important;
+        text-decoration: underline !important;
+    }}
+
     [data-testid="stRadio"] {{ margin: 0 !important; padding: 0 !important; height: 18px !important; min-height: 18px !important; max-height: 18px !important; overflow: hidden !important; }}
     [data-testid="stRadio"] > label {{ display: none !important; }}
     [data-testid="stRadio"] [role="radiogroup"] {{
@@ -641,14 +669,14 @@ css_act_v74 = f"""
     }}
     .act-statusbar {{ background-color: #D4D0C8; border-top: 1px solid #808080; padding: 1px 6px; font-size: 10px; color: #000000; display: flex; justify-content: space-between; margin-top: 4px; }}
     </style>
-"""
+""""""
 st.markdown(css_act_v74, unsafe_allow_html=True)
 
 st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V85</td>
+            <td class="act-top-right">Act! Versão V91</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -810,34 +838,6 @@ if st.session_state["confirmar_exclusao"] and total_registros > 0:
         if st.button("Cancelar", use_container_width=True):
             st.session_state["confirmar_exclusao"] = False
             st.rerun()
-
-
-st.markdown('<div style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; color:#000000;">Visualização em Linha Única (HTML Puro):</div>', unsafe_allow_html=True)
-components.html("""
-<table style="width: 100%; border-collapse: collapse; background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; font-family: 'Tahoma', 'MS Sans Serif', sans-serif; font-size: 11px;">
-  <tr>
-    <td style="padding: 2px; white-space: nowrap;">
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&lt;|</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&lt;</button>
-      <input type="text" value="0 de 0" disabled style="width: 55px; height: 20px; text-align: center; background-color: #FFFFFF; border-top: 1px solid #808080; border-left: 1px solid #808080; border-right: 1px solid #FFFFFF; border-bottom: 1px solid #FFFFFF; font-size: 11px; vertical-align: middle;" />
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&gt;</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 4px; font-size: 11px; cursor: pointer;">&gt;|</button>
-      
-      <input type="text" placeholder="Localizar..." style="width: 95px; height: 20px; background-color: #FFFFFF; border: 1px solid #808080; padding: 0 4px; font-size: 11px; vertical-align: middle; margin-left: 4px;" />
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Buscar</button>
-      
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer; margin-left: 2px;">Todos</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Novo</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Excluir</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Tabela</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Quarent(0)</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Campos</button>
-      <button style="background-color: #C6D9F1; border: 1px solid #0A246A; height: 20px; padding: 0 6px; font-size: 11px; font-weight: bold; cursor: pointer;">Unificar</button>
-      <button style="background-color: #D4D0C8; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #404040; border-bottom: 1px solid #404040; height: 20px; padding: 0 6px; font-size: 11px; cursor: pointer;">Sair</button>
-    </td>
-  </tr>
-</table>
-""", height=30)
 
 st.markdown('<hr class="act-hr">', unsafe_allow_html=True)
 

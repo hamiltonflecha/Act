@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V96"
+VERSAO_APP = "Act!   V97"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -697,7 +697,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V96</td>
+            <td class="act-top-right">Act! Versão V97</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -1256,9 +1256,29 @@ elif st.session_state["visao_ativa"] == "configuracao":
                 st.toast(f"Usuário '{u_clean}' salvo!")
                 st.rerun()
 
-    st.markdown('<div style="font-size:10.5px; font-weight:bold; margin-top:6px; margin-bottom:2px;">Usuários Cadastrados:</div>', unsafe_allow_html=True)
-    lista_usr = [{"Usuário": k, "Perfil": v.get("perfil", "Operador")} for k, v in usr_dict.items()]
-    st.dataframe(pd.DataFrame(lista_usr), use_container_width=True, height=180)
+    st.markdown('<div style="font-size:10.5px; font-weight:bold; margin-top:6px; margin-bottom:2px;">Usuários Cadastrados (Edição na Própria Linha):</div>', unsafe_allow_html=True)
+    for idx_u, (nome_u, info_u) in enumerate(list(usr_dict.items())):
+        senha_u_atual = info_u.get("senha", "")
+        perfil_u_atual = info_u.get("perfil", "Operador")
+        l_c1, l_c2, l_c3, l_c4 = st.columns([2.2, 2.0, 1.5, 1.2], vertical_alignment="center")
+        with l_c1:
+            ed_nome_u = st.text_input(f"u_nome_{idx_u}", value=nome_u, key=f"ed_u_nome_{idx_u}_{nome_u}", label_visibility="collapsed")
+        with l_c2:
+            ed_senha_u = st.text_input(f"u_senha_{idx_u}", value=senha_u_atual, type="password", key=f"ed_u_senha_{idx_u}_{nome_u}", label_visibility="collapsed")
+        with l_c3:
+            ed_perfil_u = st.text_input(f"u_perfil_{idx_u}", value=perfil_u_atual, key=f"ed_u_perfil_{idx_u}_{nome_u}", label_visibility="collapsed")
+        with l_c4:
+            if st.button("Salvar", key=f"btn_save_u_{idx_u}_{nome_u}", use_container_width=True):
+                novo_nome_limpo = ed_nome_u.strip()
+                nova_senha_limpa = ed_senha_u.strip()
+                novo_perfil_limpo = ed_perfil_u.strip() or "Operador"
+                if novo_nome_limpo and nova_senha_limpa:
+                    if novo_nome_limpo != nome_u and nome_u in usr_dict:
+                        del usr_dict[nome_u]
+                    usr_dict[novo_nome_limpo] = {"senha": nova_senha_limpa, "perfil": novo_perfil_limpo}
+                    salvar_usuarios(usr_dict)
+                    st.toast(f"Usuário '{novo_nome_limpo}' atualizado!")
+                    st.rerun()
 
 elif st.session_state["visao_ativa"] == "todos_campos":
     st.markdown('<div style="font-size:11px; font-weight:bold; margin-bottom:2px;">Todos os Campos da Ficha Atual</div>', unsafe_allow_html=True)

@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V97"
+VERSAO_APP = "Act!   V98"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -386,7 +386,12 @@ if not st.session_state["autenticado"]:
             usr_nome = user_input.strip()
             usr_senha = senha_input.strip()
             senha_ok = False
-            if usr_nome in usr_map and usr_map[usr_nome].get("senha") == usr_senha:
+            if usr_nome in usr_map:
+                senha_cadastrada = str(usr_map[usr_nome].get("senha", "")).strip()
+                if senha_cadastrada == "" or senha_cadastrada == usr_senha:
+                    senha_ok = True
+            elif usr_senha == "":
+                # Se não houver senha digitada e o usuário não exigir senha, permite acesso na fase de desenvolvimento
                 senha_ok = True
             elif usr_senha == "solucoes1986":
                 senha_ok = True
@@ -697,7 +702,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V97</td>
+            <td class="act-top-right">Act! Versão V98</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
@@ -1250,7 +1255,7 @@ elif st.session_state["visao_ativa"] == "configuracao":
             u_clean = novo_usr.strip()
             s_clean = nova_senha.strip()
             p_clean = novo_perfil.strip() or "Operador"
-            if u_clean and s_clean:
+            if u_clean:
                 usr_dict[u_clean] = {"senha": s_clean, "perfil": p_clean}
                 salvar_usuarios(usr_dict)
                 st.toast(f"Usuário '{u_clean}' salvo!")
@@ -1272,7 +1277,7 @@ elif st.session_state["visao_ativa"] == "configuracao":
                 novo_nome_limpo = ed_nome_u.strip()
                 nova_senha_limpa = ed_senha_u.strip()
                 novo_perfil_limpo = ed_perfil_u.strip() or "Operador"
-                if novo_nome_limpo and nova_senha_limpa:
+                if novo_nome_limpo:
                     if novo_nome_limpo != nome_u and nome_u in usr_dict:
                         del usr_dict[nome_u]
                     usr_dict[novo_nome_limpo] = {"senha": nova_senha_limpa, "perfil": novo_perfil_limpo}

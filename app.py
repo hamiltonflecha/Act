@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import streamlit.components.v1 as components
 
-VERSAO_APP = "Act!   V98"
+VERSAO_APP = "Act!   V99"
 
 st.set_page_config(page_title=f"{VERSAO_APP} - Banco.dbf", page_icon="📑", layout="wide", initial_sidebar_state="collapsed")
 
@@ -217,7 +217,7 @@ def copiar_texto_js(texto):
     """, height=0, width=0)
 
 if "autenticado" not in st.session_state:
-    st.session_state["autenticado"] = True
+    st.session_state["autenticado"] = False
 
 if not st.session_state["autenticado"]:
     css_login = """
@@ -388,19 +388,15 @@ if not st.session_state["autenticado"]:
             senha_ok = False
             if usr_nome in usr_map:
                 senha_cadastrada = str(usr_map[usr_nome].get("senha", "")).strip()
+                # Permite entrar sem senha apenas se a senha cadastrada do usuário estiver vazia
                 if senha_cadastrada == "" or senha_cadastrada == usr_senha:
                     senha_ok = True
-            elif usr_senha == "":
-                # Se não houver senha digitada e o usuário não exigir senha, permite acesso na fase de desenvolvimento
-                senha_ok = True
-            elif usr_senha == "solucoes1986":
-                senha_ok = True
             if senha_ok:
                 st.session_state["autenticado"] = True
-                st.session_state["operador_atual"] = usr_nome or "Hamilton Flecha"
+                st.session_state["operador_atual"] = usr_nome
                 st.rerun()
             else:
-                st.markdown('<div class="act-msg-erro">Senha inválida para Banco.dbf.</div>', unsafe_allow_html=True)
+                st.markdown('<div class="act-msg-erro">Usuário ou senha inválida para Banco.dbf.</div>', unsafe_allow_html=True)
         if btn_cancel:
             st.markdown('<div class="act-msg-erro">Entrada cancelada.</div>', unsafe_allow_html=True)
 
@@ -702,7 +698,7 @@ st.markdown(f"""
     <table class="act-topbar-table">
         <tr>
             <td class="act-top-left">Hamilton e Jaedna</td>
-            <td class="act-top-right">Act! Versão V98</td>
+            <td class="act-top-right">Act! Versão V99</td>
         </tr>
     </table>
 """, unsafe_allow_html=True)
